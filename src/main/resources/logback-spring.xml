@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level %-50logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
+     
+    <appender name="RollingFileDefault" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>C:\temp\MyApp.log</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level %-50logger{40} - %msg%n</pattern>
+        </encoder>
+         
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>C:\temp\MyApp-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+    
+     <appender name="RollingFileDev" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/ide-api.log</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level %-50logger{40} - %msg%n</pattern>
+        </encoder>
+         
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/ide-api-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+    
+    <springProfile name="default">
+        <root level="DEBUG">
+            <appender-ref ref="Console" />
+        <appender-ref ref="RollingFileDefault" />
+        </root>
+    </springProfile>
+    
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="Console" />
+            <appender-ref ref="RollingFileDev" />
+        </root>
+    </springProfile>
+    
+</configuration>
