@@ -9,7 +9,7 @@ def updateGitlabStatus(Map args) {
 
 pipeline {
   agent {
-    label 'kubectl'
+    label 'docker'
   }
   
   options {
