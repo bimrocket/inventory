@@ -13,4 +13,4 @@ RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 EXPOSE 8091
-ENTRYPOINT java -jar -Dspring-boot.run.profiles=nexus -Dspring.profiles.include=dev $JAR_FILE
+ENTRYPOINT java -jar $JAR_FILE
