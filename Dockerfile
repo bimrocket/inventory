@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11-jdk-alpine
 
 ENV TZ Europe/Madrid
 ENV JAR_FILE inventari-municipal-0.0.1-SNAPSHOT.jar
