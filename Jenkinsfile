@@ -106,6 +106,13 @@ pipeline {
 
     // Stage C.
     stage('C. Initialize environment') {
+      agent {
+        docker {
+          reuseNode true
+          image 'openjdk:11'
+        }
+      }
+
       steps {
         updateGitlabStatus(state: 'running')
         script {
@@ -124,6 +131,13 @@ pipeline {
 
     // Stage D.
     stage('D. Build code') {
+      agent {
+        docker {
+          reuseNode true
+          image 'openjdk:11'
+        }
+      }
+
       steps {
         updateGitlabStatus(state: 'running')
         script {
@@ -139,6 +153,12 @@ pipeline {
     
     // Stage E.
     stage('E. Tests') {
+      agent {
+        docker {
+          reuseNode true
+          image 'openjdk:11'
+        }
+      }
       steps {
         updateGitlabStatus(state: 'running')
         script {
