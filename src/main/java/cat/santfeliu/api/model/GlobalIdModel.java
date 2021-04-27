@@ -14,16 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity(name="global_ids")
-@IdClass(GlobalIdModel.GlobalIdModelId.class)
+@IdClass(GlobalIdModelId.class)
 public class GlobalIdModel implements Serializable {
 
-    /**
-     * IdClass for primary key when using JPA annotations
-     */
-    public class GlobalIdModelId implements Serializable {
-        java.lang.String localId;
-        java.lang.String globalId;
-    }
 
     /** Primary key. */
     protected static final String PK = "GlobalIdModelGlobalIdsPk";

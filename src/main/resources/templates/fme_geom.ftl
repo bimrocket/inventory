@@ -1,1 +1,0 @@
-<lt>?xml<space>version=<quote>1.0<quote><space>encoding=<quote>US_ASCII<quote><space>standalone=<quote>no<quote><space>?<gt><lt>geometry<gt><lt>polygon<gt><lt>line<gt>${coords}<lt><solidus>line<gt><lt><solidus>polygon<gt><lt><solidus>geometry<gt>

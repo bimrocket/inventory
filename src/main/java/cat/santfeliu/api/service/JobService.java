@@ -15,6 +15,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 
+import cat.santfeliu.api.beans.KafkaMessageDelete;
 import cat.santfeliu.api.beans.ResponseWfsContainer;
 import cat.santfeliu.api.enumerator.JobSourcesEnum;
 import cat.santfeliu.api.enumerator.JobSourcesParamsEnum;
@@ -54,6 +55,9 @@ public class JobService {
 
 	@Autowired
 	InputOutputIoRepo ioRepo;
+	
+	@Autowired
+	KafkaProducer kafkaPro;
 
 	@Autowired
 	InventoryUtils invUtils;
@@ -95,8 +99,7 @@ public class JobService {
 
 	private void runInputJsonJob(InventoryModel inv, InputOutputIoModel ioModel, String json) {
 
-		List<GlobalIdModel> listGUIDs = globalIdRepo.findByInventory(inv.getInventoryId());
-		List<String> listNew = new ArrayList<>();
+		List<String> listTreatedGUIDs = new ArrayList<>();
 		Gson objMap = new Gson();
 		JsonArray fArray = new JsonArray();
 		try {
@@ -112,6 +115,7 @@ public class JobService {
 			return;
 		}
 
+		// Transformació dades i publicació a Kafka
 		for (int i = 0; i < fArray.size(); i++) {
 			JsonObject fJson = fArray.get(i).getAsJsonObject();
 
@@ -119,13 +123,51 @@ public class JobService {
 			String globalId = null;
 			Optional<GlobalIdModel> hasIdOpt = globalIdRepo.findByInventoryAndLocalId(inv.getInventoryId(), localId);
 			if (hasIdOpt.isEmpty()) {
+				// No s'ha trobat GUID cal obtenir-lo i inserir-lo
 				globalId = invUtils.getGuid();
+				GlobalIdModel guid = new GlobalIdModel();
+				guid.setGlobalId(globalId);
+				guid.setInventoryModel(inv);
+				guid.setLocalId(localId);
+				globalIdRepo.save(guid);
 			} else {
 				globalId = hasIdOpt.get().getGlobalId();
 			}
-			listNew.add(globalId);
-			String modelKafka = transformer.modelDataForKafka(inv, globalId, ioModel, fJson.toString());
-			log.info(modelKafka);
+			boolean alreadyTreated = false;
+			for (int j = 0; j < listTreatedGUIDs.size() && !alreadyTreated; j++) {
+				alreadyTreated = listTreatedGUIDs.get(j).equals(globalId);
+			}
+			if (!alreadyTreated) {
+				listTreatedGUIDs.add(globalId);
+				String modelKafka = transformer.modelDataForKafka(inv, globalId, ioModel, fJson.toString());
+				if (modelKafka != null && !modelKafka.equals("")) {
+					kafkaPro.sendMessage(inv.getInventoryKafkaTopicId(), modelKafka);
+				} else {
+					log.error("runInputJsonJob@JobService - empty model created for json {}", fJson.toString());
+				}
+			}
+			
+		}
+		List<GlobalIdModel> listGUIDs = globalIdRepo.findByInventory(inv.getInventoryId());
+		
+		// Tractament globalIds no existents ja
+		for (int i = 0; i < listGUIDs.size(); i++) {
+			boolean found = false;
+			for (int j = 0; j < listTreatedGUIDs.size() && !found;j ++) {
+				found = listTreatedGUIDs.get(j).equals(listGUIDs.get(i).getGlobalId());
+			}
+			if (!found) {
+
+				// No s'ha trobat GUID cal enviar missatge a Kafka de eliminació i eliminar-ho de base de dades
+				if (ioModel.getOutputDataFormat().equals("application/json")) {
+					KafkaMessageDelete deleteMsg = new KafkaMessageDelete();
+					deleteMsg.setId(listGUIDs.get(i).getGlobalId());
+					deleteMsg.setType(inv.getInventoryName());
+					kafkaPro.sendMessage(inv.getInventoryKafkaTopicId(), objMap.toJson(deleteMsg));
+				}
+				
+				globalIdRepo.delete(listGUIDs.get(i));
+			}
 		}
 
 	}
