@@ -43,6 +43,11 @@ pipeline {
     DOCKER_IMAGE_URL = "${DOCKER_REGISTRY}/${DOCKER_PROJECT}/${DOCKER_IMAGE}"
     DOCKER_REGISTRY_CREDENTIALS = credentials('registry-pwd')
     DOCKER_DEV_TAG = 'dev'
+
+    // Docker deploy server (dev)
+    DOCKER_DEPLOY_HOST_IP = '192.168.0.216'
+    DOCKER_DEPLOY_CERTIFICATE = 'docker-srvdocker1-ssl'
+    DOCKER_DEPLOY_SERVICE_NAME = 'cityos-web_cityos-inventory'
   }
   
   triggers {
@@ -207,11 +212,23 @@ pipeline {
     }
     
     // Stage H.
-    stage('H. Kubernetes restart pod') {
+    stage('H. Deploy DEV (SRVDOCKER1)') {
+      when {
+        allOf {
+          expression { event_name == 'push' }
+        }
+      }
+
       steps {
         updateGitlabStatus(state: 'running')
         script {
-            sh "pending..."
+          docker.withServer("tcp://${DOCKER_DEPLOY_HOST_IP}:4243", "${DOCKER_DEPLOY_CERTIFICATE}") {
+            sh '''
+              docker service update ${DOCKER_DEPLOY_SERVICE_NAME} \
+                --force \
+                --image=${DOCKER_IMAGE_URL}:${DOCKER_DEV_TAG}
+            '''
+          }
         }
       }
       post {
