@@ -14,4 +14,7 @@ public interface InventoryRepo extends CrudRepository<InventoryModel, Integer> {
 
 	@Query(value = "SELECT * FROM inventories WHERE inventory_job_api_id = :jobApiId", nativeQuery = true)
 	public Optional<InventoryModel> findJob(@Param("jobApiId") String job);
+	
+	@Query(value = "SELECT * FROM inventories WHERE inventory_name = :invName", nativeQuery = true)
+	public Optional<InventoryModel> findInvByName(@Param("invName") String invName);
 }

@@ -1,5 +1,8 @@
 package cat.santfeliu.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,9 +16,12 @@ import com.google.gson.JsonParser;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+import cat.santfeliu.api.model.GlobalIdModel;
 import cat.santfeliu.api.model.InputOutputIoModel;
 import cat.santfeliu.api.model.InventoryModel;
 import cat.santfeliu.api.repo.GlobalidRepo;
+import cat.santfeliu.api.repo.InventoryRepo;
+import cat.santfeliu.api.utils.InventoryUtils;
 
 @Service
 public class TransformerService {
@@ -24,12 +30,19 @@ public class TransformerService {
 
 	@Autowired
 	private GlobalidRepo globalIdRepo;
+	
+	@Autowired
+	private InventoryUtils invUtils;
+	
+	@Autowired
+	private InventoryRepo invRepo;
 
 	private final Integer INTERPRETER_JSON_PATH = 3;
 
 	public String modelDataForKafka(InventoryModel inv, String globalId, InputOutputIoModel ioModel, String data) {
 		String dataTrans = "";
 
+		List<GlobalIdModel> modelGUIDs = new ArrayList<>();
 		String template = ioModel.getOutputTemplateOrScript();
 		if (ioModel.getInputDataFormat().equals("application/json")
 				&& ioModel.getInputInterpreterId() == INTERPRETER_JSON_PATH) {
@@ -39,12 +52,40 @@ public class TransformerService {
 				Pattern p = Pattern.compile("#[\\w|.|$]+#");
 				Matcher m = p.matcher(template);
 				String replacedTemplate = new String(template);
+				DocumentContext templateJsonPath = JsonPath.parse(template);
 				DocumentContext jsonPath = JsonPath.parse(data);
 				while (m.find()) {
 					String variable = m.group();
 					switch (variable) {
 					case "#context.globalId#":
 						replacedTemplate = replacedTemplate.replace("#context.globalId#", globalId);
+						break;
+					case "#context.modelGlobalId#":
+						String fieldRef = ioModel.getInputLocalModelIdPath();
+						if (fieldRef != null && !fieldRef.isEmpty()) {
+							String typeModel = templateJsonPath.<String>read("$.typeModel");
+							Optional<InventoryModel> invTypeModel = invRepo.findInvByName(typeModel);
+							if (invTypeModel.isEmpty()) {
+								log.error("modelDataForKafka@TransformerService - couldn't find typeModel in template json {}", template);
+							} else {
+								String modelLocalId = jsonPath.<String>read(fieldRef);
+								Optional<GlobalIdModel> globalIdModel = globalIdRepo.findByInventoryAndLocalId(invTypeModel.get().getInventoryId(), modelLocalId);
+								String typeModelGlobalId = "";
+								if (globalIdModel.isPresent()) {
+									typeModelGlobalId = globalIdModel.get().getGlobalId();
+								} else {
+									typeModelGlobalId = invUtils.getGuid();
+									GlobalIdModel guid = new GlobalIdModel();
+									guid.setGlobalId(globalId);
+									guid.setInventoryModel(invTypeModel.get());
+									guid.setLocalId(modelLocalId);
+									globalIdRepo.save(guid);
+								}
+								replacedTemplate = replacedTemplate.replace("#context.modelGlobalId#", typeModelGlobalId);
+									
+							}
+								
+						}
 						break;
 					default:
 						String jsonPathVar = variable.replaceAll("#", "");
