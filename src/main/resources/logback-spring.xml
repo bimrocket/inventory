@@ -8,7 +8,7 @@
     </appender>
      
     <appender name="RollingFileDefault" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>C:\temp\MyApp.log</file>
+        <file>/tmp/MyApp.log</file>
         <encoder>
             <pattern>%d [%thread] %-5level %-50logger{40} - %msg%n</pattern>
         </encoder>
@@ -20,7 +20,7 @@
     </appender>
     
      <appender name="RollingFileDev" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/ide-api.log</file>
+        <file>/tmp/ide-api.log</file>
         <encoder>
             <pattern>%d [%thread] %-5level %-50logger{40} - %msg%n</pattern>
         </encoder>
