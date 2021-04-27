@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import cat.santfeliu.api.model.GlobalIdModel;
-import cat.santfeliu.api.model.GlobalIdModel.GlobalIdModelId;
+import cat.santfeliu.api.model.GlobalIdModelId;
 
 public interface GlobalidRepo extends CrudRepository<GlobalIdModel, GlobalIdModelId> {
 

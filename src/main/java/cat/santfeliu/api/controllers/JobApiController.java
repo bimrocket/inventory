@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cat.santfeliu.api.api.JobApi;
+import cat.santfeliu.api.dto.ApiError;
 import cat.santfeliu.api.service.JobService;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-07T18:27:59.210Z[GMT]")
@@ -35,7 +37,15 @@ public class JobApiController implements JobApi {
 
 	@Override
 	public ResponseEntity<Object> runJob(@PathVariable("id") String jobId) {
-		jobService.runJob(jobId);
+		try { 
+			jobService.runJob(jobId);
+		} catch (Exception e) {
+			log.error("runJob@JobApiController - exception running job {}", e.getMessage(), e);
+			return new ResponseEntity<>(new ApiError("error_501", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), ""), HttpStatus.INTERNAL_SERVER_ERROR);
+
+		} finally {
+			
+		}
 		return ResponseEntity.ok().build();
 	}
 }

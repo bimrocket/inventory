@@ -25,7 +25,7 @@ public class KafkaConfiguration {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
           ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, 
-          bootstrapAddress);
+          "192.168.0.74:9092");
         configProps.put(
           ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, 
           StringSerializer.class);
