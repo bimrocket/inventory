@@ -199,7 +199,7 @@ pipeline {
         updateGitlabStatus(state: 'running')
         script {
           docker.withRegistry("https://${DOCKER_REGISTRY}") {
-            image = docker.build("${DOCKER_IMAGE_URL}", "--no-cache .")
+            image = docker.build("${DOCKER_IMAGE_URL}", "--no-cache .","-add-host cityos:192.168.0.74")
             image.push("${DOCKER_DEV_TAG}")
           }
         }
