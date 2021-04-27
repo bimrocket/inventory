@@ -109,7 +109,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'openjdk:11'
+          image 'mvn:3-openjdk-11'
         }
       }
 
@@ -134,7 +134,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'openjdk:11'
+          image 'mvn:3-openjdk-11'
         }
       }
 
@@ -156,7 +156,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'openjdk:11'
+          image 'mvn:3-openjdk-11'
         }
       }
       steps {
