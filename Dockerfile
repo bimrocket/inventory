@@ -13,4 +13,4 @@ RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 EXPOSE 8091
-ENTRYPOINT java -Dpython.import.site=false -jar $JAR_FILE
+ENTRYPOINT ["/bin/sh", "-c" , "echo 192.168.0.74   cityos >> /etc/hosts && exec java -Dpython.import.site=false -jar $JAR_FILE"]
