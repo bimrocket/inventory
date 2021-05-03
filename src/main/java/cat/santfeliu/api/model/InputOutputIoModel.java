@@ -42,6 +42,8 @@ public class InputOutputIoModel implements Serializable {
     private String inputLocalModelIdPath;
     @Column(name="input_interpreter_id", nullable=false, precision=10)
     private int inputInterpreterId;
+    @Column(name="input_local_model_name", nullable=false, length=255)
+    private String inputLocalModelName;
 
     /** Default constructor. */
     public InputOutputIoModel() {
@@ -245,8 +247,18 @@ public class InputOutputIoModel implements Serializable {
     public void setInputInterpreterId(int aInputInterpreterId) {
         inputInterpreterId = aInputInterpreterId;
     }
+    
+    
 
-    /**
+    public String getInputLocalModelName() {
+		return inputLocalModelName;
+	}
+
+	public void setInputLocalModelName(String inputLocalModelName) {
+		this.inputLocalModelName = inputLocalModelName;
+	}
+
+	/**
      * Compares the key for this instance with another InputOutputIoModel.
      *
      * @param other The object to compare to

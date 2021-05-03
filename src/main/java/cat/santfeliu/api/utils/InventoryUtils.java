@@ -8,13 +8,12 @@ import javax.annotation.PostConstruct;
 import org.python.util.PythonInterpreter;
 import org.springframework.stereotype.Service;
 
-@Service
 public class InventoryUtils {
 
-	private PythonInterpreter pythonInterpreter = new PythonInterpreter();
+	private static PythonInterpreter pythonInterpreter = new PythonInterpreter();
 
 
-	public String getGuid() {
+	public static String getGuid() {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream is = classloader.getResourceAsStream("python/guid.py");
 		pythonInterpreter.execfile(is);

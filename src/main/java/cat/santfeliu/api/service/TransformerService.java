@@ -1,7 +1,5 @@
 package cat.santfeliu.api.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,27 +30,28 @@ public class TransformerService {
 	private GlobalidRepo globalIdRepo;
 	
 	@Autowired
-	private InventoryUtils invUtils;
+	private InventoryRepo invRepo;
 	
 	@Autowired
-	private InventoryRepo invRepo;
+	private RhinoService jsService;
 
+	private final Integer INTERPRETER_JS = 1;
 	private final Integer INTERPRETER_JSON_PATH = 3;
 
 	public String modelDataForKafka(InventoryModel inv, String globalId, InputOutputIoModel ioModel, String data) {
 		String dataTrans = "";
 
-		List<GlobalIdModel> modelGUIDs = new ArrayList<>();
 		String template = ioModel.getOutputTemplateOrScript();
 		if (ioModel.getInputDataFormat().equals("application/json")
 				&& ioModel.getInputInterpreterId() == INTERPRETER_JSON_PATH) {
 			JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-			if (ioModel.getOutputInterpreterId() == INTERPRETER_JSON_PATH) {
+			if (ioModel.getOutputInterpreterId() == INTERPRETER_JS) {
+				return jsService.transformData(inv, ioModel, globalId, data);
+			} else if (ioModel.getOutputInterpreterId() == INTERPRETER_JSON_PATH) {
 				// We work with template
 				Pattern p = Pattern.compile("#[\\w|.|$]+#");
 				Matcher m = p.matcher(template);
 				String replacedTemplate = new String(template);
-				DocumentContext templateJsonPath = JsonPath.parse(template);
 				DocumentContext jsonPath = JsonPath.parse(data);
 				while (m.find()) {
 					String variable = m.group();
@@ -63,7 +62,7 @@ public class TransformerService {
 					case "#context.modelGlobalId#":
 						String fieldRef = ioModel.getInputLocalModelIdPath();
 						if (fieldRef != null && !fieldRef.isEmpty()) {
-							String typeModel = templateJsonPath.<String>read("$.typeModel");
+							String typeModel = ioModel.getInputLocalModelName();
 							Optional<InventoryModel> invTypeModel = invRepo.findInvByName(typeModel);
 							if (invTypeModel.isEmpty()) {
 								log.error("modelDataForKafka@TransformerService - couldn't find typeModel in template json {}", template);
@@ -74,7 +73,7 @@ public class TransformerService {
 								if (globalIdModel.isPresent()) {
 									typeModelGlobalId = globalIdModel.get().getGlobalId();
 								} else {
-									typeModelGlobalId = invUtils.getGuid();
+									typeModelGlobalId = InventoryUtils.getGuid();
 									GlobalIdModel guid = new GlobalIdModel();
 									guid.setGlobalId(globalId);
 									guid.setInventoryModel(invTypeModel.get());

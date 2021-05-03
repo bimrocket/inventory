@@ -59,9 +59,6 @@ public class JobService {
 	@Autowired
 	KafkaProducer kafkaPro;
 
-	@Autowired
-	InventoryUtils invUtils;
-
 	public void runJob(String jobId) {
 		Optional<InventoryModel> jobModel = invRepo.findJob(jobId);
 		log.info("Starting job with id '{}' and source '{}'", jobId);
@@ -124,7 +121,7 @@ public class JobService {
 			Optional<GlobalIdModel> hasIdOpt = globalIdRepo.findByInventoryAndLocalId(inv.getInventoryId(), localId);
 			if (hasIdOpt.isEmpty()) {
 				// No s'ha trobat GUID cal obtenir-lo i inserir-lo
-				globalId = invUtils.getGuid();
+				globalId = InventoryUtils.getGuid();
 				GlobalIdModel guid = new GlobalIdModel();
 				guid.setGlobalId(globalId);
 				guid.setInventoryModel(inv);
