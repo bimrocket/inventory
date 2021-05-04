@@ -115,6 +115,7 @@ pipeline {
         docker {
           reuseNode true
           image 'maven:3-openjdk-11'
+          args '-v /root/.m2:/root/.m2'
         }
       }
 
@@ -140,6 +141,7 @@ pipeline {
         docker {
           reuseNode true
           image 'maven:3-openjdk-11'
+          args '-v /root/.m2:/root/.m2'
         }
       }
 
@@ -162,6 +164,7 @@ pipeline {
         docker {
           reuseNode true
           image 'maven:3-openjdk-11'
+          args '-v /root/.m2:/root/.m2'
         }
       }
       steps {
