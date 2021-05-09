@@ -1,0 +1,52 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12 card">
+        <div class="card-body">
+          <p *ngIf="addingNew">
+            {{ 'EDIT_USUARIS_BO.FORM' | translate }}
+          </p>
+          <div class="row">
+            <div class="col-lg-3">
+              <mat-form-field>
+                <input matInput placeholder="{{ 'EDIT_USUARIS_BO.NAME' | translate }}" [formControl]="fullName" [(ngModel)]="user.fullName">
+                <mat-error *ngIf="fullName.invalid">{{getFullNameErrorMessage() | translate }}</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-3">
+              <mat-form-field>
+                <input matInput [disabled]="!addingNew" placeholder="{{ 'EDIT_USUARIS_BO.EMAIL' | translate }}" [formControl]="email" [(ngModel)]="user.email">
+                <mat-error *ngIf="email.invalid">{{getEmailErrorMessage() | translate }}</mat-error>
+                      
+              </mat-form-field>
+            </div>
+            <div class="col-lg-3">
+              <mat-form-field>
+                <mat-select [(ngModel)]="user.cities" placeholder="{{ 'EDIT_USUARIS_BO.MUNICIPI' | translate }}">
+                  <mat-option *ngIf="isAllMunicipis()" [value]="''">{{ 'GENERAL.ALL' | translate }} </mat-option>
+                  <mat-option *ngFor="let city of cities" [value]="city.juridicId">{{ city.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-3">
+              <mat-form-field>
+                <mat-select [formControl]="selectorRol" [(ngModel)]="user.profile.profileId" placeholder="{{ 'EDIT_USUARIS_BO.ROL' | translate }}">
+                  <mat-option *ngFor="let profile of profiles" [value]="profile.profileId">{{ profile.description }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="selectorRol.invalid">{{ 'GENERAL.YOU_NEED_SELECT_VALUE' | translate }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        <hr/>
+        <mat-checkbox [disabled]="!addingNew" (change)="toggleLdapUser()" [checked]="user.isLdapUser">{{ 'EDIT_USUARIS_BO.IS_LDAP_USER' | translate }}</mat-checkbox>
+        <button mat-raised-button (click)="saveUser()" class="marginLeft15px" color="accent" [disabled]="email.invalid || fullName.invalid || selectorRol.invalid" style="float:right;">
+          {{ 'GENERAL.SAVE' | translate }}
+        </button>
+        <button mat-raised-button color="white" [routerLink]="['/sistema/usuaris-bo']" style="float:right;">
+          {{ 'GENERAL.CANCEL' | translate }}
+        </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

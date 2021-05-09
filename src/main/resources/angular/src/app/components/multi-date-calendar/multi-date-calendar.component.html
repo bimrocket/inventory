@@ -1,0 +1,32 @@
+
+<div class="row">
+  <div class="col-md-2" style="padding:0;">
+    <button [disabled]="isDisabledLeft()" (click)="goLeft()" mat-raised-button color="primary" class="mat-small mat-arrow">
+      <i class="material-icons">
+        chevron_left
+      </i>
+    </button>
+  </div>
+  <div class="col-md-8 currentMonth">
+    {{ getMonth() }}
+  </div>
+  <div class="col-md-2" style="padding:0;">
+    <button [disabled]="isDisabledRight()" (click)="goRight()" mat-raised-button color="primary" class="mat-small mat-arrow">
+      <i class="material-icons">
+        chevron_right
+      </i>
+    </button>
+  </div>
+  <table>
+    <thead>
+      <th class="header-day" *ngFor="let weekDay of weekDays">{{ weekDay }}</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows;let i = index;">
+        <td (click)="toggleSelection(cell)" *ngFor="let cell of row;let j= index;" [ngClass]="{ 'row-disabled': isDisabled(cell), 'row-selected' : isSelected(cell), 'row-empty' : cell === null, 'row-last': i === 5 && lastRowEmpty }" class="row-day">
+          {{ cell === null ? '' : cell.date() }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

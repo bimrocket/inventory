@@ -10,7 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import cat.santfeliu.api.model.InventoryModel;
 
 @RepositoryRestResource(exported = true)	
-public interface InventoryRepo extends CrudRepository<InventoryModel, Integer> {
+public interface InventoryRepo extends CrudRepositorySantFeliu<InventoryModel, Integer> {
 
 
 	@Query(value = "SELECT * FROM inventories WHERE inventory_job_api_id = :jobApiId", nativeQuery = true)

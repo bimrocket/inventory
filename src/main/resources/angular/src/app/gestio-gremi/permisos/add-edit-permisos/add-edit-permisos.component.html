@@ -1,0 +1,177 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12 card">
+        <div class="card-header-warning">
+          <span *ngIf="!exist">{{ 'PERMISSOS.NEW' | translate }}</span>
+          <span *ngIf="exist">{{ 'PERMISSOS.EDIT' | translate }}</span>
+        </div>
+        <div class="card-body" *ngIf="loadPermission">
+          <div class="col-lg-12">
+            <mat-spinner style="margin: 0 auto;"></mat-spinner>
+          </div>
+        </div>
+        <div class="card-body" *ngIf="!loadPermission">
+          <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="row">
+              <div class="col-lg-3">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'PERMISSOS.NOM' | translate }} *" formControlName="permisNom">
+                </mat-form-field>
+              </div>
+              <div class="col-lg-3">
+                <mat-form-field *ngIf="form.get('permisQuantitat').value != -1">
+                  <input matInput appNumeric numericType="number" placeholder="{{ 'PERMISSOS.QUANTITAT' | translate }} *" formControlName="permisQuantitat">
+                </mat-form-field>
+                <mat-slide-toggle style="margin-bottom:25px;" [checked]="form.get('permisQuantitat').value === -1" (change)="toggleQuantity($event)">{{ 'PERMISSOS.QUANTITY_UNLIMITED' | translate }}</mat-slide-toggle>
+              </div>
+              <div class="col-lg-3">
+                  <mat-form-field>
+                    <mat-select (selectionChange)="municipiChanged($event.value)" placeholder="{{ 'PERMISSOS.MUN' | translate }} *" formControlName="permisMunicipi">
+                      <mat-option *ngFor="let municipi of municipis" [value]="municipi.juridicId">{{municipi.name}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-lg-3">
+                  <mat-form-field>
+                    <mat-select placeholder="{{ 'PERMISSOS.COLECTIU' | translate }} *" formControlName="permisAgreement">
+                      <mat-option *ngFor="let agreement of agreements" [value]="agreement.agreementTypeId">{{agreement.description}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput [matDatepicker]="vigenciaDatapicker" placeholder="{{ 'PERMISSOS.DURACIO' | translate }} *" formControlName="permisVigencia">
+                  <mat-datepicker-toggle matSuffix [for]="vigenciaDatapicker"></mat-datepicker-toggle>
+                  <mat-datepicker #vigenciaDatapicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <mat-select  placeholder="{{ 'PERMISSOS.PERIODICITAT' | translate }} *" formControlName="permisPeriodicitat">
+                      <mat-option *ngFor="let period of periodicity" [value]="period.periodicityId">{{descriptionPermission(period)}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                  <mat-form-field>
+                    <input matInput appNumeric numericType="number" placeholder="{{ 'PERMISSOS.TIME' | translate }} *" formControlName="permisTime" type="number">
+                  </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <button mat-raised-button style="float:right;margin-left:20px;" color="primary" type="submit">
+                  {{ 'GENERAL.SAVE' | translate }}
+                </button>
+                <button mat-stroked-button color="accent" [routerLink]="['/gestio-gremi/permisos']" style="float:right;">
+                  {{ 'GENERAL.CANCEL' | translate }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="row card">
+          <div class="card-header-warning">
+            {{ 'AREES.HORARIS.DIESANDHOURS' | translate }}
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <tbody>
+                <thead>
+                  <th>
+                  </th>
+                  <th>
+                  </th>
+                  <th>
+                  </th>
+                  <th>
+                  </th>
+                </thead>
+                <tr class="ap_trColors" *ngFor="let day of days">
+                  <td scope="row">
+                    {{ day.name | translate }}
+                  </td>
+                  <td scope="row" style="padding-top:30px;">
+                    <span style="float:left;margin-top:15px;">
+                      {{ 'AREES.HORARIS.FROM' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input [disabled]="isDisabled()" matInput [ngxTimepicker]="from1" [(ngModel)]="day.from1" [format]="24">
+                      <ngx-material-timepicker #from1></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.from1" matSuffix mat-icon-button aria-label="Clear" (click)="day.from1=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                    <span style="float:left;margin-top:15px;margin-left:5px;">
+                      {{ 'AREES.HORARIS.TO' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input [disabled]="isDisabled()" matInput [ngxTimepicker]="to1" [(ngModel)]="day.to1" [format]="24">
+                      <ngx-material-timepicker #to1></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.to1" matSuffix mat-icon-button aria-label="Clear" (click)="day.to1=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </td>
+                  <td scope="row" style="padding-top:30px;">
+                    <span style="float:left;margin-top:15px;">
+                      {{ 'AREES.HORARIS.FROM' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input matInput [disabled]="isDisabled() || !day.from1 || !day.to1" [ngxTimepicker]="from2" [(ngModel)]="day.from2" [format]="24">
+                      <ngx-material-timepicker #from2></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.from2" matSuffix mat-icon-button aria-label="Clear" (click)="day.from2=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                    <span style="float:left;margin-top:15px;margin-left:5px;">
+                      {{ 'AREES.HORARIS.TO' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input matInput [disabled]="isDisabled() || !day.from1 || !day.to1" [ngxTimepicker]="to2" [(ngModel)]="day.to2" [format]="24">
+                      <ngx-material-timepicker #to2></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.to2" matSuffix mat-icon-button aria-label="Clear" (click)="day.to2=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </td>
+                  <td scope="row" style="padding-top:30px;">
+                    <span style="float:left;margin-top:15px;">
+                      {{ 'AREES.HORARIS.FROM' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input matInput [disabled]="isDisabled() || !day.from1 || !day.to1 || !day.from2 || !day.to2" [ngxTimepicker]="from3" [(ngModel)]="day.from3"
+                        [format]="24">
+                      <ngx-material-timepicker #from3></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.from3" matSuffix mat-icon-button aria-label="Clear" (click)="day.from3=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                    <span style="float:left;margin-top:15px;margin-left:5px;">
+                      {{ 'AREES.HORARIS.TO' | translate }}
+                    </span>
+                    <mat-form-field style="float:left;margin-left:5px;width:100px;" appearance="outline">
+                      <input matInput [disabled]="isDisabled() || !day.from1 || !day.to1 || !day.from2 || !day.to2" [ngxTimepicker]="to3" [(ngModel)]="day.to3"
+                        [format]="24">
+                      <ngx-material-timepicker #to3></ngx-material-timepicker>
+                      <button mat-button *ngIf="day.to3" matSuffix mat-icon-button aria-label="Clear" (click)="day.to3=''">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

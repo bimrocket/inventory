@@ -1,0 +1,110 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 card">
+                <div class="card-header-warning" [translate]="'GESTIO_OPERATIVA.PARAMETRES'">
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <mat-form-field>
+                                                    <input matInput name="email" placeholder="{{ 'GESTIO_OPERATIVA.CORREU_ELECTORNIC' | translate }}" [disabled]="(search.userStateId)" [(ngModel)]="search.email">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <mat-form-field>
+                                                    <input matInput name="nif" placeholder="{{ 'GESTIO_OPERATIVA.NIF' | translate }}" [disabled]="(search.userStateId)"  [(ngModel)]="search.nif">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-4" *ngIf="_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)">
+                                                <mat-form-field>
+                                                    <mat-select name="userStateId" [disabled]="(search.email || search.telefon || search.nif)"  [(ngModel)]="search.userStateId" placeholder="{{ 'GESTIO_OPERATIVA.USER_STATE_ID' | translate }}">
+                                                        <mat-option>{{ 'GENERAL.NONE' | translate }}</mat-option>
+                                                        <mat-option *ngFor="let estat of estatsUsuaris" [value]="estat.value">{{ estat.nom | translate }}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <a (click)="clearParameters()">
+                                            <i class="material-icons" style="margin-top:15px;border:1px solid rgb(48, 48, 48);cursor:pointer;border-radius:5px;">
+                                                clear
+                                            </i>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <button type="submit" mat-raised-button color="primary" style="float:right;" (click)="searchUser()">{{ 'GENERAL.SEARCH' | translate }}</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 card" *ngIf="users && users.length === 0">
+                <div class="card-body">
+                    <span>{{ 'GESTIO_OPERATIVA.NO_USER_FOUND' | translate}}</span>
+                </div>
+            </div>
+            <mat-spinner *ngIf="loading" style="margin:0 auto;"></mat-spinner>
+            <div class="col-lg-12 card" *ngIf="users && users.length > 0">
+                <div class="card-header-warning" [translate]="'GESTIO_OPERATIVA.USUARIS'">
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ 'GESTIO_OPERATIVA.EMAIL' | translate }}</th>
+                                <th scope="col">
+                                    {{ 'GESTIO_OPERATIVA.FULL_NAME' | translate }}
+                                </th>
+                                <th scope="col">
+                                    {{ 'GESTIO_OPERATIVA.NIF' | translate }}
+                                </th>
+                                <th scope="col">
+                                    {{ 'GESTIO_OPERATIVA.TIPUS_COMPTE' | translate }}
+                                </th>
+                                <th scope="col">
+                                    {{ 'GESTIO_OPERATIVA.USER_STATE' | translate }}
+                                </th>
+                                <th scope="col">
+                                    {{ 'GESTIO_OPERATIVA.APPLICATION' | translate }}
+                                </th>
+                                <th scope="col" class="col-accions">{{ 'GENERAL.ACTIONS' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of users">
+                                <td scope="row">{{ user.email }}</td>
+                                <td scope="row">{{ user.fullName }}</td>
+                                <td scope="row">{{ user.documentNumber }}</td>
+                                <td scope="row">{{ (user.accountType === 'F' ? 'GESTIO_OPERATIVA.FLOTA' : 'GESTIO_OPERATIVA.UNIPERSONAL') | translate }}</td>
+                                <td scope="row">{{ getEstatUsuari(user) | translate }}</td>
+                                <td scope="row">{{"PROJECT."+user.applicationType | translate}}</td>
+                                <td scope="row">
+                                    <a (click)="loadUser(user)">
+                                        <button mat-raised-button color="accent" style="float:left;">
+                                            <i class="material-icons" style="color:white;">
+                                                edit
+                                            </i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

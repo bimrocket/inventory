@@ -8,17 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cat.santfeliu.api.api.JobApi;
+import cat.santfeliu.api.annotations.SantFeliuRestController;
 import cat.santfeliu.api.dto.ApiError;
 import cat.santfeliu.api.service.JobService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-07T18:27:59.210Z[GMT]")
-@RestController
-public class JobApiController implements JobApi {
+@SantFeliuRestController
+public class JobApiController {
 
 	private static final Logger log = LoggerFactory.getLogger(JobApiController.class);
 
@@ -35,7 +38,11 @@ public class JobApiController implements JobApi {
 		this.request = request;
 	}
 
-	@Override
+    @Operation(summary = "", description = "", tags={ "downloads" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "OK") })
+    @RequestMapping(value = "/run/job/{id}",
+        method = RequestMethod.GET)
 	public ResponseEntity<Object> runJob(@PathVariable("id") String jobId) {
 		try { 
 			jobService.runJob(jobId);

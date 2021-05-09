@@ -1,0 +1,186 @@
+.list-container {
+    height: 60vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.mat-tab-body-content {
+    overflow: hidden !important;
+}
+
+.sidebar .nav li a, .sidebar .nav li .dropdown-menu a {
+    text-transform: none !important;
+}
+.sidebar .nav{
+    margin-top: 0px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+mat-spinner {
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+/** Cercador Operacions **/
+.actionText {
+    height:100%; 
+    width:60%; 
+    float:left;
+}
+
+.actionIcon {
+    height:100%; 
+    width:40%; 
+    float: right;
+}
+
+.actionIcon i {
+    margin-top: 11px; 
+    float: right;
+}
+
+/** Arees **/
+.map {
+    margin-top: 0px !important;
+    border: 1px solid lightgrey;
+    height: 600px;
+}
+
+.draw-active {
+    background-color: darkgrey;
+}
+
+.map-select {
+    cursor: pointer;
+}
+.rowEditRestrictions {
+    height: 62vh;
+}
+
+.rowBtns{
+    position: relative; 
+    margin: 15px 0px 15px; 
+    width: 95%;
+}
+
+.map {
+    height: 60vh !important;
+}
+
+.divContingutScroll{
+    overflow-y:scroll;
+    overflow-x:hidden;
+    height:34vh;
+    border:1px solid lightgrey;
+}
+
+.divBlancCard {
+    background: white;
+    border-radius: 10px;
+    height: 85vh;
+    width: 100%;
+    padding: 20px;
+}
+/** End Arees **/
+
+.card-header-warning {
+    margin-top: 20px !important;
+    background : #808080 !important;
+}
+
+.card-header-brown {
+    margin-top: 20px !important;
+    background : #FFAB03 !important;
+}
+
+.activeGroup{
+    background:white;
+    color: black;
+}
+
+span.mat-button-wrapper {
+    font-weight: bold;
+}
+
+
+.navbar.navbar-absolute {
+    z-index: 1 !important;
+}
+
+.ap_trColors:nth-child(even) {
+    background: rgb(243, 243, 243)
+}
+
+.timepicker__header {
+    background-color: #00A9B5 !important;
+    
+}
+
+.timepicker-button {
+    color: #00A9B5 !important;
+}
+
+.text-primary {
+    color: #00A9B5 !important;
+}
+
+.wrap-word {   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+tr:nth-child(even){
+    background: rgb(243, 243, 243)
+}
+
+.mat-calendar-body tr:nth-child(even) {
+    background: transparent;
+}
+
+.marginLeft15px {
+    margin-left: 15px !important;
+}
+  
+
+.mat-grey{
+    background-color: #B5B5B5;
+    color:white;
+    font-weight: 600;
+}
+
+
+.buttonIcon{
+    cursor: pointer;
+    min-width: 0px!important;
+    padding: 0px!important;
+    color:#797979;
+}
+
+.div-wrapper{
+    display: flex;
+    flex-flow: row;
+        flex-wrap: nowrap;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.chip-pending{
+    background-color: #DCA900!important;
+}
+
+.chip-accepted{
+    background-color: #258D01!important;
+}
+
+.chip-progress{
+    background-color: #0461BE!important;
+}
+
+.chip-denied{
+    background-color: #C51C01!important;
+}

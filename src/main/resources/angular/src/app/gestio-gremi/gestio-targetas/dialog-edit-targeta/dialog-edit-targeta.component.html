@@ -1,0 +1,31 @@
+<div>
+  <h2 mat-dialog-title>{{ 'DIALOG_EDIT_TARGETES.TITLE' | translate : {number: targeta.cardNumber } }}</h2>
+  <hr />
+
+  <mat-dialog-content>
+    <div class="row">
+      <p>
+          <mat-form-field>
+            <mat-select placeholder="Selecciona un estat" [formControl]="guildCardState">
+				<ng-container *ngIf="targeta.guildCardStatusId!=4">
+					 <mat-option *ngFor="let guildCardStatus of guildCardStates" [value]="guildCardStatus.id">
+					 {{guildCardStatus.text}} 
+					 </mat-option>
+				</ng-container>
+				<ng-container *ngIf="targeta.guildCardStatusId==4">
+					<mat-option *ngFor="let guildCardStatus of guildCardStatesAux" [value]="guildCardStatus.id" >
+						 {{guildCardStatus.text}} 
+					</mat-option>
+				</ng-container>
+            </mat-select>
+		</mat-form-field>
+        </p>
+      </div>
+  </mat-dialog-content>
+  <hr />
+  <mat-dialog-actions style="float:right;">
+    <button mat-raised-button (click)="onCloseCancel()">{{ 'GENERAL.EXIT' | translate }}</button>
+    <button mat-raised-button color="primary" (click)="onCloseConfirm()">{{ 'GENERAL.MODIFY' | translate }}</button>
+
+  </mat-dialog-actions>
+</div>

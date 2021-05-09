@@ -11,7 +11,7 @@ import cat.santfeliu.api.model.SourceModel;
 import cat.santfeliu.api.model.SourcesPk;
 
 @RepositoryRestResource(exported = true)
-public interface SourceRepo extends CrudRepository<SourceModel, SourcesPk> {
+public interface SourceRepo extends CrudRepositorySantFeliu<SourceModel, SourcesPk> {
 
 	@Query(value="select * from sources where source_name = :src", nativeQuery = true)
 	List<SourceModel> findBy(@Param("src") String src);

@@ -1,0 +1,683 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        {{ user.fullName }} (
+        <b>{{ user.email }}</b>)
+      </div>
+      
+    </div>
+    <div class="row card">
+      <div class="col-lg-12 card-body" style="padding-top:0;">
+        <mat-tab-group>
+          <mat-tab label="{{ 'GESTIO_OPERATIVA.DADES_PERSONALS' | translate }}">
+            <div *ngIf="loadingUser">
+              <mat-spinner style="margin: 0 auto;"></mat-spinner>
+            </div>
+            <div *ngIf="!loadingUser">
+              <div class="row row-edit-users">
+                <div class="col-lg-8">
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p class="">
+                        {{ 'EDIT_USUARIS.TIPUS_COMPTE' | translate }}:
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p class="">
+                        {{ (user.accountType == 'F' ? 'EDIT_USUARIS.FLOTA' : 'EDIT_USUARIS.UNIPERSONAL') | translate }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.ESTAT_COMPTE' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value" [ngStyle]="{ 'color' : user.userStateId == 1 || user.userStateId == 3 || user.userStateId == 4 || user.userStateId == 5 ? 'red' : 'black' }">
+                      <p>
+                        {{ getEstatUsuari(user) }} 
+                         <span *ngIf="!isDum">/ <span *ngIf="userStatus.unpaid else paid">{{ 'EDIT_USUARIS.UNPAID' | translate }}</span><ng-template #paid>{{ 'EDIT_USUARIS.PAID' | translate }}</ng-template></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.IS_ADMIN' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        <mat-checkbox [checked]="user.permissions.isAdmin" [disabled]="true"></mat-checkbox>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.FULL_NAME' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.fullName }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.COMPANY' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.company }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>{{ 'EDIT_USUARIS.ACTIVITY_TYPE' | translate }}</p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>{{ getActivitatCompte() }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.TIPUS_DOC' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{'DOCUMENTS_TYPES.'+user.documentTypeId | translate}}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.DOC' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.documentNumber }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.PHONE' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        +{{ user.mobilePrefix }} {{ user.mobilePhone }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.EMAIL' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.email }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.DATE_ADDED' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.dateAdded | localizedDate }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.DATE_DELETED' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.dateClosed | localizedDate }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.FAILED_LOGINS' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.failedLogins ? user.failedLogins : '0' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 label">
+                      <p>
+                        {{ 'EDIT_USUARIS.APP_USED' | translate }}
+                      </p>
+                    </div>
+                    <div class="col-lg-9 value">
+                      <p>
+                        {{ user.deviceType === 'a' ? 'Android' : 'IOS' }} {{ user.appVersion ? user.appVersion : '' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <h3>{{ 'EDIT_USUARIS.POLICY' | translate }}</h3>
+                      <hr/>
+                      <mat-error *ngIf="userMustReview">
+                        <i class="material-icons">
+                          warning
+                        </i>
+                        <span>{{ 'EDIT_USUARIS.USER_MUST_REVIEW' | translate }}</span>
+                      </mat-error>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12 label">
+                      <mat-checkbox [checked]="ppPlusPlus" [disabled]="true">{{ 'EDIT_USUARIS.POLICY_PLUS_PLUS' | translate }}</mat-checkbox>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12 label">
+                      <mat-checkbox [checked]="ppBasic" [disabled]="true">{{ 'EDIT_USUARIS.POLICY_BASIC' | translate }}</mat-checkbox>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12 label">
+                      <mat-checkbox [checked]="conditionsUse" [disabled]="true">{{ 'EDIT_USUARIS.USE_CONDITIONS' | translate }}</mat-checkbox>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div *ngIf="user && user.userStateId !== 5 && user.userStateId !== 1 && user.userStateId !== 3">
+                    <h3>
+                      {{ 'EDIT_USUARIS.ACTIONS_APP' | translate }}
+                    </h3>
+                    <p *ngIf="_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)">
+                      <a (click)="logoutUser()" style="margin-top:5px;color: orangered;cursor: pointer;text-decoration: underline">
+                        {{ 'EDIT_USUARIS.CLOSE_SESSION' | translate }}
+                      </a>
+                    </p>
+                    <p *ngIf="_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)">
+                      <a (click)="unlockUser()" style="margin-top:5px;color: orangered;cursor: pointer;text-decoration: underline">
+                        {{ 'EDIT_USUARIS.RESET_COMPT' | translate }}
+                      </a>
+                    </p>
+                  </div>
+                  <h3>
+                    {{ 'EDIT_USUARIS.ACTIONS_USER' | translate }}
+                  </h3>
+                  <p *ngIf="user && user.userStateId !== 5 && user.userStateId !== 1">
+                    <button class="userActions" [disabled]="!_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)" mat-raised-button color="primary"
+                      (click)="sendRecover()" style="margin-top:5px;">
+                      {{ 'EDIT_USUARIS.SEND_RECOVER' | translate }}
+                    </button>
+                  </p>
+                  <p *ngIf="user && (user.userStateId === 2 || user.userStateId === 3)">
+                    <button class="userActions" [disabled]="!_currentUserService.isAdmin()" mat-raised-button color="primary" (click)="toggleUserBlock(user.userId,user.userStateId)"
+                      style="margin-top:5px;">
+                      {{ (user.userStateId == 2 ? 'EDIT_USUARIS.BLOCK_USER' : user.userStateId == 3 ? 'EDIT_USUARIS.UNBLOCK_USER' : '') | translate
+                      }}
+                    </button>
+                  </p>
+                  <p *ngIf="user && user.userStateId !== 5">
+                    <button class="userActions" [disabled]="!_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)" mat-raised-button color="primary"
+                      (click)="deleteUser(user)" style="margin-top:5px;">
+                      {{ 'EDIT_USUARIS.DELETE_USER' | translate }}
+                    </button>
+                  </p>
+                  <p *ngIf="user && user.userStateId === 1">
+                    <button class="userActions" [disabled]="!_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)" mat-raised-button color="primary"
+                      (click)="sendRecover(true)" style="margin-top:5px;">
+                      {{ 'EDIT_USUARIS.VALIDATE_USER' | translate }}
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </mat-tab>
+          <mat-tab label="{{ 'EDIT_USUARIS.MATRICULES' | translate }}">
+            <div *ngIf="loadingVehicles">
+              <mat-spinner style="margin: 0 auto;"></mat-spinner>
+            </div>
+            <div class="row row-edit-users" *ngIf="!loadingVehicles">
+              <div class="col-lg-12 value">
+                <p *ngIf="user.vehicles && user.vehicles.length == 0">
+                  {{ 'EDIT_USUARIS.NO_VEHICLES' | translate }}
+                </p>
+                <table class="table" *ngIf="user.vehicles && user.vehicles.length != 0">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ 'EDIT_USUARIS.MAT_ID' | translate }}</th>
+                      <th scope="col">{{ 'EDIT_USUARIS.MAT_ALIAS' | translate }}</th>
+                      <th scope="col">
+                        {{ 'EDIT_USUARIS.ECO_TYPE' | translate }}
+                      </th>
+
+                      <th scope="col">
+                        {{ 'EDIT_USUARIS.MAT_INT' | translate }}
+                      </th>
+
+                      <th scope="col" class="col-accions">
+                        {{ 'EDIT_USUARIS.MAT_ALTA' | translate }}
+                      </th>
+                      <th scope="col" class="col-accions">
+                        {{ 'EDIT_USUARIS.MAT_BAIXA' | translate }}
+                      </th>
+                      <th scope="col" class="col-accions">
+                        {{ 'EDIT_USUARIS.GREMI' | translate }}
+                      </th>
+                      <th scope="col">
+                          {{ 'EDIT_USUARIS.GUILD_ACTIVATED' | translate }}
+                      </th>
+                      <th scope="col">
+                        {{ 'EDIT_USUARIS.ESTAT_VEHICLE' | translate }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let vehicle of user.vehicles">
+                      <td scope="row" *ngIf="isDum" [routerLink]="['/vehicles/'+vehicle.vehicleId]" style="cursor: pointer;"> 
+                        <td scope="row"  *ngIf="!isDum" [routerLink]="['/vehicles-bus/'+vehicle.vehicleId]" style="cursor: pointer;"> 
+                        {{ vehicle.plateNumber }}</td>
+                      <td scope="row"> {{ vehicle.alias }}</td>
+                      <td scope="row">
+                        {{ vehicle.ecologicalTag }}
+                      </td>
+                      <td scope="row">
+                        <mat-checkbox [checked]="vehicle.international" [disabled]="true"></mat-checkbox>
+                      </td>
+                      <td scope="row">
+                        {{ vehicle.registrationDate | localizedDate }}
+                      </td>
+                      <td scope="row">
+                        {{ vehicle.closingDate | localizedDate }}
+                      </td>
+                      <td scope="row">
+                        {{ vehicle.guildName }}
+                      </td>
+                      <td scope="row">
+                        <span *ngIf="vehicle.securityCheck == 0">
+                          {{ 'EDIT_USUARIS.SECURITY_CHECK_PENDENT' | translate }}
+                        </span>
+                        <span *ngIf="vehicle.securityCheck == 1">
+                          {{ 'EDIT_USUARIS.SECURITY_CHECK_ACCEPTAT' | translate }}
+                        </span>
+                        <span *ngIf="vehicle.securityCheck == 2">
+                          {{ 'EDIT_USUARIS.SECURITY_CHECK_BLOQUEJAT' | translate }}
+                        </span>
+                        </td>
+                      <td scope="row">
+                        <mat-chip-list *ngIf="vehicle.vehicleRegistrationState != null">
+                          <mat-chip [ngStyle]="getColorState(vehicle)">{{ vehicle.vehicleRegistrationState.i18n.cat }}</mat-chip>
+                        </mat-chip-list>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="9">
+                        <app-paginator>
+    
+                        </app-paginator>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab label="{{ 'EDIT_USUARIS.DADES_BANCARIES' | translate }}">
+            <div *ngIf="loadingUser">
+              <mat-spinner style="margin: 0 auto;"></mat-spinner>
+            </div>
+            <div *ngIf="!loadingUser">
+              <div class="row" *ngIf="user.creditcard == null">
+                <div class="col-lg-12 value">
+                  <p>
+                    {{ 'EDIT_USUARIS.NO_CREDIT_CARD' | translate }}
+                  </p>
+                </div>
+              </div>
+              <div class="row" *ngIf="user.creditcard!=null">
+                <div class="col-lg-3 label">
+                  <p>
+                    {{ 'EDIT_USUARIS.ESTAT' | translate }}
+                  </p>
+                </div>
+                <div class="col-lg-9 value">
+                  <p>
+                    {{ 'EDIT_USUARIS.ESTAT_TARGETA_'+user.creditcard.status.statusId | translate }}
+                  </p>
+                </div>
+                <div class="col-lg-3 label">
+                  <p>
+                    {{ 'EDIT_USUARIS.IDENTIFICADOR_DOCUMENT' | translate }}
+                  </p>
+                </div>
+                <div class="col-lg-9 value">
+                  <p>
+                   {{ user.creditcard.creditNumber }}
+                  </p>
+                </div>
+                <div class="col-lg-3 label">
+                  <p>
+                    {{ 'EDIT_USUARIS.DATA_CADUCITAT' | translate }}
+                  </p>
+                </div>
+                <div class="col-lg-9 value">
+                  <p>
+                    {{ user.creditcard.expirationDate }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </mat-tab>         
+          <mat-tab label="{{ 'GESTIO_OPERATIVA.OPERACIONS' | translate }}" *ngIf="_currentUserService.hasPermission(FUNCIONALITIES.OPERATIONS_QUERY)">
+            <div class="row">
+              <div class="col-lg-12" style="padding-top:10px;" *ngIf="cercador.initialized">
+                <div class="row">
+                  <div class="col-lg-3">
+                    <mat-form-field>
+                      <mat-select [(value)]="cercador.filter.selectedDay" (selectionChange)="cercador.antiguetatChanged($event)" placeholder="{{ 'CERCADOR.ANT' | translate }}">
+                        <mat-option *ngFor="let day of cercador.days" [value]="day">{{day.name | translate}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-3">
+                    <mat-form-field>
+                      <input matInput [max]="cercador.filter.toDate" [(ngModel)]="cercador.filter.fromDate" [matDatepicker]="desdeDatepicker" placeholder="{{ 'CERCADOR.FROM' | translate }}">
+                      <mat-datepicker-toggle matSuffix [for]="desdeDatepicker"></mat-datepicker-toggle>
+                      <mat-datepicker #desdeDatepicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-3">
+                    <mat-form-field>
+                      <input matInput [min]="cercador.filter.fromDate" [(ngModel)]="cercador.filter.toDate" [matDatepicker]="finsDatepicker" placeholder="{{ 'CERCADOR.TO' | translate }}">
+                      <mat-datepicker-toggle matSuffix [for]="finsDatepicker"></mat-datepicker-toggle>
+                      <mat-datepicker #finsDatepicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-3">
+                    <mat-form-field>
+                      <mat-select [(value)]="cercador.filter.typeDate" placeholder="{{ 'CERCADOR.DATE_FILTER' | translate }}">
+                        <mat-option *ngFor="let day of cercador.typeDates" [value]="day">{{day | translate}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <mat-form-field>
+                      <mat-select multiple [(value)]="cercador.filter.matriculesArray" placeholder="{{ 'CERCADOR.MATRICULES' | translate }}">
+                        <mat-option *ngFor="let vehicle of matricules" [value]="vehicle">
+                          {{vehicle}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4">
+                    <mat-form-field>
+                      <mat-select multiple [(value)]="cercador.filter.typeMovements" placeholder="{{ 'CERCADOR.TYPE_MOV' | translate }}">
+                        <mat-option *ngFor="let ticketType of cercador.ticketTypes" [value]="ticketType.ticketTypeId">
+                          {{ ticketType.description }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4">
+                    <mat-form-field>
+                      <mat-select multiple [(value)]="cercador.filter.zoneTypes" placeholder="{{ 'CERCADOR.ZONE_TYPE' | translate }}">
+                        <mat-option *ngFor="let zoneType of cercador.zoneTypes" [value]="zoneType.zoneTypeId">
+                          <div>{{ cercador.getZoneTypeName(zoneType) | translate }}</div>
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4" *ngIf="isDum">
+                    <mat-form-field>
+                      <mat-select multiple [disabled]="cercador.selectorMunicipisDisabled()" [(value)]="cercador.filter.cityIds" placeholder="{{ 'CERCADOR.CITIES' | translate }}">
+                        <mat-option *ngFor="let city of cercador.citiesFiltrats" [value]="city.juridicId">
+                          <div> {{ city.name }} </div>
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4">
+                    <mat-form-field *ngIf="fleetUsers.length > 1">
+                      <mat-select multiple [(value)]="cercador.filter.users" [compareWith]="cercador.userComparator" placeholder="{{ 'CERCADOR.USERS' | translate }} (*)">
+                        <mat-option *ngFor="let user of fleetUsers" [value]="user.userId">
+                          {{user.fullName}}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="selectorUsuaris.invalid">{{ 'EDIT_USUARIS.SELECTOR_USUARIS_REQ' | translate }}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field *ngIf="fleetUsers.length == 1">
+                      <input matInput [(ngModel)]="fleetUsers[0].fullName" [disabled]="true">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4">
+                    <mat-form-field>
+                      <input matInput [(ngModel)]="cercador.maxTickets" [disabled]="true" placeholder="{{ 'CERCADOR.MAX_TICKETS' | translate }}"
+                      />
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div class="row">
+                  <div class="col-lg-9" style="padding-left:15%">
+                    <div class="row">
+                      <div class="col-lg-5"></div>
+                      <div class="col-lg-7">
+                        <button mat-raised-button type="submit" color="accent" [disabled]="selectorUsuaris.invalid && fleetUsers.length != 1" (click)="cercador.searchTickets()">
+                          {{ 'GENERAL.SEARCH' | translate }}
+                        </button>
+                        <button mat-raised-button (click)="cercador.exportTickets('excel')" [disabled]="cercador.exportInProgress || (selectorUsuaris.invalid && fleetUsers.length != 1)"
+                          style="margin-left:10px;" color="white">
+                          {{ 'GENERAL.EXPORT_EXCEL' | translate }}
+                        </button>
+                        <button mat-raised-button (click)="cercador.exportTickets('pdf')" [disabled]="cercador.exportInProgress || (selectorUsuaris.invalid && fleetUsers.length != 1)"
+                          style="margin-left:10px;" color="white">
+                          {{ 'GENERAL.EXPORT_PDF' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-3" style="text-align: right; margin-top: 25px; margin-bottom: 10px; font-size: 15px;">
+                    <p id="alerta1000Tiquets">
+                      <span style="color:black;" *ngIf="cercador.mostrarAlertaNumTiquets"> {{'CERCADOR.ALERTA_CERCADOR_NUM_TIQUETS' | translate }} {{cercador.numTiquets}}</span>
+                      <br />
+                      <span style="color:red;" *ngIf="cercador.mostrarAlertaMaxTiquets">{{'CERCADOR.ALERTA_CERCADOR_MAX_TIQUETS' | translate }} {{cercador.maxTickets}} {{'CERCADOR.ALERTA_CERCADOR_MAX_TIQUETS_2'
+                        | translate }}</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div *ngIf="cercador.tickets != undefined && cercador.tickets.length === 0">
+                        <hr />
+                        <span>{{ 'CERCADOR.NO_TICKETS' | translate }}</span>
+                      </div>
+                      <div *ngIf="cercador.loadingTickets">
+                        <hr />
+                        <mat-spinner style="margin:0 auto;"></mat-spinner>
+
+                      </div>
+                      <table class="table" *ngIf="cercador.tickets != undefined && cercador.tickets.length > 0">
+                        <thead>
+                          <tr>
+                            <th scope="col">{{ 'EDIT_USUARIS.ID' | translate }}</th>
+                            <th scope="col">{{ 'CERCADOR.DATA_INICI' | translate }}</th>
+                            <th scope="col">{{ 'CERCADOR.DATA_FI' | translate }}</th>
+
+                            <th scope="col">{{ 'EDIT_USUARIS.MAT' | translate }}</th>
+                            <th scope="col" style="display:none;">
+                              {{ 'CERCADOR.SERVICE' | translate }}
+                            </th>
+
+                            <th scope="col">{{ 'EDIT_USUARIS.TYPE_MOV' | translate }}</th>
+                            <th scope="col">{{ 'EDIT_USUARIS.ZONE' | translate }}</th>
+
+                            <th scope="col">{{ 'EDIT_USUARIS.CITY' | translate }}</th>
+
+
+                            <th scope="col">{{ 'EDIT_USUARIS.TIME' | translate }}</th>
+                            <th scope="col" style="display:none;">{{ 'EDIT_USUARIS.COST' | translate }}</th>
+                            <th scope="col" *ngIf="!isDum">{{ 'CERCADOR.IMPORT' | translate }}</th>
+                            <th scope="col">{{ 'EDIT_USUARIS.EMAIL' | translate }}</th>
+                            <th scope="col">{{ 'EDIT_USUARIS.ACTION' | translate }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let ticket of cercador.tickets">
+                            <td scope="row"> 
+                              <span class="material-icons" *ngIf="ticket.unpaid" [matTooltip]="'CERCADOR.UNPAID' | translate " matTooltipPosition="above">
+                                warning
+                                </span>
+                                {{ ticket.ticketId }} </td>
+                            <td scope="row"> {{ ticket.startDate | localizedDate }} </td>
+                            <td scope="row"> {{ ticket.stopDate | localizedDate }}</td>
+
+                            <td scope="row"> {{ ticket.plateNumber }} </td>
+
+                            <td scope="row"> {{ cercador.getTipusMoviement(ticket) }} </td>
+
+                            <td scope="row"> {{ ticket.parkingName }} </td>
+
+                            <td scope="row"> {{ ticket.city }}</td>
+                            <td scope="row"> {{ !ticket.stopDate ? '' : ticket.parkingTime }} </td>
+                            <td scope="row" *ngIf="!isDum"> {{ ticket.price }} €</td>
+                            <td scope="row">
+                              <a *ngIf="ticket.userDesc" [routerLink]="['/gestio-operativa/'+ticket.userId]">
+                                {{ ticket.userDesc }}
+                              </a>
+                            </td>
+                            <td>
+                              <button mat-raised-button mat-button [matMenuTriggerFor]="menu" color="primary">{{ 'CERCADOR.ACTION' | translate }}</button>
+                              <mat-menu #menu="matMenu">
+                                <button mat-menu-item style="cursor:pointer;" (click)="cercador.getPdf(ticket.ticketId)">
+                                  <div class="actionText">
+                                    {{ 'GENERAL.DOWNLOAD' | translate }} PDF
+                                  </div>
+                                  <div class="actionIcon">
+                                    <i class="material-icons">
+                                      picture_as_pdf
+                                    </i>
+                                  </div>
+                                </button>
+                                <button mat-menu-item *ngIf="cercador.canStop(ticket)" (click)="cercador.stopTicket(ticket.ticketId)">
+                                  <div class="actionText">
+                                    {{ 'EDIT_USUARIS.STOP' | translate }}
+                                  </div>
+                                  <div class="actionIcon">
+                                    <i class="material-icons">
+                                      stop
+                                    </i>
+                                  </div>
+                                </button>
+                                <button style="display:none;" mat-menu-item *ngIf="cercador.canRefund(ticket)" (click)="cercador.refundTicket(ticket.ticketId)">
+                                  <div class="actionText">
+                                    {{ 'EDIT_USUARIS.REFUND' | translate }}
+                                  </div>
+                                  <div class="actionIcon">
+                                    <i class="material-icons">
+                                      assignment_return
+                                    </i>
+                                  </div>
+                                </button>
+                                <button mat-menu-item *ngIf="cercador.canShowMap(ticket)" (click)="cercador.openMap(ticket)">
+                                  <div class="actionText">
+                                    {{ 'CERCADOR.OPEN_MAP' | translate }}
+                                  </div>
+                                  <div class="actionIcon">
+                                    <i class="material-icons">
+                                      my_location
+                                    </i>
+                                  </div>
+                                </button>
+                                <button mat-menu-item *ngIf="ticket.unpaid" (click)="cercador.payPending(ticket.ticketId)">
+                                  <div class="actionText">
+                                    {{ 'CERCADOR.UNPAID' | translate }}
+                                  </div>
+                                  <div class="actionIcon">
+                                    <i class="material-icons">
+                                      warning
+                                    </i>
+                                  </div>
+                                </button>
+                                
+                              </mat-menu>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab *ngIf="user.accountType !== 'U'" label="{{ 'GESTIO_OPERATIVA.USUARIS_DEL_COMPTE' | translate }}">
+            <table class="table" *ngIf="user.accountType !== 'U'">
+              <thead>
+                <tr>
+                  <th scope="col">{{ 'EDIT_USUARIS.NAME' | translate }}</th>
+                  <th scope="col">{{ 'EDIT_USUARIS.EMAIL' | translate }}</th>
+                  <th scope="col">
+                    {{ 'EDIT_USUARIS.NIFNIE' | translate }}
+                  </th>
+                  <th scope="col">{{ 'EDIT_USUARIS.IS_ADMIN' | translate }}</th>
+                  <th scope="col" class="col-accions">{{ 'EDIT_USUARIS.DETAIL' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of fleetUsers">
+                  <td scope="row"> {{ user.fullName }} </td>
+                  <td scope="row"> {{ user.email }}</td>
+                  <td scope="row"> {{ user.documentNumber }} </td>
+                  <td scope="row">
+                    <mat-checkbox [checked]="user.permissions.isAdmin" [disabled]="true"></mat-checkbox>
+                  </td>
+                  <td scope="row">
+                    <button [disabled]="!_currentUserService.hasPermission(FUNCIONALITIES.USER_MANAGEMENT)" mat-raised-button color="primary" (click)="openDetalls(user)">
+                      <i class="material-icons" style="color:white;">
+                        search
+                      </i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<div class="logo">
+    <img src="assets/img/logo_color.svg" width="130" />
+    <div class="line-logo"></div>
+</div>
+<div class="sidebar-wrapper">
+    <div *ngIf="isMobileMenu()">
+        <ul class="nav navbar-nav nav-mobile-menu">
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons">person</i>
+                    <span>{{ curUser.getFullName() }}</span>
+                    <p>
+                        <span class="d-lg-none d-md-block">{{ 'GENERAL.ACTIONS' | translate }}</span>
+                    </p>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" [routerLink]="['/login']">{{ 'GENERAL.EXIT' | translate }}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <ul class="nav">
+        <li *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
+            <div *ngIf="!menuItem.permission || menuItem.permission && curUser.hasPermission(menuItem.permission,menuItem.key) && isForBarcelona(menuItem)
+                && isAppliaction(menuItem)">
+                <a class="nav-link">
+                    <div *ngIf="menuItem.path" class="elementMenu" [ngClass]="getColorSproBus(menuItem)" [routerLink]="[menuItem.path]"
+                        (click)="toggleChildren(menuItem)">
+                        <i class="material-icons" [ngClass]="getColorSproBus(menuItem)">{{menuItem.icon}}</i>
+                        <p>{{ menuItem.title | translate }}</p>
+                    </div>
+                    <div *ngIf="!menuItem.path" class="elementMenu" [ngClass]="getColorSproBus(menuItem)" (click)="toggleChildren(menuItem)">
+                        <i class="material-icons">{{menuItem.icon}}</i>
+                        <p>{{ menuItem.title | translate }}</p>
+                    </div>
+                    <ul class="nav" *ngIf="menuItem.childrenVisible && menuItem.children != undefined" [ngClass]="{'activeGroup': menuItem.childrenVisible && menuItem.children != undefined}">
+                        <li *ngFor="let child of menuItem.children" class="{{menuItem.class}} nav-item">
+                            <div *ngIf="!child.permission || (child.permission && curUser.hasPermission(child.permission))">
+                                <a class="nav-link childrenNav elementMenuChildren" [routerLink]="child.path" [ngClass]="getChildColorSproBus(child, menuItem)"
+                                    style="color:black;">
+                                    <p>{{ child.title | translate }}</p>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </a>
+            </div>
+        </li>
+    </ul>
+    <div class="version">
+        {{ version }}
+    </div>
+</div>

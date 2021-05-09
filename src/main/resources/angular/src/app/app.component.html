@@ -1,0 +1,18 @@
+<div class="wrapper" *ngIf="navigation.currentUrl == '/login'" style="overflow: hidden;">
+    <router-outlet>
+    </router-outlet>
+</div>
+<div class="wrapper" *ngIf="navigation.currentUrl == '/login/sso'">
+    <router-outlet>
+    </router-outlet>
+</div>
+<div class="wrapper" *ngIf="navigation.currentUrl && navigation.currentUrl != '/login' && navigation.currentUrl != '/login/sso'">
+    <div class="sidebar" data-color="danger" data-background-color="orange" data-image="../assets/img/sidebar-1.jpg">
+        <app-sidebar></app-sidebar>
+        <div class="sidebar-background"></div>
+    </div>
+    <div class="main-panel">
+        <app-navbar></app-navbar>
+        <router-outlet></router-outlet>
+    </div>
+</div>

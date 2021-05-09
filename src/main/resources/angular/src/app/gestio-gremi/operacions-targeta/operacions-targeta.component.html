@@ -1,0 +1,131 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <h3>{{'GUILDCARD_OPERATIONS.TITLE' | translate }}</h3>
+      </div>
+    </div>
+    <div class="row card">
+      <div class="col-lg-12 card-body">
+       
+            <div class="row">
+              <div class="col-lg-12">
+                <div *ngIf="loadingCards">
+                  <mat-spinner style="margin: 0 auto;">
+
+                  </mat-spinner>
+                </div>
+                <div *ngIf="!showingResults && !loadingCards">
+                  <form [formGroup]="formSearch">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <mat-form-field>
+                          <mat-select formControlName="nameGremi" placeholder="{{ 'TARGETAS.GREMI' | translate }}">
+                            <mat-option *ngFor="let guild of gremis" [value]="guild.gremiId">
+                              {{ guild.name | translate }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                    <!--  <div class="col-lg-6">
+                       <mat-form-field>
+                          <input matInput appNumeric numericType="number" formControlName="idTargeta" placeholder="{{ 'TARGETAS.ID_TAR' | translate }}" />
+                        </mat-form-field>
+                      </div> -->
+                      <div class="col-lg-6">
+                        <mat-form-field>
+                          <input matInput appNumeric numericType="number" formControlName="numTargeta" placeholder="{{ 'TARGETAS.NUM_TAR' | translate }}" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <mat-form-field>
+                          <input matInput [matDatepicker]="dateCreated" placeholder="{{ 'TARGETAS.DATE_OPERATION' | translate }}" formControlName="dateCreated">
+                          <mat-datepicker-toggle matSuffix [for]="dateCreated"></mat-datepicker-toggle>
+                          <mat-datepicker #dateCreated></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field>
+                         <mat-select formControlName="type" placeholder="{{ 'TARGETAS.TYPE' | translate }}">
+                          <mat-option *ngFor="let type of types" [value]="type">
+                              {{ type | translate }}
+                            </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                   
+                    <hr/>
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <button mat-raised-button color="primary" style="float:right;margin-right:40px;" (click)="search()">
+                          {{ 'GENERAL.SEARCH' | translate }}
+                        </button>
+                        <button mat-stroked-button color="accent" style="float: right;margin-right:40px;" (click)="clearInputs()"> {{ 'GENERAL.CLEAR' | translate }}</button>
+
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div *ngIf="showingResults && !loadingCards">
+                  <h3>{{ 'TARGETAS.SHOWING_RESULTS' | translate }}</h3>
+                  <p>{{ operations.length }} {{ 'TARGETAS.FOUND_RESULTS' | translate }}</p>
+                  <div class="table-container">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.ID' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.GUILDCARDNUMBER' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.DATE' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.TYPE' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.PARKINGCODE' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.GUILDCARDGREMI' | translate }} </th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.GUILDTOW' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.DISCOUNTTIMEUSED' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.DISCOUNTPERCENT' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.DISCOUNTAMOUNT' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.INITIALBALANCE' | translate }}</th>
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.CURRENTBALANCE' | translate }}</th> 
+                          <th scope="col">{{ 'GUILDCARD_OPERATIONS.OPERATIONIMPORT' | translate }}</th>                   
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let operation of operations">
+                          <td scope="row"> {{ operation.op_id }} </td>
+                          <td scope="row"> {{ operation.op_guildCardNumber | toSixDigits  }}</td>
+                          <td scope="row"> {{ operation.op_date | localizedDate }}</td>
+                          <td scope="row"> {{ operation.op_type }} </td>
+                          <td scope="row"> {{ operation.op_parkingCode }}</td> 
+                          <td scope="row"> {{ getGuildNameById(operation.op_guildCardGuildId) }}</td> 
+                          <td scope="row"> {{ operation.op_guildTOW }} </td>
+						  <td scope="row"> {{ operation.op_discountTimeUsed }}</td>
+                          <td scope="row"> {{ operation.op_discountPercent }}</td>
+						  <td scope="row"> {{ operation.op_discountAmount }}€</td>
+                          <td scope="row"> {{ operation.op_guildCardInitialBalance }}€</td>
+						  <td scope="row"> {{ operation.op_guildCardCurrentBalance }}€</td>
+						  <td scope="row"> {{ getImportOperacio(operation.op_guildCardInitialBalance, operation.op_guildCardCurrentBalance) }}€</td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <hr />
+                  <button mat-raised-button [disabled]="exportInProgress" 	(click)="exportOperacions()" style="float:right;"
+                  color="primary">
+                  {{ 'GENERAL.EXPORT_EXCEL' | translate }}
+                </button>
+                  <button style="float:right;margin-right:40px;" mat-raised-button (click)="showingResults=false" color="primary">
+                    {{ 'GENERAL.BACK' | translate }}
+                  </button>
+
+                </div>
+              </div>
+            </div>
+      </div>
+    </div>
+  </div>
+</div>

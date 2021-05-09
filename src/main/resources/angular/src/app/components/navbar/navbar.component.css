@@ -1,0 +1,27 @@
+.navbar {
+    background : white !important;
+    border-left : 1px solid rgba(180, 180, 180, 0.3);
+    border-bottom: 1px solid rgba(180, 180, 180, 0.3);
+}
+
+
+.mun-select ::ng-deep .mat-select-value-text {
+    font-size: 24px;
+    font-weight: bold;
+
+}
+
+.mun-placeholder {
+    font-size: 18px;
+    float:left;
+    padding-top: 5px;
+    padding-right:10px;
+}
+
+.mun-select-nav {
+    border-radius:5px;padding:15px;height:60px;background:#fdfdef;
+} 
+
+.mun-select-field {
+    float:left;margin-top:-20px;
+}

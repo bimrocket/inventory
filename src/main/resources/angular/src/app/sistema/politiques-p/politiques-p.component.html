@@ -1,0 +1,88 @@
+<div class="main-content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <h3>{{'PP.TITLE' | translate }}
+            <a [routerLink]="['/sistema/pp/new']">
+              <button mat-raised-button color="primary">
+                {{ 'GENERAL.ADD' | translate }}
+                <i class="material-icons">
+                  add_circle
+                </i>
+              </button>
+            </a>
+          </h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 card">
+          <div class="row">
+            <div class="col-lg-12">
+              <table class="table">
+                <thead>
+                  <th>
+                    {{ 'PP.ID' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.DATE' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.TYPE' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.URL' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.ACTIVE' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.VERSION' | translate }}
+                  </th>
+                  <th>
+                    {{ 'PP.ACCIONS' | translate }}
+                  </th>
+                </thead>
+                <tbody>
+                  <tr *ngIf="loadingPP">
+                    <td colspan="7">
+                      <mat-spinner style="margin:0 auto;"></mat-spinner>
+                    </td>
+                  </tr>
+                  <tr *ngFor="let pp of pp">
+                    <td scope="row">{{ pp.privacyPoliciesId }}</td>
+                    <td scope="row">
+                      {{ pp.publishDate | localizedDate }}
+                    </td>
+                    <td scope="row">
+                      {{ pp.type.description }}
+                    </td>
+                    <td scope="row">
+                      {{ pp.url_ca }}
+                    </td>
+                    <td scope="row">
+                      <mat-checkbox [disabled]="true" [checked]="pp.active"></mat-checkbox>
+                    </td>
+                    <td scope="row">
+                      {{ pp.version }}
+                    </td>
+                    <td scope="row">
+                        <button class="buttonIcon" [routerLink]="['/sistema/pp/'+pp.privacyPoliciesId]" mat-button>
+                          <i class="material-icons">
+                            edit
+                          </i>
+                        </button>
+                        <button class="marginLeft15px buttonIcon" mat-button (click)="deletePPDialog(pp.privacyPoliciesId)">
+                          <i class="material-icons">
+                            delete
+                          </i>
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

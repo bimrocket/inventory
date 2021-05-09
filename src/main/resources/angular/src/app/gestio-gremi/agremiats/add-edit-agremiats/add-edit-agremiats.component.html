@@ -1,0 +1,134 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12 card">
+        <div class="card-header-warning">
+          <span *ngIf="addingNew">{{ 'AGREMIATS.NEW' | translate }}</span>
+          <span *ngIf="!addingNew">{{ 'AGREMIATS.EDITING' | translate }} {{ agremiat.memberId }}</span>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="row">
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'AGREMIATS.EDIT_AGREMIAT' | translate }} *" formControlName="nameCompany">
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                  <mat-form-field>
+                    <mat-select formControlName="agremiatType" placeholder="{{ 'AGREMIATS.TYPE' | translate }} *" (ngModelChange)="changeType()">
+                      <mat-option *ngFor="let type of types" [value]="type.guildMemberTypeId"> {{ type.description }} </mat-option>
+                    </mat-select>
+                    <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                  </mat-form-field>
+                </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input  matInput  placeholder="{{'AGREMIATS.DNI_AGREMIAT' | translate}}" formControlName="dni" *ngIf="agremiatTypeCod == 0">
+                  <input  matInput  placeholder="{{'AGREMIATS.DNI_CIF_AGREMIAT' | translate}}" formControlName="dni" *ngIf="agremiatTypeCod == 1">
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.E_DOC_NUM' | translate }}</mat-error>
+              </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                  <mat-form-field>
+                      <input matInput placeholder="{{ 'AGREMIATS.EDIT_FULLNAME' | translate }} *" formControlName="fullName">
+                      <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                    </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'AGREMIATS.EMAIL' | translate }} *" formControlName="email">
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'AGREMIATS.PHONE' | translate }} *" formControlName="phone">
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div> 
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput  placeholder="{{ 'AGREMIATS.COD_SEGURITY' | translate }} *" formControlName="securityCode" />
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <mat-select formControlName="guildId" placeholder="{{ 'AGREMIATS.NOMGUILD' | translate }} *">
+                    <mat-option *ngFor="let guild of guilds" [value]="guild.gremiId"> {{ guild.name }} </mat-option>
+                  </mat-select>
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <mat-select formControlName="cityId" placeholder="{{ 'AGREMIATS.CITY' | translate }} *">
+                    <mat-option *ngFor="let city of municipis" [value]="city.juridicId"> {{ city.name }} </mat-option>
+                  </mat-select>
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'AGREMIATS.ADDRESS' | translate }} *" formControlName="address" />
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-4">
+                <mat-form-field>
+                  <input matInput placeholder="{{ 'AGREMIATS.ZIP_CODE' | translate }} *" formControlName="zipCode" />
+                  <mat-error class="text-warning" *ngIf="form.invalid">{{ 'GENERAL.YOU_NEED_VALUE' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <button [disabled]="form.status === 'INVALID'" mat-raised-button style=" float:right;margin-left:15px; " color="primary" *ngIf="this.agremiat.deletedDate == null"
+                  type="submit">
+                  {{ 'GENERAL.SAVE' | translate }}
+                </button>
+
+                <button mat-stroked-button style="float:left; " color="accent" [routerLink]="[
+                  '/gestio-gremi/agremiats'] ">
+                  {{ 'GENERAL.CANCEL' | translate }}
+                </button>
+
+
+              </div>
+            </div>
+          </form>
+        </div>
+        <div *ngIf="!addingNew" class="card-body">
+          <div class="col-md-4">
+            <div>
+                <div class="panel-body">
+                    <h4>{{ 'AGREMIATS.FILES' | translate }}</h4>
+                    <table class="table">
+                        <tbody class="mb-4" *ngIf="agremiat.DocumentGuildMember">
+                            <tr>
+                                <td>{{agremiat.DocumentGuildMember.fileName}}</td>
+                                <td>
+                                    <button class="buttonIcon" mat-button (click)="download(agremiat.DocumentGuildMember)">
+                                      <i class="material-icons">
+                                          <mat-icon>cloud_download</mat-icon>
+                                      </i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

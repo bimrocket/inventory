@@ -1,0 +1,22 @@
+<div>
+  <h2 mat-dialog-title>{{ 'EDIT_USUARIS.REFUND' | translate }}</h2>
+  <hr />
+  <mat-dialog-content>
+    <div class="row">
+      <div class="col-lg-12">
+        <mat-form-field>
+          <input matInput [(ngModel)]="amount" placeholder="{{ 'EDIT_USUARIS.AMOUNT' | translate }}" />
+        </mat-form-field>
+        <mat-form-field>
+          <textarea matInput [(ngModel)]="reason" [formControl]="reasonFC" placeholder="{{ 'EDIT_USUARIS.REASON' | translate }}"></textarea>
+          <mat-error *ngIf="reasonFC.invalid">{{ 'EDIT_USUARIS.REASON_REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <hr />
+  <mat-dialog-actions style="float:right;">
+    <button mat-raised-button (click)="onCloseCancel()">{{ 'GENERAL.CANCEL' | translate }}</button>
+    <button mat-raised-button color="primary" [disabled]="reasonFC.invalid" (click)="onCloseConfirm()">{{ 'GENERAL.SAVE' | translate }}</button>
+  </mat-dialog-actions>
+</div>
