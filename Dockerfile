@@ -12,5 +12,8 @@ ADD target/${JAR_FILE} /opt/
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
+COPY docker/entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 8091
-ENTRYPOINT java -Dpython.import.site=false -jar $JAR_FILE 
+ENTRYPOINT ["entrypoint.sh"]
