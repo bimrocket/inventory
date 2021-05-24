@@ -3,7 +3,7 @@ if [ -z ${KAFKA_URL} ] || [ -z ${POSTGRES_URL} ] || [ -z ${POSTGRES_USER} ] || [
   exit 1
 fi
 
-java \
+exec java \
   -Dkafka.bootstrap.address=${KAFKA_URL} \
   -Dspring.kafka.bootstrap-servers=${KAFKA_URL} \
   -Dspring.datasource.url=${POSTGRES_URL} \
