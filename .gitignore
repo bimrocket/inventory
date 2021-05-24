@@ -31,3 +31,42 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# compiled output
+src/main/resources/angular/dist
+src/main/resources/angular/tmp
+src/main/resources/angular/out-tsc
+
+# dependencies
+/src/main/resources/angular/node_modules
+
+# IDEs and editors
+/src/main/resources/angular/.idea
+/src/main/resources/angular/.project
+/src/main/resources/angular/.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+/src/main/resources/angular/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+/src/main/resources/angular/npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db

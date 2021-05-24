@@ -13,7 +13,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
-import cat.santfeliu.api.repo.InventoryRepo;
+import cat.santfeliu.api.model.ConnectorStatusDb;
+import cat.santfeliu.api.repo.ConnectorStatusRepo;
 
 /**
  * Component spring a executar quan app s'ha iniciat.
@@ -21,7 +22,6 @@ import cat.santfeliu.api.repo.InventoryRepo;
  *
  */
 @Component
-@EnableAsync
 @EnableWebSecurity
 public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 
@@ -33,9 +33,9 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     
     @Value("${app.url}")
     private String externalUrl;
-
+    
     @Autowired
-    private InventoryRepo invRepo;
+    private ConnectorStatusRepo statusRepo;
     
     @Override
     public void onApplicationEvent(ApplicationReadyEvent arg0) {
@@ -50,6 +50,15 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         
         log.info("init@InitApp - Application with name {} started at {}", appName, sdf.format(Calendar.getInstance().getTime()));
         log.info("init@InitApp - Application url is '{}'", externalUrl);
+        
+        Iterable<ConnectorStatusDb> ite = statusRepo.findAll();
+        
+        for (ConnectorStatusDb status : ite) {
+        	status.setConnectorEndDate(null);
+        	status.setConnectorStartDate(null);
+        	status.setConnectorStatus("offline");
+        	statusRepo.save(status);
+        }
  
     }
 
