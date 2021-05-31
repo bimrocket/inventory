@@ -14,7 +14,7 @@
         </encoder>
          
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>C:\temp\MyApp-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/tmp/MyApp-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>5MB</maxFileSize>
         </rollingPolicy>
     </appender>

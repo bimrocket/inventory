@@ -1,47 +1,72 @@
 package cat.santfeliu.api.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import cat.santfeliu.api.model.ConnectorComponentConfigDb;
+import cat.santfeliu.api.repo.ConnectorComponentConfigRepo;
+import cat.santfeliu.api.service.RegisterBeansDynamically;
+
+@Configuration
 public class KafkaConfiguration {
 	 
     @Value(value = "${kafka.bootstrap.address}")
     private String bootstrapAddress;
     
-    @Value(value = "${kafka.test.topic}")
-    private String kafkaTopic;
+    @Autowired
+    private RegisterBeansDynamically beans;
+    
+    @Autowired
+    private ConnectorComponentConfigRepo configRepo;
+
+    @Bean
+    public KafkaAdmin kafkaAdmin() {
+      Map<String, Object> configs = new HashMap<>();
+      // Depending on you Kafka Cluster setup you need to configure
+      // additional properties!
+      List<ConnectorComponentConfigDb> topicsDb = configRepo.findAllByKey("topic.name");
+      int i = 1;
+      for (ConnectorComponentConfigDb topic : topicsDb) {
+    	  beans.registerBean("kafkaTopic" + i, TopicBuilder.name(topic.getConfigValue()).partitions(1).build());
+    	  i++;
+      }
+      configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+      return new KafkaAdmin(configs);
+    }
     
     @Bean
     public ProducerFactory<String, String> producerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(
-          ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, 
-          "192.168.0.74:9092");
-        configProps.put(
-          ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, 
-          StringSerializer.class);
-        configProps.put(
-          ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, 
-          StringSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
+    public Map<String, Object> producerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        // See https://kafka.apache.org/documentation/#producerconfigs for more properties
+        return props;
     }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
-    
-    @Bean
-    public NewTopic topic1() {
-         return new NewTopic(kafkaTopic, 1, (short) 1);
+        return new KafkaTemplate<String, String>(producerFactory());
     }
 }

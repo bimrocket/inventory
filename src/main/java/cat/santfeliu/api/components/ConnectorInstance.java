@@ -1,6 +1,8 @@
 package cat.santfeliu.api.components;
 
 import cat.santfeliu.api.model.ConnectorDb;
+import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
+import cat.santfeliu.api.model.ConnectorStatusDb;
 
 public class ConnectorInstance {
 
@@ -8,6 +10,9 @@ public class ConnectorInstance {
 	private ConnectorLoader connectorLoader;
 	private ConnectorTransformer connectorTransformer;
 	private ConnectorSender connectorSender;
+	private ConnectorExecutionStatsDb connectorStats;
+	private ConnectorStatusDb connectorStatus;
+	private boolean end = false;
 
 	public ConnectorInstance(ConnectorDb connector, ConnectorLoader loader, ConnectorTransformer transformer, ConnectorSender sender) {
 		this.connector = connector;
@@ -52,6 +57,38 @@ public class ConnectorInstance {
 
 	public void setConnectorSender(ConnectorSender connectorSender) {
 		this.connectorSender = connectorSender;
+	}
+	
+	public ConnectorExecutionStatsDb getConnectorStats() {
+		return connectorStats;
+	}
+
+	public void setConnectorStats(ConnectorExecutionStatsDb connectorStats) {
+		this.connectorStats = connectorStats;
+	}
+
+	public ConnectorStatusDb getConnectorStatus() {
+		return connectorStatus;
+	}
+
+	public void setConnectorStatus(ConnectorStatusDb connectorStatus) {
+		this.connectorStatus = connectorStatus;
+	}
+
+	public boolean isEnd() {
+		return end;
+	}
+
+	public void setEnd(boolean end) {
+		this.end = end;
+	}
+
+	public void stop() {
+		this.end = true;
+	}
+	
+	public boolean shouldEnd() {
+		return this.end;
 	}
 
 }

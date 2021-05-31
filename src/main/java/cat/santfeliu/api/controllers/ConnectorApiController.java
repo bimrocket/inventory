@@ -68,7 +68,7 @@ public class ConnectorApiController implements ConnectorApi {
 	}
 
 	@Override
-	public ResponseEntity<ConnectorStatusDTO> connectorStatus(@NotNull @Valid String connectorName) {
+	public ResponseEntity<ConnectorStatusDTO> connectorStatus(@NotNull @Valid @PathVariable("connectorName") String connectorName) {
 		
 		return ResponseEntity.ok(managerService.connectorStatus(connectorName));
 		

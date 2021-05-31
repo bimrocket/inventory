@@ -16,5 +16,8 @@ public interface ConnectorComponentConfigRepo extends CrudRepository<ConnectorCo
 	
 	@Query(value = "SELECT * FROM connector_component_config WHERE connector_name = :connectorName", nativeQuery = true)
 	List<ConnectorComponentConfigDb> findAllByProducer(@Param("connectorName") String connectorName);
+	
+	@Query(value = "SELECT * FROM connector_component_config WHERE config_key = :configKey", nativeQuery = true)
+	List<ConnectorComponentConfigDb> findAllByKey(@Param("configKey") String configKey);
 
 }

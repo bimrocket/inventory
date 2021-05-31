@@ -16,6 +16,7 @@ import cat.santfeliu.api.dto.ConnectorParamDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
 import cat.santfeliu.api.enumerator.ComponentEnum;
 import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
+import cat.santfeliu.api.enumerator.RhinoTransformerConfigKeys;
 import cat.santfeliu.api.model.ConnectorComponentConfigDb;
 import cat.santfeliu.api.model.ConnectorComponentDb;
 import cat.santfeliu.api.model.ConnectorDb;
@@ -45,6 +46,15 @@ public class MapperService {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
 				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+		} else if (dto.getConnectorComponentName().equals(ComponentEnum.RHINO_TRANSFORMER.getName())) {
+			for (RhinoTransformerConfigKeys key : RhinoTransformerConfigKeys	.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
 		}

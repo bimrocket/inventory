@@ -18,7 +18,10 @@ public class GlobalIdDb implements Serializable {
 
     /** Primary key. */
     protected static final String PK = "GlobalIdDbPkGlobalId";
-
+    
+    @Id
+    @Column(name="inventory_name", nullable=false, length=100)
+    private String inventoryName;
     @Id
     @Column(name="local_id", nullable=false, length=255)
     private String localId;
@@ -30,8 +33,22 @@ public class GlobalIdDb implements Serializable {
     public GlobalIdDb() {
         super();
     }
+    
+    
 
-    /**
+    public String getInventoryName() {
+		return inventoryName;
+	}
+
+
+
+	public void setInventoryName(String inventoryName) {
+		this.inventoryName = inventoryName;
+	}
+
+
+
+	/**
      * Access method for localId.
      *
      * @return the current value of localId

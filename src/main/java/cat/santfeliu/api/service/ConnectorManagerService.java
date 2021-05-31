@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonObject;
 
 import cat.santfeliu.api.components.ConnectorInstance;
 import cat.santfeliu.api.components.ConnectorLoader;
@@ -26,10 +23,13 @@ import cat.santfeliu.api.enumerator.ComponentTypeEnum;
 import cat.santfeliu.api.exceptions.ApiErrorException;
 import cat.santfeliu.api.model.ConnectorComponentDb;
 import cat.santfeliu.api.model.ConnectorDb;
+import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorComponentRepo;
 import cat.santfeliu.api.repo.ConnectorRepo;
+import cat.santfeliu.api.repo.ConnectorStatsRepo;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
+import cat.santfeliu.api.repo.GlobalIdRepo;
 import cat.santfeliu.api.utils.ConfigContainer;
 
 @Service
@@ -42,18 +42,24 @@ public class ConnectorManagerService {
 
 	@Autowired
 	private ConnectorStatusRepo conStatusRepo;
+	
+	@Autowired
+	private ConnectorStatsRepo conStatsRepo;
 
 	@Autowired
 	private ConnectorComponentRepo conCompRepo;
 	
 	@Autowired
-	private ConnectorService conService;
+	private ConnectorRunnerService conService;
 
 	@Autowired
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
 	@Autowired
 	private MapperService mapper;
+	
+	@Autowired
+	private GlobalIdRepo globalIdRepo;
 
 	public ConnectorStatusDTO startConnector(@NotNull @Valid String connectorName) {
 		Optional<ConnectorDb> conDb = conRepo.findById(connectorName);
@@ -78,19 +84,50 @@ public class ConnectorManagerService {
 		status.setConnectorEndDate(null);
 		status.setConnectorStatus("online");
 		status = conStatusRepo.save(status);
-		conService.runConnector(setupConnector(conDb.get()));
-		log.info("returning status");
+		ConnectorInstance instance = setupConnector(conDb.get());
+		instance.setConnectorStatus(status);
+		ConnectorExecutionStatsDb stats = new ConnectorExecutionStatsDb();
+		stats.setExecutionConnectorName(instance.getConnector().getConnectorName());
+		stats.setExecutionStartDate(Calendar.getInstance().getTime());
+		stats.setExecutionObjectsLoaded(0);
+		stats.setExecutionObjectsSent(0);
+		stats.setExecutionObjectsTransformed(0);
+		stats.setExecutionFinalState("initialized and sent to connection runner service");
+		stats = conStatsRepo.save(stats);
+		instance.setConnectorStats(stats);
+		conService.runConnector(instance);
 		return mapper.statusDbToDTO(status);
 	}
 
 	public ConnectorStatusDTO stopConnector(@NotNull @Valid String connectorName) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<ConnectorStatusDb> conStatusDb = conStatusRepo.findById(connectorName);
+		if (conStatusDb.isEmpty()) {
+			String error = String.format("couldn't find status of connector '%s'", connectorName);
+			log.error("startConnector@ConnectorManagmentService - {}", error);
+			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, error, "CONNECTOR STATUS NOT FOUND");
+		}
+		ConnectorStatusDb status = conStatusDb.get();
+		if (status.getConnectorStatus().equals("offline")) {
+			String error = String.format("connector '%s' is already stopped", connectorName);
+			log.error("startConnector@ConnectorManagmentService - {}", error);
+			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, error, "CONNECTOR IS RUNNING");
+		}
+		ConnectorRunnerService.instances.get(connectorName).setEnd(true);
+		status.setConnectorEndDate(Calendar.getInstance().getTime());
+		status.setConnectorStatus("offline");
+		status = conStatusRepo.save(status);		
+		return mapper.statusDbToDTO(status);
 	}
 
 	public ConnectorStatusDTO connectorStatus(@NotNull @Valid String connectorName) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<ConnectorStatusDb> conStatusDb = conStatusRepo.findById(connectorName);
+		if (conStatusDb.isEmpty()) {
+			String error = String.format("couldn't find status of connector '%s'", connectorName);
+			log.error("startConnector@ConnectorManagmentService - {}", error);
+			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, error, "CONNECTOR STATUS NOT FOUND");
+		}
+		ConnectorStatusDb status = conStatusDb.get();
+		return mapper.statusDbToDTO(status);
 	}
 
 	private ConnectorInstance setupConnector(ConnectorDb connector) {
@@ -169,9 +206,12 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
-		loader.init(getParamsForComponent(connector, ComponentTypeEnum.LOADER));
-		transformer.init(getParamsForComponent(connector, ComponentTypeEnum.TRANSFORMER));
-		sender.init(getParamsForComponent(connector, ComponentTypeEnum.SENDER));
+		loader.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.LOADER));
+		transformer.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.TRANSFORMER));
+		autowireCapableBeanFactory.autowireBean(transformer);
+		autowireCapableBeanFactory.autowireBean(sender);
+
+		sender.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.SENDER));
 		return new ConnectorInstance(connector, loader, transformer, sender);
 	}
 
