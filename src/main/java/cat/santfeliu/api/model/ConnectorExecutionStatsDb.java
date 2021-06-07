@@ -21,8 +21,8 @@ public class ConnectorExecutionStatsDb implements Serializable {
     protected static final String PK = "executionId";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "connector_execution_seq")
-    @SequenceGenerator(name = "connector_execution_seq", sequenceName = "connector_execution_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "connector_execution_stats_seq_gen")
+    @SequenceGenerator(name = "connector_execution_stats_seq_gen", sequenceName = "connector_execution_stats_seq", allocationSize = 1)
     @Column(name="execution_id", unique=true, nullable=false, precision=10)
     private int executionId;
     @Column(name="execution_start_date", nullable=false)
