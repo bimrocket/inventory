@@ -13,7 +13,7 @@ public class LogSender extends ConnectorSender {
 	
 	@Override
 	public void send(JsonObject node) {
-		log.info(node.toString());
+		log.info("recevied :: {}", node.toString());
 	}
 
 	

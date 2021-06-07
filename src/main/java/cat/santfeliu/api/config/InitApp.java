@@ -7,14 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
+import cat.santfeliu.api.senders.GeoserverSender;
+import cat.santfeliu.api.utils.ConfigContainer;
 
 /**
  * Component spring a executar quan app s'ha iniciat.
@@ -37,6 +42,9 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     private ConnectorStatusRepo statusRepo;
     
+	@Autowired
+	private AutowireCapableBeanFactory autowireCapableBeanFactory;
+	
     @Override
     public void onApplicationEvent(ApplicationReadyEvent arg0) {
         init();
@@ -61,5 +69,4 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         }
  
     }
-
 }

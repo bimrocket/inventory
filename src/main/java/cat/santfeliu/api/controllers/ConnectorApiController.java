@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cat.santfeliu.api.api.ConnectorApi;
 import cat.santfeliu.api.dto.ConnectorComponentDTO;
 import cat.santfeliu.api.dto.ConnectorDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
+import cat.santfeliu.api.model.PageStatsDTO;
 import cat.santfeliu.api.service.ConnectorApiService;
 import cat.santfeliu.api.service.ConnectorManagerService;
 
@@ -78,6 +80,13 @@ public class ConnectorApiController implements ConnectorApi {
 	public ResponseEntity<List<ConnectorComponentDTO>> connectorComponents() {
 
 		return ResponseEntity.ok(apiService.getAllComponents());
+	}
+
+	@Override
+	public ResponseEntity<PageStatsDTO> connectorStats(@NotNull @Valid @PathVariable("connectorName") String connectorName, @RequestParam(name = "page", defaultValue = "0") int page,@RequestParam(name = "size", defaultValue = "10") int size) {
+		
+		return ResponseEntity.ok(managerService.connectorStats(connectorName, page, size));
+		
 	}
 	
 }

@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import cat.santfeliu.api.model.ConnectorComponentDb;
 import cat.santfeliu.api.model.ConnectorDb;
 import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
+import cat.santfeliu.api.model.PageStatsDTO;
 import cat.santfeliu.api.repo.ConnectorComponentRepo;
 import cat.santfeliu.api.repo.ConnectorRepo;
 import cat.santfeliu.api.repo.ConnectorStatsRepo;
@@ -92,6 +95,7 @@ public class ConnectorManagerService {
 		stats.setExecutionObjectsLoaded(0);
 		stats.setExecutionObjectsSent(0);
 		stats.setExecutionObjectsTransformed(0);
+		stats.setExecutionObjectsDeleted(9);
 		stats.setExecutionFinalState("initialized and sent to connection runner service");
 		stats = conStatsRepo.save(stats);
 		instance.setConnectorStats(stats);
@@ -208,10 +212,11 @@ public class ConnectorManagerService {
 		}
 		loader.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.LOADER));
 		transformer.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.TRANSFORMER));
+		sender.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.SENDER));
+		
+		autowireCapableBeanFactory.autowireBean(loader);
 		autowireCapableBeanFactory.autowireBean(transformer);
 		autowireCapableBeanFactory.autowireBean(sender);
-
-		sender.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.SENDER));
 		return new ConnectorInstance(connector, loader, transformer, sender);
 	}
 
@@ -220,6 +225,14 @@ public class ConnectorManagerService {
 		autowireCapableBeanFactory.autowireBean(params);
 		params.init(connector.getConnectorName(), componentType.getName());
 		return params;
+	}
+
+	public PageStatsDTO connectorStats(@NotNull @Valid String connectorName, int page, int size) {
+		Page<ConnectorExecutionStatsDb> statsDb = conStatsRepo.findByExecutionConnectorNameOrderByExecutionStartDateDesc(connectorName, PageRequest.of(page, size));
+		PageStatsDTO pageDto = new PageStatsDTO();
+		pageDto = mapper.connectorStatsDbToDTO(statsDb);
+		return pageDto;
+		
 	}
 
 }

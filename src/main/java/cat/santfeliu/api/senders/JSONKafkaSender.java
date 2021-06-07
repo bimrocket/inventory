@@ -18,9 +18,6 @@ import cat.santfeliu.api.components.ConnectorSender;
 import cat.santfeliu.api.enumerator.JSONKafkaSenderConfigKeys;
 
 public class JSONKafkaSender extends ConnectorSender {
-
-	boolean initialized = false;
-	private static final Logger log = LoggerFactory.getLogger(JSONKafkaSender.class);
 	
 	@Autowired
 	protected KafkaTemplate<String, String> template;
@@ -33,7 +30,6 @@ public class JSONKafkaSender extends ConnectorSender {
 
 		this.template.send(this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()),
 				node.toString());
-		this.log.info("sent " + node.toString());
 
 	}
 

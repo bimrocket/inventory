@@ -3,6 +3,7 @@ package cat.santfeliu.api.loaders;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
@@ -22,34 +23,93 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.jayway.jsonpath.JsonPath;
 
+import cat.santfeliu.api.beans.LoaderJsonObject;
 import cat.santfeliu.api.components.ConnectorLoader;
 import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
 import cat.santfeliu.api.exceptions.ApiErrorException;
+import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.utils.InventoryUtils;
 
 public class GeoserverLoader extends ConnectorLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
 	
-	private int currentIndex = 0;
+	private int currentIndex = -1;
 	
 	private JsonArray loaded = null;
-	
+
 	@Override
 	public JsonObject load(int timeout) {
 		if (loaded == null) {
 			return loadResponse(timeout);
 		} else {
-			currentIndex++;
-			JsonElement toReturn;
-			try { 
-				toReturn = loaded.get(currentIndex);
-			} catch (IndexOutOfBoundsException e) {
-				toReturn = null;
+			if (this.checkedDeletions) {
+				return this.getDeletion();
+			} else {
+				JsonObject obj = getObject();
+				if (obj == null) {
+					this.checkDeletions();
+					return this.getDeletion();
+				}
+				return obj;
 			}
-			return toReturn != null ? toReturn.getAsJsonObject() : null;
+	
 		}
 		
+	}
+	
+	private JsonObject getObject() {		
+		currentIndex++;
+		JsonElement toReturn;
+		try { 
+			toReturn = loaded.get(currentIndex);
+		} catch (IndexOutOfBoundsException e) {
+			toReturn = null;
+		}
+		if (toReturn != null) {
+			toReturn = transformForTransformer(toReturn.getAsJsonObject());
+			if (toReturn == null) {
+				// already treated get next recursively
+				toReturn = getObject();
+			}
+		}
+		
+		return toReturn != null ? toReturn.getAsJsonObject() : null;
+	}
+	
+	private JsonObject transformForTransformer(JsonObject object) {
+		String localId = JsonPath.parse(object.toString()).<String>read(
+				this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+		String globalId = null;
+		Optional<GlobalIdDb> hasIdOpt = globalIdRepo.findByInventoryAndLocalId(this.inventoryName, localId);
+		if (hasIdOpt.isEmpty()) {
+			// No s'ha trobat GUID cal obtenir-lo i inserir-lo
+			globalId = InventoryUtils.getGuid();
+			GlobalIdDb guid = new GlobalIdDb();
+			guid.setGlobalId(globalId);
+			guid.setInventoryName(this.inventoryName);
+			guid.setLocalId(localId);
+			globalIdRepo.save(guid);
+		} else {
+			globalId = hasIdOpt.get().getGlobalId();
+		}
+		boolean alreadyTreated = false;
+		for (int j = 0; j < this.treatedGUIDs.size() && !alreadyTreated; j++) {
+			alreadyTreated = this.treatedGUIDs.get(j).equals(globalId);
+		}
+
+		if (!alreadyTreated) {
+			this.treatedGUIDs.add(globalId);
+			LoaderJsonObject loaderJson = new LoaderJsonObject();
+			loaderJson.setGlobalId(globalId);
+			loaderJson.setElement(object);
+			return gson.fromJson(gson.toJson(loaderJson), JsonObject.class);
+		} else {
+			return null;
+		}
+
 	}
 	
 	private JsonObject loadResponse(int timeout) {
@@ -101,8 +161,7 @@ public class GeoserverLoader extends ConnectorLoader {
 
 		try {
 			this.loaded = jsonResponse.get("features").getAsJsonArray();
-			JsonElement e = this.loaded.get(currentIndex);
-			return e != null ? e.getAsJsonObject() : null;
+			return getObject();
 		} catch (Exception e) {
 			log.error("loadResponse@GeoserverLoader - exception while sending petition : ", e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -110,6 +169,11 @@ public class GeoserverLoader extends ConnectorLoader {
 		
 		}
 
+	}
+
+	@Override
+	public void stop() {
+		this.instance.stop();
 	}
 
 }

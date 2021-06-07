@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import cat.santfeliu.api.dto.ConnectorComponentDTO;
 import cat.santfeliu.api.dto.ConnectorDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
+import cat.santfeliu.api.model.PageStatsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -79,6 +80,13 @@ public interface ConnectorApi {
     @RequestMapping(value = "/connectors/components",
         method = RequestMethod.GET)
     ResponseEntity<List<ConnectorComponentDTO>> connectorComponents();
+   
+    @Operation(summary = "", description = "", tags={ "connectors" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "OK") })
+    @RequestMapping(value = "/connectors/{connectorName}/stats",
+        method = RequestMethod.GET)
+    ResponseEntity<PageStatsDTO> connectorStats(@NotNull @Parameter(in = ParameterIn.PATH, description = "" ,required=true,schema=@Schema()) @Valid @PathParam(value = "connectorName") String connectorName, int page, int size);
     
 }
 

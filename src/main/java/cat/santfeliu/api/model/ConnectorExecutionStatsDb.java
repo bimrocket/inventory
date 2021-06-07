@@ -30,11 +30,13 @@ public class ConnectorExecutionStatsDb implements Serializable {
     @Column(name="execution_end_date")
     private Date executionEndDate;
     @Column(name="execution_objects_loaded", precision=10)
-    private int executionObjectsLoaded;
+    private Integer executionObjectsLoaded;
     @Column(name="execution_objects_transformed", precision=10)
-    private int executionObjectsTransformed;
+    private Integer executionObjectsTransformed;
     @Column(name="execution_objects_sent", precision=10)
-    private int executionObjectsSent;
+    private Integer executionObjectsSent;    
+    @Column(name="execution_objects_deleted", precision=10)
+    private Integer executionObjectsDeleted;
     @Column(name="execution_final_state", length=100)
     private String executionFinalState;
     @Column(name="execution_connector_name", length=100)
@@ -104,7 +106,7 @@ public class ConnectorExecutionStatsDb implements Serializable {
      *
      * @return the current value of executionObjectsLoaded
      */
-    public int getExecutionObjectsLoaded() {
+    public Integer getExecutionObjectsLoaded() {
         return executionObjectsLoaded;
     }
 
@@ -126,7 +128,7 @@ public class ConnectorExecutionStatsDb implements Serializable {
      *
      * @return the current value of executionObjectsTransformed
      */
-    public int getExecutionObjectsTransformed() {
+    public Integer getExecutionObjectsTransformed() {
         return executionObjectsTransformed;
     }
 
@@ -148,7 +150,7 @@ public class ConnectorExecutionStatsDb implements Serializable {
      *
      * @return the current value of executionObjectsSent
      */
-    public int getExecutionObjectsSent() {
+    public Integer getExecutionObjectsSent() {
         return executionObjectsSent;
     }
 
@@ -164,8 +166,24 @@ public class ConnectorExecutionStatsDb implements Serializable {
     public void addSent() {
     	executionObjectsSent = executionObjectsSent + 1;
     }
+    
+    
 
-    /**
+    public Integer getExecutionObjectsDeleted() {
+		return executionObjectsDeleted;
+	}
+
+	public void setExecutionObjectsDeleted(int executionObjectsDeleted) {
+		this.executionObjectsDeleted = executionObjectsDeleted;
+	}
+	
+    
+    public void addDeleted() {
+    	executionObjectsDeleted = executionObjectsDeleted + 1;
+    }
+    
+
+	/**
      * Access method for executionFinalState.
      *
      * @return the current value of executionFinalState

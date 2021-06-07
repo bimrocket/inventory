@@ -1,13 +1,12 @@
 package cat.santfeliu.api.repo;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-import cat.santfeliu.api.model.ConnectorComponentDb;
 import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 
-public interface ConnectorStatsRepo extends CrudRepository<ConnectorExecutionStatsDb, Integer>  {
-
+public interface ConnectorStatsRepo extends PagingAndSortingRepository<ConnectorExecutionStatsDb, Integer>  {
+	
+	Page<ConnectorExecutionStatsDb> findByExecutionConnectorNameOrderByExecutionStartDateDesc(String connectorName, Pageable page);
 }
