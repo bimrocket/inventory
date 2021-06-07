@@ -26,6 +26,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -188,8 +189,7 @@ public class GeoserverSender extends ConnectorSender {
 	}
 
 	/**
-	 * Envia un request de tipus POST. Utilitzat entre altres per crides a addon
-	 * payments.
+	 * Envia un request de tipus POST.
 	 * 
 	 * @param uri Servidor de tercers
 	 * @param xml XML a enviar
@@ -218,7 +218,7 @@ public class GeoserverSender extends ConnectorSender {
 				authHeader = "Basic " + new String(encodedAuth);
 			}
 			httpPost.setConfig(requestConfig);
-			httpPost.setEntity(new StringEntity(xml));
+			httpPost.setEntity(new StringEntity(xml, HTTP.UTF_8));
 			httpPost.setHeader("Accept", "application/xml");
 			httpPost.setHeader("Content-type", "application/xml");
 			httpPost.setHeader("Authorization", authHeader);
@@ -230,7 +230,7 @@ public class GeoserverSender extends ConnectorSender {
 				String readLine;
 				while (((readLine = br.readLine()) != null)) {
 					sb.append("\n").append(readLine);
-				}
+				} 
 			}
 
 			String ret = sb.toString();
