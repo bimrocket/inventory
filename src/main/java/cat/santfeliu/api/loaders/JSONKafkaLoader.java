@@ -12,7 +12,7 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 	private Thread threatRunner;
 	
 	@Override
-	public JsonObject load(int timeout) {
+	public JsonObject load(long timeout) {
 		if (runner == null) {		
 			runner = new KafkaConsumerRunner(this.instance, this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_GROUP_ID.getKey()),
 			this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_TOPIC_NAME.getKey()));

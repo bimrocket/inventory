@@ -1,54 +1,111 @@
 package cat.santfeliu.api.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import cat.santfeliu.api.beans.KafkaMessageDelete;
 import cat.santfeliu.api.beans.LoaderJsonObject;
 import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
+import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.repo.ConnectorStatsRepo;
 import cat.santfeliu.api.repo.GlobalIdRepo;
 
 public abstract class ConnectorLoader extends ConnectorComponent {
 
 	private static final Logger logLoader = LoggerFactory.getLogger(ConnectorLoader.class);
-
-	protected boolean ends;
-
-	protected ConnectorInstance instance;
-
+	
 	@Autowired
 	protected GlobalIdRepo globalIdRepo;
 
-	protected final List<String> treatedGUIDs = new ArrayList<String>();
+	@Autowired
+	protected ConnectorStatsRepo connectorStatsRepo;
 
-	protected final List<JsonObject> deletions = new ArrayList<>();
+	protected boolean ends;
+
+	protected boolean reset = true;
+
+	protected long sleepTime;
+
+	protected long loadTimeout;
+
+	protected ConnectorInstance instance;
+
+	protected JsonArray loaded = null;
+
+	protected JsonArray all = null;
 
 	protected final Gson gson = new Gson();
+	
+	protected int currentIndex = -1;
 
-	private int deletionIndex = 0;
+	protected int deletionIndex = -1;
 
 	protected boolean checkedDeletions = false;
 
-	public abstract JsonObject load(int timeout);
+	protected List<String> allGUIDs = new ArrayList<String>();
+
+	protected Page<ConnectorExecutionStatsDb> page = null;
+
+	protected Map<String, String> guidsExisting = new HashMap<>();
+
+	protected List<String> treatedGUIDs = new ArrayList<String>();
+
+	protected List<JsonObject> deletions = new ArrayList<>();
+
+	public abstract JsonObject load(long timeout);
 
 	public void initLoader(ConnectorInstance instance) {
 		this.instance = instance;
 		this.ends = Boolean.valueOf(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_HAS_END.getKey()));
+		this.sleepTime = Long
+				.parseLong(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_SLEEP_TIME.getKey(), false));
+		this.loadTimeout = Long
+				.parseLong(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_TIMEOUT.getKey(), false));
+		this.resetVars();
+	}
+
+	protected void resetVars() {
+		guidsExisting = new HashMap<>();
+		List<GlobalIdDb> listGuids = globalIdRepo.findByInventory(instance.getConnector().getInventoryName());
+
+		for (GlobalIdDb guid : listGuids) {
+			guidsExisting.put(guid.getLocalId(), guid.getGlobalId());
+		}
+		page = connectorStatsRepo.findByExecutionConnectorNameOrderByExecutionStartDateDesc(
+				this.instance.getConnector().getConnectorName(), PageRequest.of(0, 1));
+		treatedGUIDs = new ArrayList<String>();
+		deletions = new ArrayList<>();
+		allGUIDs = new ArrayList<>();
+		currentIndex = -1;
+		deletionIndex = -1;
+		reset = true;
+		loaded = null;
+		all = null;
 	}
 
 	public boolean hasEnd() {
 		return ends;
+	}
+
+	public long getSleepTime() {
+		return this.sleepTime;
+	}
+
+	public long getLoadTimeout() {
+		return this.loadTimeout;
 	}
 
 	public abstract void stop();
@@ -57,20 +114,13 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 		return !this.deletions.isEmpty();
 	}
 
-	public boolean isFullLoad() {
-		return Boolean.valueOf(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_IS_FULL_LOAD.getKey()));
-	}
-	
 	public void checkDeletions() {
 		List<GlobalIdDb> listGUIDs = globalIdRepo.findByInventory(this.inventoryName);
 
 		// Tractament globalIds no existents ja
-		if (!this.treatedGUIDs.isEmpty()) {
+		if (!this.allGUIDs.isEmpty()) {
 			for (int i = 0; i < listGUIDs.size(); i++) {
-				boolean found = false;
-				for (int j = 0; j < this.treatedGUIDs.size() && !found; j++) {
-					found = this.treatedGUIDs.get(j).equals(listGUIDs.get(i).getGlobalId());
-				}
+				boolean found = Collections.binarySearch(this.allGUIDs, listGUIDs.get(i).getGlobalId()) > 0;
 				if (!found) {
 
 					// No s'ha trobat GUID cal enviar global id amb element null
@@ -88,13 +138,18 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 
 	}
 
-	public JsonObject getDeletion() {
+	public JsonObject getDeletion() {			
+		this.deletionIndex++;
+		JsonObject deletion = null;
 		try {
-			JsonObject deletion = deletions.get(deletionIndex);
-			this.deletionIndex = deletionIndex + 1;
-			return deletion;
+			deletion = deletions.get(deletionIndex);
 		} catch (IndexOutOfBoundsException e) {
+			deletion = null;
+		}	
+		if (deletion == null && !this.hasEnd()) {
+			this.resetVars();
 			return null;
 		}
+		return deletion;
 	}
 }

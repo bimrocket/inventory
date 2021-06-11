@@ -46,10 +46,18 @@ public class ConnectorRunnerService {
 	private GlobalIdRepo globalIdRepo;
 	
 	
+	/**
+	 * Bucle prinicipal de flux de dades
+	 * Serveix tan per llegir a kafka com escriure
+	 * S'ha de passar ConnectorInstance que ha sigut generat previament
+	 * per mètode setupConnector de ConnectorManagerService
+	 * Aquest mètode es asincron es a dir es genera un nou Thread
+	 * que s'encarrega de la execució del mètode.
+	 * @param instance
+	 */
 	@Async
 	public void runConnector(ConnectorInstance instance) {
 		boolean hasException = false;
-		int timeout = 60000;
 		log.info("runConnector@ConnectorRunnerService - running async start of connector instance {}", instance.getConnector().getConnectorName());
 		instances.put(instance.getConnector().getConnectorName(), instance);
 		instance.getConnectorStats().setExecutionFinalState("start of async run");
@@ -59,22 +67,25 @@ public class ConnectorRunnerService {
 		loader.initLoader(instance);		
 		JsonObject curObject = null;
 		try {
-			curObject = loader.load(timeout);
+			curObject = loader.load(loader.getLoadTimeout());
 			boolean loaderHasEnd = loader.hasEnd();
 			// ---------------------- Initializing classes
 			while (!instance.shouldEnd()) {
 				if (curObject == null && loaderHasEnd) {
 					instance.stop();
 				} else if (curObject == null && !loaderHasEnd) {
-					Thread.sleep(100);
-					curObject = loader.load(timeout);
+					log.debug("runConnector@ConnectorRunnerService - connector {} put to sleep {}ms due to end of objects", instance.getConnector().getConnectorName(), loader.getSleepTime());
+					Thread.sleep(loader.getSleepTime());
+					log.debug("runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader", instance.getConnector().getConnectorName());
+					curObject = loader.load(loader.getLoadTimeout());
 				}
 				if (curObject != null) {
+					log.debug("currentOnject :: {}", curObject.toString());
 					this.updateStats(instance, ComponentTypeEnum.LOADER);
 					JsonObject transformed = null;
 					try {
 						transformed = transformer.transform(curObject);
-						log.info("beforeTransform :: {}", curObject.toString());
+						log.info("afterTransform :: {}", transformed.toString());
 					} catch (Exception e) {
 						String error = String.format(
 								"exception while transforming object of connector %s with message '%s' check logs for more details", instance.getConnector().getConnectorName(), e.getMessage());
@@ -86,7 +97,7 @@ public class ConnectorRunnerService {
 						this.updateStats(instance, ComponentTypeEnum.TRANSFORMER);
 						try {
 							sender.send(transformed);
-							log.info("sent :: {}", transformed.toString());
+							log.debug("sent :: {}", transformed.toString());
 							this.updateStats(instance, ComponentTypeEnum.SENDER);
 						} catch (Exception e) {
 							String error = String.format(
@@ -97,7 +108,7 @@ public class ConnectorRunnerService {
 						}
 					
 					}
-					curObject = loader.load(timeout);
+					curObject = loader.load(loader.getLoadTimeout());
 				}
 			}
 

@@ -2,10 +2,14 @@ package cat.santfeliu.api.loaders;
 
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,21 +32,21 @@ import com.jayway.jsonpath.JsonPath;
 import cat.santfeliu.api.beans.LoaderJsonObject;
 import cat.santfeliu.api.components.ConnectorLoader;
 import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
+import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
 import cat.santfeliu.api.exceptions.ApiErrorException;
 import cat.santfeliu.api.model.GlobalIdDb;
 import cat.santfeliu.api.utils.InventoryUtils;
+import cat.santfeliu.api.utils.QuickSortAlgorithm;
 
 public class GeoserverLoader extends ConnectorLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
 	
-	private int currentIndex = -1;
-	
-	private JsonArray loaded = null;
-
 	@Override
-	public JsonObject load(int timeout) {
-		if (loaded == null) {
+	public JsonObject load(long timeout) {
+		if (loaded == null && this.reset) {
+			this.checkedDeletions = false;
+			this.reset = false;
 			return loadResponse(timeout);
 		} else {
 			if (this.checkedDeletions) {
@@ -55,18 +59,23 @@ public class GeoserverLoader extends ConnectorLoader {
 				}
 				return obj;
 			}
-	
+
 		}
-		
+
 	}
-	
-	private JsonObject getObject() {		
+
+	private JsonObject getObject() {
+		// Add one more to index as it starts at -1 and objects start at 0
 		currentIndex++;
 		JsonElement toReturn;
-		try { 
+		try {
+			// Try to recover object
 			toReturn = loaded.get(currentIndex);
 		} catch (IndexOutOfBoundsException e) {
-			toReturn = null;
+			// End of objects if loop has no end we put loaded as null so next time (after
+			// sleep) it
+			// recover all objects again
+			return null;
 		}
 		if (toReturn != null) {
 			toReturn = transformForTransformer(toReturn.getAsJsonObject());
@@ -75,26 +84,16 @@ public class GeoserverLoader extends ConnectorLoader {
 				toReturn = getObject();
 			}
 		}
-		
+
 		return toReturn != null ? toReturn.getAsJsonObject() : null;
 	}
-	
+
 	private JsonObject transformForTransformer(JsonObject object) {
-		String localId = JsonPath.parse(object.toString()).<String>read(
-				this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
-		String globalId = null;
-		Optional<GlobalIdDb> hasIdOpt = globalIdRepo.findByInventoryAndLocalId(this.inventoryName, localId);
-		if (hasIdOpt.isEmpty()) {
-			// No s'ha trobat GUID cal obtenir-lo i inserir-lo
-			globalId = InventoryUtils.getGuid();
-			GlobalIdDb guid = new GlobalIdDb();
-			guid.setGlobalId(globalId);
-			guid.setInventoryName(this.inventoryName);
-			guid.setLocalId(localId);
-			globalIdRepo.save(guid);
-		} else {
-			globalId = hasIdOpt.get().getGlobalId();
-		}
+
+		Pair<String, String> ids = getIds(object);
+		String localId = ids.getLeft();
+		String globalId = ids.getRight();
+		
 		boolean alreadyTreated = false;
 		for (int j = 0; j < this.treatedGUIDs.size() && !alreadyTreated; j++) {
 			alreadyTreated = this.treatedGUIDs.get(j).equals(globalId);
@@ -111,11 +110,11 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 
 	}
-	
-	private JsonObject loadResponse(int timeout) {
+
+	private JsonObject loadResponse(long timeout) {
 		RequestConfig.Builder requestBuilder = RequestConfig.custom();
-		requestBuilder.setConnectTimeout(timeout);
-		requestBuilder.setConnectionRequestTimeout(timeout);
+		requestBuilder.setConnectTimeout((int) timeout);
+		requestBuilder.setConnectionRequestTimeout((int) timeout);
 		HttpClientBuilder clientBuilder = HttpClients.custom();
 		clientBuilder.setDefaultRequestConfig(requestBuilder.build());
 		HttpClient httpClient = clientBuilder.build();
@@ -129,7 +128,8 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 		String uri = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_URL.getKey());
 		String params = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_PARAMS.getKey());
-		List<String> layers = this.params.getMultipleParamValues(GeoserverLoaderConfigKeys.LOADER_LAYERS_MULTIPLE.getKey());
+		List<String> layers = this.params
+				.getMultipleParamValues(GeoserverLoaderConfigKeys.LOADER_LAYERS_MULTIPLE.getKey());
 		String layersInline = "";
 		for (int i = 0; i < layers.size(); i++) {
 			layersInline += (i != 0 ? "," + layers.get(i) : layers.get(i));
@@ -140,19 +140,19 @@ public class GeoserverLoader extends ConnectorLoader {
 		if (authType != null && authType.equals("Basic")) {
 			request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
 		}
-		
+
 		JsonObject jsonResponse;
-		
+
 		try {
 			Gson gson = new Gson();
 			HttpResponse response = httpClient.execute(request.build());
 			String bodyResp = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 			jsonResponse = gson.fromJson(bodyResp, JsonObject.class);
-			
+
 		} catch (ConnectTimeoutException | SocketTimeoutException e) {
 			log.error("loadResponse@GeoserverLoader - timeout while sending petition : ", e);
-			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"timeout while sending petition to geoserver", e.getMessage());
+			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "timeout while sending petition to geoserver",
+					e.getMessage());
 		} catch (Exception e) {
 			log.error("loadResponse@GeoserverLoader - exception while sending petition : ", e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -160,15 +160,72 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 
 		try {
-			this.loaded = jsonResponse.get("features").getAsJsonArray();
+			all = jsonResponse.get("features").getAsJsonArray();
+			JsonArray arrayFiltered = new JsonArray();
+			Date updateDate = null;
+			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
+			if (this.page.getContent().isEmpty() || filterField == null) {
+				this.loaded = all;
+			} else {
+				updateDate = this.page.getContent().get(0).getExecutionStartDate();
+				SimpleDateFormat sdf = new SimpleDateFormat(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
+			
+				for (JsonElement e : all) {
+					Pair<String, String> ids = getIds(e);
+					String localId = ids.getLeft();
+					String globalId = ids.getRight();
+					
+					this.guidsExisting.put(localId, globalId);
+					this.allGUIDs.add(globalId);
+					String dateUpdateElemStr = JsonPath.parse(e.toString()).<String>read(filterField);
+					if (dateUpdateElemStr != null && !dateUpdateElemStr.isBlank()) {
+						Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
+						if (dateUpdateElem.compareTo(updateDate) > 0) {
+							arrayFiltered.add(e);
+							log.debug("element added : {}", e.toString());
+						}	
+					} else {
+						arrayFiltered.add(e);
+						log.debug("element added : {}", e.toString());
+					}
+
+				}
+				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
+				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
+				sorter.sort(arr);
+		        List<String> list = new ArrayList<>();
+		        Collections.addAll(list, arr);
+		        this.allGUIDs = list;
+				this.loaded = arrayFiltered;
+			}
 			return getObject();
 		} catch (Exception e) {
 			log.error("loadResponse@GeoserverLoader - exception while sending petition : ", e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"exception while sending petition to geoserver", e.getMessage());
-		
+
 		}
 
+	}
+	
+	private Pair<String, String> getIds(JsonElement e) {
+		String localId = JsonPath.parse(e.toString())
+				.<String>read(this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+		String globalId = null;
+		
+		String hasGuid = this.guidsExisting.get(localId);
+		log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId, this.guidsExisting.size());
+		if (hasGuid == null) {
+			globalId = InventoryUtils.getGuid();
+			GlobalIdDb guidDb = new GlobalIdDb();
+			guidDb.setGlobalId(globalId);
+			guidDb.setInventoryName(this.inventoryName);
+			guidDb.setLocalId(localId);
+			globalIdRepo.save(guidDb);
+		} else {
+			globalId = hasGuid;
+		}
+		return Pair.of(localId, globalId);
 	}
 
 	@Override

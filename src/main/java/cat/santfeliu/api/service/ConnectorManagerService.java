@@ -65,6 +65,7 @@ public class ConnectorManagerService {
 	private GlobalIdRepo globalIdRepo;
 
 	public ConnectorStatusDTO startConnector(@NotNull @Valid String connectorName) {
+		// Fer comprovacions en bd
 		Optional<ConnectorDb> conDb = conRepo.findById(connectorName);
 		if (conDb.isEmpty()) {
 			String error = String.format("trying to start non existing connector '%s'", connectorName);
@@ -134,8 +135,19 @@ public class ConnectorManagerService {
 		return mapper.statusDbToDTO(status);
 	}
 
+	/***
+	 * Mètode principal que inicia components (loader, transformer, sender)
+	 * amb la seva classe corresponent definida en model de base de dades equivalent al Connector,
+	 * A part d'iniciar components també li passa els seus configs (ConfigContainer) que
+	 * es carreguen de bd i guarden en un Map.
+	 * Si el ComponentLoader, etc..Contenen un objecte @Autowired també
+	 * aquí s'assigna el Bean del contexte Spring
+	 * @param connector Model de base de dades
+	 * @return Instància de connector preparat per córrer amb runConnector de {ConnectorRunnerService}
+	 */
 	private ConnectorInstance setupConnector(ConnectorDb connector) {
 		// --------------------------- Setting up classes
+		// Checking if loader component defined in connector exists in database and recovers class package path
 		Optional<ConnectorComponentDb> loaderComponentDb = conCompRepo.findById(connector.getConnectorLoader());
 		if (loaderComponentDb.isEmpty()) {
 			String error = String.format("connector component loader '%s' not found", connector.getConnectorLoader());
@@ -144,6 +156,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT LOADER NOT FOUND");
 
 		}
+		// Creating new instance of loader (equals to new XXXLoader())
 		String loaderClassName = loaderComponentDb.get().getConnectorComponentClass();
 		ConnectorLoader loader = null;
 		try {
@@ -160,6 +173,7 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		// Checking if transformer component exists in database and recovers class package path
 		Optional<ConnectorComponentDb> transformerComponentDb = conCompRepo
 				.findById(connector.getConnectorTransformer());
 		if (transformerComponentDb.isEmpty()) {
@@ -170,6 +184,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT TRANSFORMER NOT FOUND");
 
 		}
+		// Creating new instance of transformer (equals to new XXXTransfomer())
 		String transformerClassName = transformerComponentDb.get().getConnectorComponentClass();
 		ConnectorTransformer transformer = null;
 		try {
@@ -186,6 +201,7 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		// Checking if sender component exists in database and recovers class package path
 		Optional<ConnectorComponentDb> senderCompDb = conCompRepo.findById(connector.getConnectorSender());
 		if (senderCompDb.isEmpty()) {
 			String error = String.format("connector component sender '%s' not found", connector.getConnectorLoader());
@@ -194,6 +210,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT SENDER NOT FOUND");
 
 		}
+		// Creating new instance of sender (equals to new XXXSender())
 		String senderClassName = senderCompDb.get().getConnectorComponentClass();
 		ConnectorSender sender = null;
 		try {
@@ -210,16 +227,28 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		// Invoked init of component passing inventoryName and ConfigContainer
 		loader.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.LOADER));
 		transformer.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.TRANSFORMER));
 		sender.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.SENDER));
 		
+		// Autowires @Autowired objects of components
 		autowireCapableBeanFactory.autowireBean(loader);
 		autowireCapableBeanFactory.autowireBean(transformer);
 		autowireCapableBeanFactory.autowireBean(sender);
+		// Returns instance which contains connector,loader, transformer and sender
+		// ready to run
 		return new ConnectorInstance(connector, loader, transformer, sender);
 	}
 
+	/**
+	 * Amb model de base de dades del connector i tipus de component indicat per enum ComponentTypeEnum (loader, transformer, sender)
+	 * retorna el ConfigContainer.
+	 * @param connector Model de connector
+	 * @param componentType Enum indicat quin tipus de component és
+	 * @return ConfigContainer conté tots els params de base de dades en un Map
+	 * i mètodes com getParamValue.
+	 */
 	private ConfigContainer getParamsForComponent(ConnectorDb connector, ComponentTypeEnum componentType) {
 		ConfigContainer params = new ConfigContainer();
 		autowireCapableBeanFactory.autowireBean(params);

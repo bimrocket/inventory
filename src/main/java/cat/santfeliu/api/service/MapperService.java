@@ -18,7 +18,9 @@ import cat.santfeliu.api.dto.ConnectorStatsDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
 import cat.santfeliu.api.enumerator.ComponentEnum;
 import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
+import cat.santfeliu.api.enumerator.GeoserverSenderConfigKeys;
 import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
+import cat.santfeliu.api.enumerator.JSONKafkaLoaderConfigKeys;
 import cat.santfeliu.api.enumerator.RhinoTransformerConfigKeys;
 import cat.santfeliu.api.model.ConnectorComponentConfigDb;
 import cat.santfeliu.api.model.ConnectorComponentDb;
@@ -37,12 +39,22 @@ public class MapperService {
 	@Autowired
 	private ConnectorComponentConfigRepo conConfigRepo;
 	
+	/**
+	 * Retorna dto de ConnectorStatusDb
+	 * @param statusDb
+	 * @return dto ConnectorStatusDTO
+	 */
 	public ConnectorStatusDTO statusDbToDTO(ConnectorStatusDb statusDb) {
 		ConnectorStatusDTO dto = new ConnectorStatusDTO();
 		return modelMapper.map(statusDb, ConnectorStatusDTO.class);
 		
 	}
 	
+	/**
+	 * Retorna dto de componente de connector ConnectorComponentDb
+	 * @param db
+	 * @return dto
+	 */
 	public ConnectorComponentDTO componentDbToDTO(ConnectorComponentDb db) {
 		ConnectorComponentDTO dto = modelMapper.map(db, ConnectorComponentDTO.class);
 		if (dto.getConnectorComponentName().equals(ComponentEnum.GEOSERVER_LOADER.getName())) {
@@ -62,8 +74,40 @@ public class MapperService {
 				dto.getComponentConfigKeys().add(configDto);
 			}
 			
+		} else if (dto.getConnectorComponentName().equals(ComponentEnum.JSON_KAFKA_LOADER.getName())) {
+			for (JSONKafkaLoaderConfigKeys key : JSONKafkaLoaderConfigKeys	.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+			
+			for (GlobalLoaderConfigKeys key : GlobalLoaderConfigKeys.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.RHINO_TRANSFORMER.getName())) {
 			for (RhinoTransformerConfigKeys key : RhinoTransformerConfigKeys	.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+		} else if (dto.getConnectorComponentName().equals(ComponentEnum.GEOSERVER_SENDER.getName())) {
+			for (GeoserverSenderConfigKeys key : GeoserverSenderConfigKeys	.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+		} else if (dto.getConnectorComponentName().equals(ComponentEnum.JSON_KAFKA_SENDER.getName())) {
+			for (GeoserverSenderConfigKeys key : GeoserverSenderConfigKeys	.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
 				configDto.setRequired(key.isRequired());
@@ -74,6 +118,11 @@ public class MapperService {
 		return dto;
 	}
 	
+	/**
+	 * Retorna dto de connector desde ConnectorDb
+	 * @param con
+	 * @return dto
+	 */
 	public ConnectorDTO connectorDbToDTO(ConnectorDb con) {
 		ConnectorDTO dto = modelMapper.map(con, ConnectorDTO.class);
 		List<ConnectorComponentConfigDb> paramsDb = conConfigRepo.findAllByProducer(con.getConnectorName());
@@ -85,11 +134,22 @@ public class MapperService {
 		return dto;
 	}
 	
+	/**
+	 * ConnectorDTO a model de base de dades ConnectorDb
+	 * @param dto
+	 * @return db
+	 */
 	public ConnectorDb connectorDTOToDb(ConnectorDTO dto) {
 		ConnectorDb db = modelMapper.map(dto, ConnectorDb.class);;
 		return db;
 	}
 	
+	/**
+	 * Configs de connector com dto a Set de base de dades
+	 * @param connectorName
+	 * @param dto
+	 * @return set db
+	 */
 	public Set<ConnectorComponentConfigDb> connectorConfigSetDTOToDb(String connectorName,List<ConnectorParamDTO> dto) {
 		Set<ConnectorComponentConfigDb> paramsDb = new HashSet<>();
 		for (ConnectorParamDTO param : dto) {
@@ -100,6 +160,11 @@ public class MapperService {
 		return paramsDb;
 	}
 
+	/**
+	 * Estadístiques db paginades a PageStatsDTO
+	 * @param statsDb
+	 * @return
+	 */
 	public PageStatsDTO connectorStatsDbToDTO(Page<ConnectorExecutionStatsDb> statsDb) {
 		PageStatsDTO pageDto = new PageStatsDTO();
 		pageDto.setPage(statsDb.getNumber());

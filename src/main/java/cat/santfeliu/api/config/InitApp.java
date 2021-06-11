@@ -20,6 +20,7 @@ import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
 import cat.santfeliu.api.senders.GeoserverSender;
 import cat.santfeliu.api.utils.ConfigContainer;
+import cat.santfeliu.api.utils.InventoryUtils;
 
 /**
  * Component spring a executar quan app s'ha iniciat.
@@ -67,6 +68,5 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         	status.setConnectorStatus("offline");
         	statusRepo.save(status);
         }
- 
     }
 }

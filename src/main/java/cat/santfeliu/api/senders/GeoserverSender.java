@@ -210,7 +210,7 @@ public class GeoserverSender extends ConnectorSender {
 			RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
 					.setSocketTimeout(socketTimeout).build();
 			String authType = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_AUTH.getKey());
-			String authHeader = "";
+			String authHeader = ""; 
 			if (authType != null && authType.equals("Basic")) {
 				String auth = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_USERNAME.getKey()) + ":"
 						+ this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_PASSWORD.getKey());

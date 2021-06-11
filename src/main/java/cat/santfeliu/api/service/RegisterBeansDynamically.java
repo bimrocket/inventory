@@ -11,6 +11,13 @@ public class RegisterBeansDynamically implements BeanFactoryAware {
 
     private ConfigurableBeanFactory beanFactory;
 
+    /**
+     * Registra un bean en temps real funciona com @Autowired pero
+     * es dinamic
+     * @param <T>
+     * @param beanName
+     * @param bean
+     */
     public <T> void registerBean(String beanName, T bean) {
         beanFactory.registerSingleton(beanName, bean);
     }

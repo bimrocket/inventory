@@ -33,6 +33,12 @@ public class KafkaConsumerRunner implements Runnable {
     @Value(value = "${kafka.bootstrap.address}")
     private String bootstrapAddress;
 
+    /**
+     * 
+     * @param instance
+     * @param groupId
+     * @param topic
+     */
 	public KafkaConsumerRunner(ConnectorInstance instance, String groupId, String topic) {
 		this.topic = topic;
 		this.instance = instance;
