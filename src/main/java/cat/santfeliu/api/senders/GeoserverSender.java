@@ -60,7 +60,7 @@ public class GeoserverSender extends ConnectorSender {
 				update = true;
 			}
 			localId = globalIdDbOpt.get().getLocalId();
-		} else {
+		} else if (!node.get("element").isJsonNull()) {
 			insert = true;
 		}
 		Directives dir = new Directives();
