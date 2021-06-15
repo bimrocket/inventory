@@ -1,0 +1,61 @@
+\hypertarget{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}{}\doxysection{cat.\+santfeliu.\+api.\+utils.\+Config\+Container Class Reference}
+\label{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}\index{cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a7586ee1bad9c5d3ebd6005e6afb614f4}{init}} (String producer, String type)
+\item 
+String \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a0754904e39db6e7a0600ed60953b90f5}{get\+Param\+Value}} (String key)
+\item 
+String \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a912d054abfd083e152011308f3991d0b}{get\+Param\+Value}} (String key, boolean strict)
+\item 
+List$<$ String $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a1fb34f496d57b4ebed3c28b49a525533}{get\+Multiple\+Param\+Values}} (String key)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a1fb34f496d57b4ebed3c28b49a525533}\label{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a1fb34f496d57b4ebed3c28b49a525533}} 
+\index{cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}!getMultipleParamValues@{getMultipleParamValues}}
+\index{getMultipleParamValues@{getMultipleParamValues}!cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}}
+\doxysubsubsection{\texorpdfstring{getMultipleParamValues()}{getMultipleParamValues()}}
+{\footnotesize\ttfamily List$<$String$>$ cat.\+santfeliu.\+api.\+utils.\+Config\+Container.\+get\+Multiple\+Param\+Values (\begin{DoxyParamCaption}\item[{String}]{key }\end{DoxyParamCaption})}
+
+Returns list of params following this syntax the key needs to contain $\ast$ which translates to 01,02,03 Example if we load key Container\+Producer.\+loader.\+layers.$\ast$ It will return list of all layers defined with key \+: Container\+Producer.\+loader.\+layers.\+01, Container\+Producer.\+loader.\+layers.\+02, Container\+Producer.\+loader.\+layers.\+xx 
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a0754904e39db6e7a0600ed60953b90f5}\label{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a0754904e39db6e7a0600ed60953b90f5}} 
+\index{cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}!getParamValue@{getParamValue}}
+\index{getParamValue@{getParamValue}!cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}}
+\doxysubsubsection{\texorpdfstring{getParamValue()}{getParamValue()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String cat.\+santfeliu.\+api.\+utils.\+Config\+Container.\+get\+Param\+Value (\begin{DoxyParamCaption}\item[{String}]{key }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a912d054abfd083e152011308f3991d0b}\label{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a912d054abfd083e152011308f3991d0b}} 
+\index{cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}!getParamValue@{getParamValue}}
+\index{getParamValue@{getParamValue}!cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}}
+\doxysubsubsection{\texorpdfstring{getParamValue()}{getParamValue()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String cat.\+santfeliu.\+api.\+utils.\+Config\+Container.\+get\+Param\+Value (\begin{DoxyParamCaption}\item[{String}]{key,  }\item[{boolean}]{strict }\end{DoxyParamCaption})}
+
+Returns param by key If strict throws Api\+Error\+Exception if param not found 
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a7586ee1bad9c5d3ebd6005e6afb614f4}\label{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container_a7586ee1bad9c5d3ebd6005e6afb614f4}} 
+\index{cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}!init@{init}}
+\index{init@{init}!cat.santfeliu.api.utils.ConfigContainer@{cat.santfeliu.api.utils.ConfigContainer}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+utils.\+Config\+Container.\+init (\begin{DoxyParamCaption}\item[{String}]{producer,  }\item[{String}]{type }\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/workspace/inventari/src/main/java/cat/santfeliu/api/utils/\mbox{\hyperlink{_config_container_8java}{Config\+Container.\+java}}\end{DoxyCompactItemize}

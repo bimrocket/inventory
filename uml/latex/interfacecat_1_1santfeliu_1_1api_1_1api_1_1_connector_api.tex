@@ -1,0 +1,99 @@
+\hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api}{}\doxysection{cat.\+santfeliu.\+api.\+api.\+Connector\+Api Interface Reference}
+\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api}\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+Inheritance diagram for cat.\+santfeliu.\+api.\+api.\+Connector\+Api\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Response\+Entity$<$ List$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} $>$ $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aa3adf10b2d2caceb2dd9d818d833bb37}{get\+Connectors}} ()
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4278a23c8fa0f2c5540c76db37d5a912}{create\+Connector}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name, @Request\+Body \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} connector)
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a179ada6cff36cbd7bf95ac301ddc7127}{update\+Connector}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name, @Request\+Body \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} connector)
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ab8aec8fa8e9a4555cdab36f3aef6a95c}{get\+Connector}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name)
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aad7a7a0e0dd8f31eb5575ed112f407db}{start\+Connector}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name)
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ac18dd30a11c1196db8015469de8f0728}{stop\+Connector}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name)
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4ed614323e06425ae705b9bbfb2c6f24}{connector\+Status}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name)
+\item 
+Response\+Entity$<$ List$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o}{Connector\+Component\+DTO}} $>$ $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4bc4627a995c4537c8f9264e19c7f3e7}{connector\+Components}} ()
+\item 
+Response\+Entity$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_page_stats_d_t_o}{Page\+Stats\+DTO}} $>$ \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a2f53d24a385b08ab55d213cc9750d496}{connector\+Stats}} (@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String connector\+Name, int page, int size)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4bc4627a995c4537c8f9264e19c7f3e7}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4bc4627a995c4537c8f9264e19c7f3e7}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!connectorComponents@{connectorComponents}}
+\index{connectorComponents@{connectorComponents}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{connectorComponents()}{connectorComponents()}}
+{\footnotesize\ttfamily Response\+Entity$<$List$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o}{Connector\+Component\+DTO}}$>$ $>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+connector\+Components (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Implemented in \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1controllers_1_1_connector_api_controller_a064034d8dc6b2b6939f71ff86198d82d}{cat.\+santfeliu.\+api.\+controllers.\+Connector\+Api\+Controller}}.
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a2f53d24a385b08ab55d213cc9750d496}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a2f53d24a385b08ab55d213cc9750d496}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!connectorStats@{connectorStats}}
+\index{connectorStats@{connectorStats}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{connectorStats()}{connectorStats()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_page_stats_d_t_o}{Page\+Stats\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+connector\+Stats (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name,  }\item[{int}]{page,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4ed614323e06425ae705b9bbfb2c6f24}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4ed614323e06425ae705b9bbfb2c6f24}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!connectorStatus@{connectorStatus}}
+\index{connectorStatus@{connectorStatus}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{connectorStatus()}{connectorStatus()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+connector\+Status (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4278a23c8fa0f2c5540c76db37d5a912}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a4278a23c8fa0f2c5540c76db37d5a912}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!createConnector@{createConnector}}
+\index{createConnector@{createConnector}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{createConnector()}{createConnector()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+create\+Connector (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name,  }\item[{@Request\+Body \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}}]{connector }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ab8aec8fa8e9a4555cdab36f3aef6a95c}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ab8aec8fa8e9a4555cdab36f3aef6a95c}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!getConnector@{getConnector}}
+\index{getConnector@{getConnector}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{getConnector()}{getConnector()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+get\+Connector (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aa3adf10b2d2caceb2dd9d818d833bb37}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aa3adf10b2d2caceb2dd9d818d833bb37}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!getConnectors@{getConnectors}}
+\index{getConnectors@{getConnectors}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{getConnectors()}{getConnectors()}}
+{\footnotesize\ttfamily Response\+Entity$<$List$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}$>$ $>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+get\+Connectors (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Implemented in \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1controllers_1_1_connector_api_controller_ab6fefd7662c67929b7db9260b346c24b}{cat.\+santfeliu.\+api.\+controllers.\+Connector\+Api\+Controller}}.
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aad7a7a0e0dd8f31eb5575ed112f407db}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_aad7a7a0e0dd8f31eb5575ed112f407db}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!startConnector@{startConnector}}
+\index{startConnector@{startConnector}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{startConnector()}{startConnector()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+start\+Connector (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ac18dd30a11c1196db8015469de8f0728}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_ac18dd30a11c1196db8015469de8f0728}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!stopConnector@{stopConnector}}
+\index{stopConnector@{stopConnector}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{stopConnector()}{stopConnector()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+stop\+Connector (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a179ada6cff36cbd7bf95ac301ddc7127}\label{interfacecat_1_1santfeliu_1_1api_1_1api_1_1_connector_api_a179ada6cff36cbd7bf95ac301ddc7127}} 
+\index{cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}!updateConnector@{updateConnector}}
+\index{updateConnector@{updateConnector}!cat.santfeliu.api.api.ConnectorApi@{cat.santfeliu.api.api.ConnectorApi}}
+\doxysubsubsection{\texorpdfstring{updateConnector()}{updateConnector()}}
+{\footnotesize\ttfamily Response\+Entity$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}$>$ cat.\+santfeliu.\+api.\+api.\+Connector\+Api.\+update\+Connector (\begin{DoxyParamCaption}\item[{@Not\+Null @Parameter(in=Parameter\+In.\+PATH, description=\char`\"{}\char`\"{}, required=true, schema=@Schema()) @Valid @Path\+Param(value=\char`\"{}connector\+Name\char`\"{}) String}]{connector\+Name,  }\item[{@Request\+Body \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}}]{connector }\end{DoxyParamCaption})}
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/workspace/inventari/src/main/java/cat/santfeliu/api/api/\mbox{\hyperlink{_connector_api_8java}{Connector\+Api.\+java}}\end{DoxyCompactItemize}

@@ -1,0 +1,18 @@
+digraph "cat.santfeliu.api.service.MapperService.componentDbToDTO"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="cat.santfeliu.api.service.\lMapperService.componentDbToDTO",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="cat.santfeliu.api.dto.Connector\lComponentDTO.getComponentConfigKeys",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o.html#a53360afcfe3a82323924ccf720a9b8b8",tooltip=" "];
+  Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="cat.santfeliu.api.dto.Connector\lComponentDTO.getConnectorComponentName",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o.html#aac50bc0fcac83e24a2389fab7e3024a1",tooltip=" "];
+  Node1 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="cat.santfeliu.api.dto.Component\lConfigKeyDTO.setConfigKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1dto_1_1_component_config_key_d_t_o.html#a8bbef91a85a3a25e0049ab04336252e2",tooltip=" "];
+  Node1 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="cat.santfeliu.api.dto.Component\lConfigKeyDTO.setDescription",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1dto_1_1_component_config_key_d_t_o.html#a6bca54230273ae4cbac78c89ead718d9",tooltip=" "];
+  Node1 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="cat.santfeliu.api.dto.Component\lConfigKeyDTO.setRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1dto_1_1_component_config_key_d_t_o.html#a5e3f20ad0307a438488f9188932b164c",tooltip=" "];
+}

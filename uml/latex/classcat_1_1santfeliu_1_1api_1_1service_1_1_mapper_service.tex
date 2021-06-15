@@ -1,0 +1,111 @@
+\hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service}{}\doxysection{cat.\+santfeliu.\+api.\+service.\+Mapper\+Service Class Reference}
+\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service}\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a24bd74d5e8946f702ff64f9c863138e2}{status\+Db\+To\+DTO}} (\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_status_db}{Connector\+Status\+Db}} status\+Db)
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o}{Connector\+Component\+DTO}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_acd29cbf661870631823c369e8d11c981}{component\+Db\+To\+DTO}} (\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_db}{Connector\+Component\+Db}} db)
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a12bc99a07e69864ff1595c4a30fbdcfa}{connector\+Db\+To\+DTO}} (\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_db}{Connector\+Db}} con)
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_db}{Connector\+Db}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a25719e9308cac2cd3d18f2c71c3ec3}{connector\+DTOTo\+Db}} (\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} dto)
+\item 
+Set$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_config_db}{Connector\+Component\+Config\+Db}} $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a66e082b54894d9a505f9bc1e997caa}{connector\+Config\+Set\+DTOTo\+Db}} (String connector\+Name, List$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_param_d_t_o}{Connector\+Param\+DTO}} $>$ dto)
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_page_stats_d_t_o}{Page\+Stats\+DTO}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a0300cc82ac831fa42646f5e825a8a367}{connector\+Stats\+Db\+To\+DTO}} (Page$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_execution_stats_db}{Connector\+Execution\+Stats\+Db}} $>$ stats\+Db)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_acd29cbf661870631823c369e8d11c981}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_acd29cbf661870631823c369e8d11c981}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!componentDbToDTO@{componentDbToDTO}}
+\index{componentDbToDTO@{componentDbToDTO}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{componentDbToDTO()}{componentDbToDTO()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_component_d_t_o}{Connector\+Component\+DTO}} cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+component\+Db\+To\+DTO (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_db}{Connector\+Component\+Db}}}]{db }\end{DoxyParamCaption})}
+
+Retorna dto de componente de connector Connector\+Component\+Db 
+\begin{DoxyParams}{Parameters}
+{\em db} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+dto 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a66e082b54894d9a505f9bc1e997caa}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a66e082b54894d9a505f9bc1e997caa}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!connectorConfigSetDTOToDb@{connectorConfigSetDTOToDb}}
+\index{connectorConfigSetDTOToDb@{connectorConfigSetDTOToDb}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{connectorConfigSetDTOToDb()}{connectorConfigSetDTOToDb()}}
+{\footnotesize\ttfamily Set$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_config_db}{Connector\+Component\+Config\+Db}}$>$ cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+connector\+Config\+Set\+DTOTo\+Db (\begin{DoxyParamCaption}\item[{String}]{connector\+Name,  }\item[{List$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_param_d_t_o}{Connector\+Param\+DTO}} $>$}]{dto }\end{DoxyParamCaption})}
+
+Configs de connector com dto a Set de base de dades 
+\begin{DoxyParams}{Parameters}
+{\em connector\+Name} & \\
+\hline
+{\em dto} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+set db 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a12bc99a07e69864ff1595c4a30fbdcfa}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a12bc99a07e69864ff1595c4a30fbdcfa}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!connectorDbToDTO@{connectorDbToDTO}}
+\index{connectorDbToDTO@{connectorDbToDTO}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{connectorDbToDTO()}{connectorDbToDTO()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}} cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+connector\+Db\+To\+DTO (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_db}{Connector\+Db}}}]{con }\end{DoxyParamCaption})}
+
+Retorna dto de connector desde Connector\+Db 
+\begin{DoxyParams}{Parameters}
+{\em con} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+dto 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a25719e9308cac2cd3d18f2c71c3ec3}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a9a25719e9308cac2cd3d18f2c71c3ec3}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!connectorDTOToDb@{connectorDTOToDb}}
+\index{connectorDTOToDb@{connectorDTOToDb}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{connectorDTOToDb()}{connectorDTOToDb()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_db}{Connector\+Db}} cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+connector\+DTOTo\+Db (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_d_t_o}{Connector\+DTO}}}]{dto }\end{DoxyParamCaption})}
+
+Connector\+DTO a model de base de dades Connector\+Db 
+\begin{DoxyParams}{Parameters}
+{\em dto} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+db 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a0300cc82ac831fa42646f5e825a8a367}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a0300cc82ac831fa42646f5e825a8a367}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!connectorStatsDbToDTO@{connectorStatsDbToDTO}}
+\index{connectorStatsDbToDTO@{connectorStatsDbToDTO}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{connectorStatsDbToDTO()}{connectorStatsDbToDTO()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_page_stats_d_t_o}{Page\+Stats\+DTO}} cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+connector\+Stats\+Db\+To\+DTO (\begin{DoxyParamCaption}\item[{Page$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_execution_stats_db}{Connector\+Execution\+Stats\+Db}} $>$}]{stats\+Db }\end{DoxyParamCaption})}
+
+Estadístiques db paginades a Page\+Stats\+DTO 
+\begin{DoxyParams}{Parameters}
+{\em stats\+Db} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a24bd74d5e8946f702ff64f9c863138e2}\label{classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service_a24bd74d5e8946f702ff64f9c863138e2}} 
+\index{cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}!statusDbToDTO@{statusDbToDTO}}
+\index{statusDbToDTO@{statusDbToDTO}!cat.santfeliu.api.service.MapperService@{cat.santfeliu.api.service.MapperService}}
+\doxysubsubsection{\texorpdfstring{statusDbToDTO()}{statusDbToDTO()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1dto_1_1_connector_status_d_t_o}{Connector\+Status\+DTO}} cat.\+santfeliu.\+api.\+service.\+Mapper\+Service.\+status\+Db\+To\+DTO (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_status_db}{Connector\+Status\+Db}}}]{status\+Db }\end{DoxyParamCaption})}
+
+Retorna dto de Connector\+Status\+Db 
+\begin{DoxyParams}{Parameters}
+{\em status\+Db} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+dto Connector\+Status\+DTO 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/workspace/inventari/src/main/java/cat/santfeliu/api/service/\mbox{\hyperlink{_mapper_service_8java}{Mapper\+Service.\+java}}\end{DoxyCompactItemize}

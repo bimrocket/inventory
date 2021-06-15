@@ -1,0 +1,14 @@
+digraph "cat.santfeliu.api.components.ConnectorInstance.stop"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="cat.santfeliu.api.components.\lConnectorInstance.stop",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="cat.santfeliu.api.service.\lConnectorRunnerService.runConnector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1service_1_1_connector_runner_service.html#a1c5f65bf8f9a03d8cf5210c8dabf6640",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="cat.santfeliu.api.loaders.\lGeoserverLoader.stop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1loaders_1_1_geoserver_loader.html#ab07e37f525d0b822dc7811d7d08e77c3",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="cat.santfeliu.api.loaders.\lJSONKafkaLoader.stop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1loaders_1_1_j_s_o_n_kafka_loader.html#ab870cf6d6fe927f3633f7d909a467e76",tooltip=" "];
+}

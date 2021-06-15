@@ -1,0 +1,268 @@
+\hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader}{}\doxysection{cat.\+santfeliu.\+api.\+components.\+Connector\+Loader Class Reference}
+\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader}\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+Inheritance diagram for cat.\+santfeliu.\+api.\+components.\+Connector\+Loader\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.745098cm]{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract Json\+Object \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a3ee0b3443797b237c9bdc0338d1f9406}{load}} (long timeout)
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_accc95d5cd409d284e07abd19532e62fe}{init\+Loader}} (\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_instance}{Connector\+Instance}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a858ff0d9b3daa18e53dc69d3450d67a1}{instance}})
+\item 
+boolean \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ac935ffb67f007454e67972e81a20bfb7}{has\+End}} ()
+\item 
+long \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40a74c9baadf1779787ada36dbcf2853}{get\+Sleep\+Time}} ()
+\item 
+long \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aad38137f6f052ca10b12d8e22649dd7a}{get\+Load\+Timeout}} ()
+\item 
+abstract void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_acc153c99cc9488fbad55ecf8b9c9dc48}{stop}} ()
+\item 
+boolean \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4ddb08dc3ddb876c8c0e61ace5dc2b61}{has\+Deletions}} ()
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a705980ec8774468c2ed0e386bcefb3ff}{check\+Deletions}} ()
+\item 
+Json\+Object \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ad4e0fa43141e2c32be9e3740d45a0707}{get\+Deletion}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4bffc119f5748678bdcb81193c62a680}{reset\+Vars}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1repo_1_1_global_id_repo}{Global\+Id\+Repo}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a9b0ac29244feb0d2185e633581b9cb20}{global\+Id\+Repo}}
+\item 
+\mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1repo_1_1_connector_stats_repo}{Connector\+Stats\+Repo}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a6e1a99bf27415b1b4951c429e7bb373d}{connector\+Stats\+Repo}}
+\item 
+boolean \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a1a1fe4e1ae5f3d0f22d458a39c2fd82b}{ends}}
+\item 
+boolean \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a632fe28439846d9aa444e35fe174c825}{reset}} = true
+\item 
+long \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40bbd9cb5a0269420519a611c313dd46}{sleep\+Time}}
+\item 
+long \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_abf46478d82cefc49846086ebbf5e06c2}{load\+Timeout}}
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_instance}{Connector\+Instance}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a858ff0d9b3daa18e53dc69d3450d67a1}{instance}}
+\item 
+Json\+Array \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a7b1b2d73c096a3ae2302db24f9023c4b}{loaded}} = null
+\item 
+Json\+Array \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a92c08fce83d0fb3420d648278bdc2327}{all}} = null
+\item 
+final Gson \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ada4d504aaebdfd29c526d3e599b81ef0}{gson}} = new Gson()
+\item 
+int \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade4bbf672bbe81f964fae01d0e9ac48a}{current\+Index}} = -\/1
+\item 
+int \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aa6e346114bf99f8d2d29cf9fb8556309}{deletion\+Index}} = -\/1
+\item 
+boolean \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a376105e6d51f4ed6b09bf95d730b4d1a}{checked\+Deletions}} = false
+\item 
+List$<$ String $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a2d9f8bef23021b5ffd5c1c40c9e6b980}{all\+GUIDs}} = new Array\+List$<$String$>$()
+\item 
+Map$<$ String, String $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ae3535e9ce89dfdab019cee2f45af098e}{guids\+Existing}} = new Hash\+Map$<$$>$()
+\item 
+List$<$ String $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a5e7974fbae2862202b50895693b7d2ae}{treated\+GUIDs}} = new Array\+List$<$String$>$()
+\item 
+List$<$ Json\+Object $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade2bfd6baaf7d4e0c6492e82bd830ea4}{deletions}} = new Array\+List$<$$>$()
+\item 
+Page$<$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_execution_stats_db}{Connector\+Execution\+Stats\+Db}} $>$ \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a926cae0e60169d9204b01658d0c86a45}{page}} = null
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a705980ec8774468c2ed0e386bcefb3ff}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a705980ec8774468c2ed0e386bcefb3ff}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!checkDeletions@{checkDeletions}}
+\index{checkDeletions@{checkDeletions}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{checkDeletions()}{checkDeletions()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+check\+Deletions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ad4e0fa43141e2c32be9e3740d45a0707}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ad4e0fa43141e2c32be9e3740d45a0707}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!getDeletion@{getDeletion}}
+\index{getDeletion@{getDeletion}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{getDeletion()}{getDeletion()}}
+{\footnotesize\ttfamily Json\+Object cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+get\+Deletion (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aad38137f6f052ca10b12d8e22649dd7a}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aad38137f6f052ca10b12d8e22649dd7a}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!getLoadTimeout@{getLoadTimeout}}
+\index{getLoadTimeout@{getLoadTimeout}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{getLoadTimeout()}{getLoadTimeout()}}
+{\footnotesize\ttfamily long cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+get\+Load\+Timeout (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40a74c9baadf1779787ada36dbcf2853}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40a74c9baadf1779787ada36dbcf2853}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!getSleepTime@{getSleepTime}}
+\index{getSleepTime@{getSleepTime}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{getSleepTime()}{getSleepTime()}}
+{\footnotesize\ttfamily long cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+get\+Sleep\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4ddb08dc3ddb876c8c0e61ace5dc2b61}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4ddb08dc3ddb876c8c0e61ace5dc2b61}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!hasDeletions@{hasDeletions}}
+\index{hasDeletions@{hasDeletions}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{hasDeletions()}{hasDeletions()}}
+{\footnotesize\ttfamily boolean cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+has\+Deletions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ac935ffb67f007454e67972e81a20bfb7}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ac935ffb67f007454e67972e81a20bfb7}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!hasEnd@{hasEnd}}
+\index{hasEnd@{hasEnd}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{hasEnd()}{hasEnd()}}
+{\footnotesize\ttfamily boolean cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+has\+End (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Retorna si el loader t \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_accc95d5cd409d284e07abd19532e62fe}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_accc95d5cd409d284e07abd19532e62fe}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!initLoader@{initLoader}}
+\index{initLoader@{initLoader}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{initLoader()}{initLoader()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+init\+Loader (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_instance}{Connector\+Instance}}}]{instance }\end{DoxyParamCaption})}
+
+Inicialitza connector loader i recupera variables de config necessaries per la seva execució 
+\begin{DoxyParams}{Parameters}
+{\em instance} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a3ee0b3443797b237c9bdc0338d1f9406}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a3ee0b3443797b237c9bdc0338d1f9406}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!load@{load}}
+\index{load@{load}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily abstract Json\+Object cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+load (\begin{DoxyParamCaption}\item[{long}]{timeout }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1loaders_1_1_j_s_o_n_kafka_loader_a4c32817dc42a8c6bbf98724a430c5575}{cat.\+santfeliu.\+api.\+loaders.\+JSONKafka\+Loader}}, and \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1loaders_1_1_geoserver_loader_aecdc6ab5af412ad4354ece82bddc6fc2}{cat.\+santfeliu.\+api.\+loaders.\+Geoserver\+Loader}}.
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4bffc119f5748678bdcb81193c62a680}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a4bffc119f5748678bdcb81193c62a680}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!resetVars@{resetVars}}
+\index{resetVars@{resetVars}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{resetVars()}{resetVars()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+reset\+Vars (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+Reinicia variables de loader Es utilitza si es vol a tornar a fer la carrega \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_acc153c99cc9488fbad55ecf8b9c9dc48}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_acc153c99cc9488fbad55ecf8b9c9dc48}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!stop@{stop}}
+\index{stop@{stop}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{stop()}{stop()}}
+{\footnotesize\ttfamily abstract void cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+stop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1loaders_1_1_j_s_o_n_kafka_loader_ab870cf6d6fe927f3633f7d909a467e76}{cat.\+santfeliu.\+api.\+loaders.\+JSONKafka\+Loader}}, and \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1loaders_1_1_geoserver_loader_ab07e37f525d0b822dc7811d7d08e77c3}{cat.\+santfeliu.\+api.\+loaders.\+Geoserver\+Loader}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a92c08fce83d0fb3420d648278bdc2327}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a92c08fce83d0fb3420d648278bdc2327}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!all@{all}}
+\index{all@{all}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{all}{all}}
+{\footnotesize\ttfamily Json\+Array cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+all = null\hspace{0.3cm}{\ttfamily [protected]}}
+
+Tots els elements sense filtra \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a2d9f8bef23021b5ffd5c1c40c9e6b980}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a2d9f8bef23021b5ffd5c1c40c9e6b980}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!allGUIDs@{allGUIDs}}
+\index{allGUIDs@{allGUIDs}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{allGUIDs}{allGUIDs}}
+{\footnotesize\ttfamily List$<$String$>$ cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+all\+GUIDs = new Array\+List$<$String$>$()\hspace{0.3cm}{\ttfamily [protected]}}
+
+Correspon a tots els GUIDs de la array all \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a376105e6d51f4ed6b09bf95d730b4d1a}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a376105e6d51f4ed6b09bf95d730b4d1a}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!checkedDeletions@{checkedDeletions}}
+\index{checkedDeletions@{checkedDeletions}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{checkedDeletions}{checkedDeletions}}
+{\footnotesize\ttfamily boolean cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+checked\+Deletions = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+Indica si s\textquotesingle{}han comprovat eliminacions \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a6e1a99bf27415b1b4951c429e7bb373d}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a6e1a99bf27415b1b4951c429e7bb373d}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!connectorStatsRepo@{connectorStatsRepo}}
+\index{connectorStatsRepo@{connectorStatsRepo}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{connectorStatsRepo}{connectorStatsRepo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1repo_1_1_connector_stats_repo}{Connector\+Stats\+Repo}} cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+connector\+Stats\+Repo\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade4bbf672bbe81f964fae01d0e9ac48a}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade4bbf672bbe81f964fae01d0e9ac48a}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!currentIndex@{currentIndex}}
+\index{currentIndex@{currentIndex}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{currentIndex}{currentIndex}}
+{\footnotesize\ttfamily int cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+current\+Index = -\/1\hspace{0.3cm}{\ttfamily [protected]}}
+
+Index de objecte actual per recuperar via load \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aa6e346114bf99f8d2d29cf9fb8556309}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_aa6e346114bf99f8d2d29cf9fb8556309}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!deletionIndex@{deletionIndex}}
+\index{deletionIndex@{deletionIndex}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{deletionIndex}{deletionIndex}}
+{\footnotesize\ttfamily int cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+deletion\+Index = -\/1\hspace{0.3cm}{\ttfamily [protected]}}
+
+Index de eliminacio actual per recupera via load \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade2bfd6baaf7d4e0c6492e82bd830ea4}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ade2bfd6baaf7d4e0c6492e82bd830ea4}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!deletions@{deletions}}
+\index{deletions@{deletions}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{deletions}{deletions}}
+{\footnotesize\ttfamily List$<$Json\+Object$>$ cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+deletions = new Array\+List$<$$>$()\hspace{0.3cm}{\ttfamily [protected]}}
+
+Correspon a tots els objects a eliminar Es pot omplir amb mètode check\+Deletions \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a1a1fe4e1ae5f3d0f22d458a39c2fd82b}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a1a1fe4e1ae5f3d0f22d458a39c2fd82b}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!ends@{ends}}
+\index{ends@{ends}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{ends}{ends}}
+{\footnotesize\ttfamily boolean cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+ends\hspace{0.3cm}{\ttfamily [protected]}}
+
+Indica si loader te fin \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a9b0ac29244feb0d2185e633581b9cb20}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a9b0ac29244feb0d2185e633581b9cb20}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!globalIdRepo@{globalIdRepo}}
+\index{globalIdRepo@{globalIdRepo}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{globalIdRepo}{globalIdRepo}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfacecat_1_1santfeliu_1_1api_1_1repo_1_1_global_id_repo}{Global\+Id\+Repo}} cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+global\+Id\+Repo\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ada4d504aaebdfd29c526d3e599b81ef0}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ada4d504aaebdfd29c526d3e599b81ef0}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!gson@{gson}}
+\index{gson@{gson}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{gson}{gson}}
+{\footnotesize\ttfamily final Gson cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+gson = new Gson()\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ae3535e9ce89dfdab019cee2f45af098e}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_ae3535e9ce89dfdab019cee2f45af098e}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!guidsExisting@{guidsExisting}}
+\index{guidsExisting@{guidsExisting}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{guidsExisting}{guidsExisting}}
+{\footnotesize\ttfamily Map$<$String, String$>$ cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+guids\+Existing = new Hash\+Map$<$$>$()\hspace{0.3cm}{\ttfamily [protected]}}
+
+Correspon a tots els GUIDs de la base de dades \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a858ff0d9b3daa18e53dc69d3450d67a1}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a858ff0d9b3daa18e53dc69d3450d67a1}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!instance@{instance}}
+\index{instance@{instance}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{instance}{instance}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_instance}{Connector\+Instance}} cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+instance\hspace{0.3cm}{\ttfamily [protected]}}
+
+Instancia de connector corresponent a la carrega \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a7b1b2d73c096a3ae2302db24f9023c4b}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a7b1b2d73c096a3ae2302db24f9023c4b}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!loaded@{loaded}}
+\index{loaded@{loaded}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{loaded}{loaded}}
+{\footnotesize\ttfamily Json\+Array cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+loaded = null\hspace{0.3cm}{\ttfamily [protected]}}
+
+Elements carregats filtrats a retornar per load \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_abf46478d82cefc49846086ebbf5e06c2}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_abf46478d82cefc49846086ebbf5e06c2}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!loadTimeout@{loadTimeout}}
+\index{loadTimeout@{loadTimeout}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{loadTimeout}{loadTimeout}}
+{\footnotesize\ttfamily long cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+load\+Timeout\hspace{0.3cm}{\ttfamily [protected]}}
+
+Timeout per el mètode load \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a926cae0e60169d9204b01658d0c86a45}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a926cae0e60169d9204b01658d0c86a45}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!page@{page}}
+\index{page@{page}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{page}{page}}
+{\footnotesize\ttfamily Page$<$\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_execution_stats_db}{Connector\+Execution\+Stats\+Db}}$>$ cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+page = null\hspace{0.3cm}{\ttfamily [protected]}}
+
+Conté la última execució Es utilitza per filtra dades \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a632fe28439846d9aa444e35fe174c825}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a632fe28439846d9aa444e35fe174c825}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!reset@{reset}}
+\index{reset@{reset}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{reset}{reset}}
+{\footnotesize\ttfamily boolean cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+reset = true\hspace{0.3cm}{\ttfamily [protected]}}
+
+Indica si cal reiniciar loader \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40bbd9cb5a0269420519a611c313dd46}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a40bbd9cb5a0269420519a611c313dd46}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!sleepTime@{sleepTime}}
+\index{sleepTime@{sleepTime}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{sleepTime}{sleepTime}}
+{\footnotesize\ttfamily long cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+sleep\+Time\hspace{0.3cm}{\ttfamily [protected]}}
+
+Indica temps que cal dormir-\/lo en cas de que no tingui fin \mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a5e7974fbae2862202b50895693b7d2ae}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_loader_a5e7974fbae2862202b50895693b7d2ae}} 
+\index{cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}!treatedGUIDs@{treatedGUIDs}}
+\index{treatedGUIDs@{treatedGUIDs}!cat.santfeliu.api.components.ConnectorLoader@{cat.santfeliu.api.components.ConnectorLoader}}
+\doxysubsubsection{\texorpdfstring{treatedGUIDs}{treatedGUIDs}}
+{\footnotesize\ttfamily List$<$String$>$ cat.\+santfeliu.\+api.\+components.\+Connector\+Loader.\+treated\+GUIDs = new Array\+List$<$String$>$()\hspace{0.3cm}{\ttfamily [protected]}}
+
+Correspon a tots GUIDs que han passat per load 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/workspace/inventari/src/main/java/cat/santfeliu/api/components/\mbox{\hyperlink{_connector_loader_8java}{Connector\+Loader.\+java}}\end{DoxyCompactItemize}

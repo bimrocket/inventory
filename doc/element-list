@@ -1,0 +1,17 @@
+cat.santfeliu.api
+cat.santfeliu.api.annotations
+cat.santfeliu.api.api
+cat.santfeliu.api.beans
+cat.santfeliu.api.components
+cat.santfeliu.api.config
+cat.santfeliu.api.controllers
+cat.santfeliu.api.dto
+cat.santfeliu.api.enumerator
+cat.santfeliu.api.exceptions
+cat.santfeliu.api.loaders
+cat.santfeliu.api.model
+cat.santfeliu.api.repo
+cat.santfeliu.api.senders
+cat.santfeliu.api.service
+cat.santfeliu.api.transformers
+cat.santfeliu.api.utils

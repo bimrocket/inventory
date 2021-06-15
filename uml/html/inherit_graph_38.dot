@@ -1,0 +1,26 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node75 [label="Serializable",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node75 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="cat.santfeliu.api.model.\lConnectorComponentConfigDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_config_db.html",tooltip=" "];
+  Node75 -> Node77 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="cat.santfeliu.api.model.\lConnectorComponentConfigDbId",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_config_db_id.html",tooltip=" "];
+  Node75 -> Node78 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node78 [label="cat.santfeliu.api.model.\lConnectorComponentDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_db.html",tooltip=" "];
+  Node75 -> Node79 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="cat.santfeliu.api.model.\lConnectorComponentTypeDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_component_type_db.html",tooltip=" "];
+  Node75 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="cat.santfeliu.api.model.\lConnectorDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_db.html",tooltip=" "];
+  Node75 -> Node81 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="cat.santfeliu.api.model.\lConnectorExecutionStatsDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_execution_stats_db.html",tooltip=" "];
+  Node75 -> Node82 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="cat.santfeliu.api.model.\lConnectorStatusDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_connector_status_db.html",tooltip=" "];
+  Node75 -> Node83 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="cat.santfeliu.api.model.\lGlobalIdDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_global_id_db.html",tooltip=" "];
+  Node75 -> Node84 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="cat.santfeliu.api.model.\lGlobalIdDbId",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1model_1_1_global_id_db_id.html",tooltip=" "];
+}

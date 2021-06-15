@@ -1,0 +1,12 @@
+digraph "cat.santfeliu.api.config.KafkaConfiguration.kafkaTemplate"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="cat.santfeliu.api.config.\lKafkaConfiguration.kafkaTemplate",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="cat.santfeliu.api.config.\lKafkaConfiguration.producerFactory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1config_1_1_kafka_configuration.html#a839f926c4e0798edff79fc9e8a9984d2",tooltip=" "];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="cat.santfeliu.api.config.\lKafkaConfiguration.producerConfigs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1config_1_1_kafka_configuration.html#af6f21e96c8a332323d4c77f5b619c611",tooltip=" "];
+}

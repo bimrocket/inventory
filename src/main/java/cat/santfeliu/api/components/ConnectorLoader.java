@@ -33,40 +33,92 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	@Autowired
 	protected ConnectorStatsRepo connectorStatsRepo;
 
+	/**
+	 * Indica si loader te fin
+	 */
 	protected boolean ends;
 
+	/**
+	 * Indica si cal reiniciar loader
+	 */
 	protected boolean reset = true;
 
+	/**
+	 * Indica temps que cal dormir-lo en cas de que no tingui fin
+	 */
 	protected long sleepTime;
 
+	/**
+	 * Timeout per el mètode load
+	 */
 	protected long loadTimeout;
 
+	/**
+	 * Instancia de connector corresponent a la carrega
+	 */
 	protected ConnectorInstance instance;
-
+	
+	/**
+	 * Elements carregats filtrats a retornar per load
+	 */
 	protected JsonArray loaded = null;
 
+	/**
+	 * Tots els elements sense filtra
+	 */
 	protected JsonArray all = null;
 
 	protected final Gson gson = new Gson();
 	
+	/**
+	 * Index de objecte actual per recuperar via load
+	 */
 	protected int currentIndex = -1;
 
+	/**
+	 * Index de eliminacio actual per recupera via load
+	 */
 	protected int deletionIndex = -1;
 
+	/**
+	 * Indica si s'han comprovat eliminacions
+	 */
 	protected boolean checkedDeletions = false;
 
+	/**
+	 * Correspon a tots els GUIDs de la array all
+	 */
 	protected List<String> allGUIDs = new ArrayList<String>();
 
-	protected Page<ConnectorExecutionStatsDb> page = null;
-
+	/**
+	 * Correspon a tots els GUIDs de la base de dades
+	 */
 	protected Map<String, String> guidsExisting = new HashMap<>();
 
+	/**
+	 * Correspon a tots GUIDs que han passat per load
+	 */
 	protected List<String> treatedGUIDs = new ArrayList<String>();
 
+	/**
+	 * Correspon a tots els objects a eliminar
+	 * Es pot omplir amb mètode checkDeletions
+	 */
 	protected List<JsonObject> deletions = new ArrayList<>();
+
+	/**
+	 * Conté la última execució 
+	 * Es utilitza per filtra dades
+	 */
+	protected Page<ConnectorExecutionStatsDb> page = null;
 
 	public abstract JsonObject load(long timeout);
 
+	/**
+	 * Inicialitza connector loader i recupera variables de config 
+	 * necessaries per la seva execució
+	 * @param instance
+	 */
 	public void initLoader(ConnectorInstance instance) {
 		this.instance = instance;
 		this.ends = Boolean.valueOf(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_HAS_END.getKey()));
@@ -77,6 +129,10 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 		this.resetVars();
 	}
 
+	/**
+	 * Reinicia variables de loader
+	 * Es utilitza si es vol a tornar a fer la carrega
+	 */
 	protected void resetVars() {
 		guidsExisting = new HashMap<>();
 		List<GlobalIdDb> listGuids = globalIdRepo.findByInventory(instance.getConnector().getInventoryName());
@@ -96,6 +152,10 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 		all = null;
 	}
 
+	/**
+	 * Retorna si el loader t
+	 * @return
+	 */
 	public boolean hasEnd() {
 		return ends;
 	}

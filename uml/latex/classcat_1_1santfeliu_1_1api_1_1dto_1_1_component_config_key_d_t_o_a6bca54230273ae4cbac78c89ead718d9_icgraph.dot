@@ -1,0 +1,10 @@
+digraph "cat.santfeliu.api.dto.ComponentConfigKeyDTO.setDescription"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="cat.santfeliu.api.dto.Component\lConfigKeyDTO.setDescription",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="cat.santfeliu.api.service.\lMapperService.componentDbToDTO",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classcat_1_1santfeliu_1_1api_1_1service_1_1_mapper_service.html#acd29cbf661870631823c369e8d11c981",tooltip=" "];
+}

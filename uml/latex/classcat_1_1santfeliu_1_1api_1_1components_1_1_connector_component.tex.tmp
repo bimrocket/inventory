@@ -1,0 +1,59 @@
+\hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component}{}\doxysection{cat.\+santfeliu.\+api.\+components.\+Connector\+Component Class Reference}
+\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component}\index{cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}}
+
+
+Inheritance diagram for cat.\+santfeliu.\+api.\+components.\+Connector\+Component\+:
+% FIG 0
+
+
+Collaboration diagram for cat.\+santfeliu.\+api.\+components.\+Connector\+Component\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aa461fb98f4991d8e6b8ae00f6dd5c240}{init}} (String \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a9a5fd6538443a3aa2e246dbdcd3011c3}{inventory\+Name}}, \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}{Config\+Container}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a979a66d0a5a08a2462ed52506fc0be1e}{params}})
+\item 
+void \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aaaa71695cbeee6b4eb98f511312f70e4}{destroy}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a9a5fd6538443a3aa2e246dbdcd3011c3}{inventory\+Name}}
+\item 
+\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}{Config\+Container}} \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a979a66d0a5a08a2462ed52506fc0be1e}{params}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aaaa71695cbeee6b4eb98f511312f70e4}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aaaa71695cbeee6b4eb98f511312f70e4}} 
+\index{cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}!destroy@{destroy}}
+\index{destroy@{destroy}!cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}}
+\doxysubsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+components.\+Connector\+Component.\+destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aa461fb98f4991d8e6b8ae00f6dd5c240}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_aa461fb98f4991d8e6b8ae00f6dd5c240}} 
+\index{cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}!init@{init}}
+\index{init@{init}!cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void cat.\+santfeliu.\+api.\+components.\+Connector\+Component.\+init (\begin{DoxyParamCaption}\item[{String}]{inventory\+Name,  }\item[{\mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}{Config\+Container}}}]{params }\end{DoxyParamCaption})}
+
+Init de componente de connector 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a9a5fd6538443a3aa2e246dbdcd3011c3}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a9a5fd6538443a3aa2e246dbdcd3011c3}} 
+\index{cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}!inventoryName@{inventoryName}}
+\index{inventoryName@{inventoryName}!cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}}
+\doxysubsubsection{\texorpdfstring{inventoryName}{inventoryName}}
+{\footnotesize\ttfamily String cat.\+santfeliu.\+api.\+components.\+Connector\+Component.\+inventory\+Name\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a979a66d0a5a08a2462ed52506fc0be1e}\label{classcat_1_1santfeliu_1_1api_1_1components_1_1_connector_component_a979a66d0a5a08a2462ed52506fc0be1e}} 
+\index{cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}!params@{params}}
+\index{params@{params}!cat.santfeliu.api.components.ConnectorComponent@{cat.santfeliu.api.components.ConnectorComponent}}
+\doxysubsubsection{\texorpdfstring{params}{params}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcat_1_1santfeliu_1_1api_1_1utils_1_1_config_container}{Config\+Container}} cat.\+santfeliu.\+api.\+components.\+Connector\+Component.\+params\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/workspace/inventari/src/main/java/cat/santfeliu/api/components/\mbox{\hyperlink{_connector_component_8java}{Connector\+Component.\+java}}\end{DoxyCompactItemize}
