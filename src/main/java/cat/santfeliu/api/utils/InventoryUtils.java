@@ -11,8 +11,7 @@ public class InventoryUtils {
 	private PythonInterpreter pythonInterpreter = new PythonInterpreter();
 
 	public String getGuid() {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("python/guid.py");
+		InputStream is = InventoryUtils.class.getResourceAsStream("python/guid.py");
 		pythonInterpreter.execfile(is);
 		pythonInterpreter.exec("x = new()");
 		return pythonInterpreter.get("x").asString();
