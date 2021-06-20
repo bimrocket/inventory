@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class InventoryUtils {
 
-	private PythonInterpreter pythonInterpreter = new PythonInterpreter();
-
 	public String getGuid() {
+		PythonInterpreter pythonInterpreter = new PythonInterpreter();
 		InputStream is = InventoryUtils.class.getResourceAsStream("python/guid.py");
 		pythonInterpreter.execfile(is);
 		pythonInterpreter.exec("x = new()");

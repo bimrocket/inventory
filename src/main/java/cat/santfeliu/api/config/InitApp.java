@@ -76,23 +76,23 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         	statusRepo.save(status);
         }
 //        
-//		GemwebLoader loader = new GemwebLoader();
-//		ConfigContainer params = new ConfigContainer();
-//		autowireCapableBeanFactory.autowireBean(params);
-//		params.init("CentresProducer", ComponentTypeEnum.LOADER.getName());
-//		autowireCapableBeanFactory.autowireBean(loader);
-//		loader.init("GemwebCentres", params);
-//		ConnectorDb connector = new ConnectorDb();
-//		connector.setInventoryName("GemwebCentres");
-//		
-//		ConnectorInstance instance = new ConnectorInstance(connector, null, null, null);
-//		
-//		loader.initLoader(instance);
-//		log.info(loader.getAccessToken());
-//		JsonObject obj = loader.load(60000);
-//		while (obj != null) {
-//			log.info(obj.toString());
-//			obj = loader.load(60000); 
-//		}
+		GemwebLoader loader = new GemwebLoader();
+		ConfigContainer params = new ConfigContainer();
+		autowireCapableBeanFactory.autowireBean(params);
+		params.init("CentresProducer", ComponentTypeEnum.LOADER.getName());
+		autowireCapableBeanFactory.autowireBean(loader);
+		loader.init("GemwebCentres", params);
+		ConnectorDb connector = new ConnectorDb();
+		connector.setInventoryName("GemwebCentres");
+		
+		ConnectorInstance instance = new ConnectorInstance(connector, null, null, null);
+		
+		loader.initLoader(instance);
+		log.info(loader.getAccessToken());
+		JsonObject obj = loader.load(60000);
+		while (obj != null) {
+			log.info(obj.toString());
+			obj = loader.load(60000); 
+		}
     }
 }
