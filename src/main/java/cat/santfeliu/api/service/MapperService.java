@@ -17,6 +17,7 @@ import cat.santfeliu.api.dto.ConnectorParamDTO;
 import cat.santfeliu.api.dto.ConnectorStatsDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
 import cat.santfeliu.api.enumerator.ComponentEnum;
+import cat.santfeliu.api.enumerator.GemWebLoaderConfigKeys;
 import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
 import cat.santfeliu.api.enumerator.GeoserverSenderConfigKeys;
 import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
@@ -76,6 +77,22 @@ public class MapperService {
 			
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.JSON_KAFKA_LOADER.getName())) {
 			for (JSONKafkaLoaderConfigKeys key : JSONKafkaLoaderConfigKeys	.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+			
+			for (GlobalLoaderConfigKeys key : GlobalLoaderConfigKeys.values()) {
+				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
+				configDto.setConfigKey(key.getKey());
+				configDto.setRequired(key.isRequired());
+				configDto.setDescription(key.getDescription());
+				dto.getComponentConfigKeys().add(configDto);
+			}
+		} else if (dto.getConnectorComponentName().equals(ComponentEnum.GEMWEB_LOADER.getName())) {
+			for (GemWebLoaderConfigKeys key : GemWebLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
 				configDto.setRequired(key.isRequired());

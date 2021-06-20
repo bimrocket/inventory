@@ -177,6 +177,7 @@ public class GeoserverSender extends ConnectorSender {
 					log.error("send@GeoserverSender - couldn't do update transaction, response from geoserver :: {}, xml sent :: {}",bodyResp, xml);
 				}
 			} else if (delete) {
+				globalIdRepo.delete(globalIdDbOpt.get());
 				Matcher m = Pattern.compile("<wfs:totalDeleted>1</wfs:totalDeleted>").matcher(bodyResp);
 				if (!m.find()) {
 					log.error("send@GeoserverSender - couldn't do delete transaction, response from geoserver :: {}, xml sent :: {}",bodyResp, xml);

@@ -45,7 +45,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 				if (globalIdModel.isPresent()) {
 					modelGlobalId = globalIdModel.get().getGlobalId();
 				} else {
-					modelGlobalId = InventoryUtils.getGuid();
+					modelGlobalId = invUtils.getGuid();
 					GlobalIdDb guid = new GlobalIdDb();
 					guid.setGlobalId(modelGlobalId);
 					guid.setInventoryName(modelInventoryName);

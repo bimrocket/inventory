@@ -1,7 +1,6 @@
 package cat.santfeliu.api.components;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.GlobalIdDb;
 import cat.santfeliu.api.repo.ConnectorStatsRepo;
 import cat.santfeliu.api.repo.GlobalIdRepo;
+import cat.santfeliu.api.utils.InventoryUtils;
 
 public abstract class ConnectorLoader extends ConnectorComponent {
 
@@ -32,6 +32,9 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 
 	@Autowired
 	protected ConnectorStatsRepo connectorStatsRepo;
+	
+	@Autowired
+	protected InventoryUtils invUtils;
 
 	/**
 	 * Indica si loader te fin
@@ -150,6 +153,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 		reset = true;
 		loaded = null;
 		all = null;
+		checkedDeletions = false;
 	}
 
 	/**
@@ -180,7 +184,10 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 		// Tractament globalIds no existents ja
 		if (!this.allGUIDs.isEmpty()) {
 			for (int i = 0; i < listGUIDs.size(); i++) {
-				boolean found = Collections.binarySearch(this.allGUIDs, listGUIDs.get(i).getGlobalId()) > 0;
+				boolean found = false;
+				for (int j=0; j < this.allGUIDs.size() && !found; j++) {
+					found = this.allGUIDs.get(j).equals(listGUIDs.get(i).getGlobalId());
+				}
 				if (!found) {
 
 					// No s'ha trobat GUID cal enviar global id amb element null

@@ -7,7 +7,8 @@ public enum ComponentEnum {
 	RHINO_TRANSFORMER("RhinoTransformer", ComponentTypeEnum.TRANSFORMER.getName()),
 	GEOSERVER_SENDER("GeoserverSender", ComponentTypeEnum.SENDER.getName()),
 	JSON_KAFKA_SENDER("JSONKafkaSender", ComponentTypeEnum.SENDER.getName()),
-	LOG_SENDER("GeoserverSender", ComponentTypeEnum.SENDER.getName());
+	LOG_SENDER("GeoserverSender", ComponentTypeEnum.SENDER.getName()),
+	GEMWEB_LOADER("GemwebLoader", ComponentTypeEnum.LOADER.getName());
 	private String name;
 	private String type;
 	

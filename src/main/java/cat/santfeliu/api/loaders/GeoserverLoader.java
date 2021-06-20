@@ -216,7 +216,7 @@ public class GeoserverLoader extends ConnectorLoader {
 		String hasGuid = this.guidsExisting.get(localId);
 		log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId, this.guidsExisting.size());
 		if (hasGuid == null) {
-			globalId = InventoryUtils.getGuid();
+			globalId = invUtils.getGuid();
 			GlobalIdDb guidDb = new GlobalIdDb();
 			guidDb.setGlobalId(globalId);
 			guidDb.setInventoryName(this.inventoryName);
