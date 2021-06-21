@@ -165,7 +165,22 @@ public class GeoserverLoader extends ConnectorLoader {
 			Date updateDate = null;
 			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
 			if (this.page.getContent().isEmpty() || filterField == null) {
+				for (JsonElement e : all) {
+					Pair<String, String> ids = getIds(e);
+					String localId = ids.getLeft();
+					String globalId = ids.getRight();
+					
+					this.guidsExisting.put(localId, globalId);
+					this.allGUIDs.add(globalId);
+				}
+				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
+				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
+				sorter.sort(arr);
+		        List<String> list = new ArrayList<>();
+		        Collections.addAll(list, arr);
+		        this.allGUIDs = list;
 				this.loaded = all;
+				
 			} else {
 				updateDate = this.page.getContent().get(0).getExecutionStartDate();
 				SimpleDateFormat sdf = new SimpleDateFormat(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));

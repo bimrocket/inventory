@@ -89,7 +89,11 @@ public class GeoserverSender extends ConnectorSender {
 					}
 				} else {
 					dir.add(key);
-					dir.set(entry.getValue().getAsString());
+					if (entry.getValue().isJsonNull()) {
+						dir.set(null);
+					} else {
+						dir.set(entry.getValue().getAsString());
+					}
 					dir.up();
 				}
 			}
@@ -128,7 +132,11 @@ public class GeoserverSender extends ConnectorSender {
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
-					dir.set(entry.getValue().getAsString());
+					if (entry.getValue().isJsonNull()) {
+						dir.set(null);
+					} else {
+						dir.set(entry.getValue().getAsString());
+					}
 					dir.up();
 				}
 				dir.up();
