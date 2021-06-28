@@ -65,7 +65,7 @@ public class ConnectorManagerService {
 	private GlobalIdRepo globalIdRepo;
 
 	public ConnectorStatusDTO startConnector(@NotNull @Valid String connectorName) {
-		// Fer comprovacions en bd
+		// Make checks in db
 		Optional<ConnectorDb> conDb = conRepo.findById(connectorName);
 		if (conDb.isEmpty()) {
 			String error = String.format("trying to start non existing connector '%s'", connectorName);
@@ -101,6 +101,7 @@ public class ConnectorManagerService {
 		stats = conStatsRepo.save(stats);
 		instance.setConnectorStats(stats);
 		conService.runConnector(instance);
+		log.debug("startConnector@ConnectorManagerService -  initialization of connector {}", connectorName);
 		return mapper.statusDbToDTO(status);
 	}
 
@@ -120,7 +121,8 @@ public class ConnectorManagerService {
 		ConnectorRunnerService.instances.get(connectorName).setEnd(true);
 		status.setConnectorEndDate(Calendar.getInstance().getTime());
 		status.setConnectorStatus("offline");
-		status = conStatusRepo.save(status);		
+		status = conStatusRepo.save(status);
+		log.debug("stopConnector@ConnectorManagerService - stop connector {}", connectorName);
 		return mapper.statusDbToDTO(status);
 	}
 
@@ -132,18 +134,19 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, error, "CONNECTOR STATUS NOT FOUND");
 		}
 		ConnectorStatusDb status = conStatusDb.get();
+		log.debug("connectorStatusDTO@ConnectorManagerService - get status of connector {}", connectorName);
 		return mapper.statusDbToDTO(status);
 	}
 
 	/***
-	 * Mètode principal que inicia components (loader, transformer, sender)
-	 * amb la seva classe corresponent definida en model de base de dades equivalent al Connector,
-	 * A part d'iniciar components també li passa els seus configs (ConfigContainer) que
-	 * es carreguen de bd i guarden en un Map.
-	 * Si el ComponentLoader, etc..Contenen un objecte @Autowired també
-	 * aquí s'assigna el Bean del contexte Spring
-	 * @param connector Model de base de dades
-	 * @return Instància de connector preparat per córrer amb runConnector de {ConnectorRunnerService}
+	 * Main method that starts components (loader, transformer, sender)
+	 * with its corresponding class defined in database model equivalent to the Connector,
+	 * Aside from starting components you also get your configs (ConfigContainer) that
+	 * they are loaded from db and saved on a Map.
+	 * If the ComponentLoader, etc..They contain an @Autowired object as well
+	 * here the Spring context Bean is assigned
+	 * @param connector Database model
+	 * @return Instance connector ready to run with runConnector from {ConnectorRunnerService}
 	 */
 	private ConnectorInstance setupConnector(ConnectorDb connector) {
 		// --------------------------- Setting up classes
@@ -156,6 +159,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT LOADER NOT FOUND");
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - check if loader component of connector {} exists", connector.getConnectorName());
 		// Creating new instance of loader (equals to new XXXLoader())
 		String loaderClassName = loaderComponentDb.get().getConnectorComponentClass();
 		ConnectorLoader loader = null;
@@ -173,6 +177,7 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - create new instance of loader component of connector {}", connector.getConnectorName());
 		// Checking if transformer component exists in database and recovers class package path
 		Optional<ConnectorComponentDb> transformerComponentDb = conCompRepo
 				.findById(connector.getConnectorTransformer());
@@ -184,6 +189,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT TRANSFORMER NOT FOUND");
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - check if transformer component of connector {} exists", connector.getConnectorName());
 		// Creating new instance of transformer (equals to new XXXTransfomer())
 		String transformerClassName = transformerComponentDb.get().getConnectorComponentClass();
 		ConnectorTransformer transformer = null;
@@ -201,6 +207,7 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - create new instance of transformer component of connector {}", connector.getConnectorName());
 		// Checking if sender component exists in database and recovers class package path
 		Optional<ConnectorComponentDb> senderCompDb = conCompRepo.findById(connector.getConnectorSender());
 		if (senderCompDb.isEmpty()) {
@@ -210,6 +217,7 @@ public class ConnectorManagerService {
 					"CONNECTOR COMPONENT SENDER NOT FOUND");
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - check if sender component of connector {} exists", connector.getConnectorName());
 		// Creating new instance of sender (equals to new XXXSender())
 		String senderClassName = senderCompDb.get().getConnectorComponentClass();
 		ConnectorSender sender = null;
@@ -227,32 +235,36 @@ public class ConnectorManagerService {
 			throw new ApiErrorException(HttpStatus.BAD_REQUEST, error, error);
 
 		}
+		log.debug("setupConnector@ConnectorManagerService - create new instance of sender component of connector {}", connector.getConnectorName());
 		// Invoked init of component passing inventoryName and ConfigContainer
 		loader.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.LOADER));
 		transformer.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.TRANSFORMER));
 		sender.init(connector.getInventoryName(), getParamsForComponent(connector, ComponentTypeEnum.SENDER));
+		log.debug("setupConnector@ConnectorManagerService - initialization of components of connector {}", connector.getConnectorName());
 		
 		// Autowires @Autowired objects of components
 		autowireCapableBeanFactory.autowireBean(loader);
 		autowireCapableBeanFactory.autowireBean(transformer);
 		autowireCapableBeanFactory.autowireBean(sender);
+		log.debug("setupConnector@ConnectorManagerService - autowire object of components of connector {}", connector.getConnectorName());
 		// Returns instance which contains connector,loader, transformer and sender
 		// ready to run
 		return new ConnectorInstance(connector, loader, transformer, sender);
 	}
 
 	/**
-	 * Amb model de base de dades del connector i tipus de component indicat per enum ComponentTypeEnum (loader, transformer, sender)
-	 * retorna el ConfigContainer.
-	 * @param connector Model de connector
-	 * @param componentType Enum indicat quin tipus de component és
-	 * @return ConfigContainer conté tots els params de base de dades en un Map
-	 * i mètodes com getParamValue.
+	 * With connector database model and component type indicated by enum ComponentTypeEnum (loader, transformer, sender)
+	 * returns the ConfigContainer.
+	 * @param connector Connector model
+	 * @param componentType Enum indicated what type of component it is
+	 * @return ConfigContainer contains all database params in a Map
+	 * and methods like getParamValue.
 	 */
 	private ConfigContainer getParamsForComponent(ConnectorDb connector, ComponentTypeEnum componentType) {
 		ConfigContainer params = new ConfigContainer();
 		autowireCapableBeanFactory.autowireBean(params);
 		params.init(connector.getConnectorName(), componentType.getName());
+		log.debug("getParamsForComponent@ConnectorManagerService - get params of connector {} and component type {}",connector.getConnectorName(),componentType.getName());
 		return params;
 	}
 
@@ -260,6 +272,7 @@ public class ConnectorManagerService {
 		Page<ConnectorExecutionStatsDb> statsDb = conStatsRepo.findByExecutionConnectorNameOrderByExecutionStartDateDesc(connectorName, PageRequest.of(page, size));
 		PageStatsDTO pageDto = new PageStatsDTO();
 		pageDto = mapper.connectorStatsDbToDTO(statsDb);
+		log.debug("connectorStats@ConnectorManagerService - get stats of connector {} of page {} with size {}", connectorName, page, size);
 		return pageDto;
 		
 	}

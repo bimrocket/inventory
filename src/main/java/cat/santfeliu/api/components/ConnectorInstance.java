@@ -3,9 +3,12 @@ package cat.santfeliu.api.components;
 import cat.santfeliu.api.model.ConnectorDb;
 import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConnectorInstance {
 
+	private static final Logger log = LoggerFactory.getLogger(ConnectorInstance.class);
 	private ConnectorDb connector;
 	private ConnectorLoader connectorLoader;
 	private ConnectorTransformer connectorTransformer;
@@ -25,6 +28,7 @@ public class ConnectorInstance {
 		this.connectorLoader.destroy();
 		this.connectorSender.destroy();
 		this.connectorTransformer.destroy();
+		log.debug("destroy@ConnectorInstance - destroy of connector instance");
 	}
 
 	public ConnectorDb getConnector() {

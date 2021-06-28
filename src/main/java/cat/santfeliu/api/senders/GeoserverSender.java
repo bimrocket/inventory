@@ -44,6 +44,7 @@ public class GeoserverSender extends ConnectorSender {
 		boolean delete = false;
 		String localId = "";
 		String globalId = node.get("globalId").getAsString();
+		log.debug("send@GeoserverSender - find globalidDb by inventory {} and globalid {}", this.inventoryName, globalId);
 		Optional<GlobalIdDb> globalIdDbOpt = globalIdRepo.findByInventoryAndGlobalId(this.inventoryName, globalId);
 		if (globalIdDbOpt.isPresent()) {
 			if (node.get("element").isJsonNull()) {
@@ -61,12 +62,14 @@ public class GeoserverSender extends ConnectorSender {
 				.attr("xsi:schemaLocation", "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd");
 		if (insert) {
 			JsonObject elem = node.get("element").getAsJsonObject();
+			log.debug("send@GeoserverSender - add insert of geoserversender key {}", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
 			dir.add("Insert").add(this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
 			dir.attr("xmlns", "https://www.santfeliu.cat");
 			for (Map.Entry<String, JsonElement> entry : elem.entrySet()) {
 				String key = entry.getKey();
 				JsonElement elemElem = entry.getValue();
 				if (key.equals("geom")) {
+					log.debug("send@GeoserverSender - add geom key");
 					dir.add("geom");
 					JsonObject geomObj = elemElem.getAsJsonObject();
 					String type = geomObj.get("type").getAsString();
@@ -85,10 +88,12 @@ public class GeoserverSender extends ConnectorSender {
 						}
 						dir.set(pointCoordsStr);
 						dir.up().up().up();
+						log.debug("send@GeoserverSender - add point {} of geom key", pointCoordsStr);
 
 					}
 				} else {
 					dir.add(key);
+					log.debug("send@GeoserverSender - add not geom key {}", key);
 					if (entry.getValue().isJsonNull()) {
 						dir.set(null);
 					} else {
@@ -100,6 +105,7 @@ public class GeoserverSender extends ConnectorSender {
 
 		} else if (update) {
 			JsonObject elem = node.get("element").getAsJsonObject();
+			log.debug("send@GeoserverSender - add update of geoserversender key {}",this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()) );
 			dir.add("Update").attr("typeName", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			for (Map.Entry<String, JsonElement> entry : elem.entrySet()) { 
@@ -107,6 +113,7 @@ public class GeoserverSender extends ConnectorSender {
 				String key = entry.getKey();
 				JsonElement elemElem = entry.getValue();
 				if (key.equals("geom")) {
+					log.debug("send@GeoserverSender - set geom key");
 					dir.add("Name").set("geom").up();
 					JsonObject geomObj = elemElem.getAsJsonObject();
 					String type = geomObj.get("type").getAsString();
@@ -126,9 +133,11 @@ public class GeoserverSender extends ConnectorSender {
 						}
 						dir.set(pointCoordsStr);
 						dir.up().up().up();
+						log.debug("send@GeoserverSender - set point {} of geom key", pointCoordsStr);
 
 					}
 				} else {
+					log.debug("send@GeoserverSender - set not geom key {}", key);
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
@@ -144,6 +153,7 @@ public class GeoserverSender extends ConnectorSender {
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");			
 			dir.add("FeatureId").attr("fid",localId);
 		} else {
+			log.debug("send@GeoserverSender - add delete of geoserversender key {}",this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.add("Delete").attr("typeName", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");			

@@ -47,14 +47,17 @@ public class GeoserverLoader extends ConnectorLoader {
 		if (loaded == null && this.reset) {
 			this.checkedDeletions = false;
 			this.reset = false;
+			log.debug("load@GeoserverLoader - load response of timeout {}",timeout);
 			return loadResponse(timeout);
 		} else {
 			if (this.checkedDeletions) {
+				log.debug("load@GeoserverLoader - return checked deletion {}", this.getDeletion());
 				return this.getDeletion();
 			} else {
 				JsonObject obj = getObject();
 				if (obj == null) {
 					this.checkDeletions();
+					log.debug("load@GeoserverLoader - return not checked deletion {}", this.getDeletion());
 					return this.getDeletion();
 				}
 				return obj;
@@ -71,6 +74,7 @@ public class GeoserverLoader extends ConnectorLoader {
 		try {
 			// Try to recover object
 			toReturn = loaded.get(currentIndex);
+			log.debug("getObject@GeoserverLoader - get :: {}", toReturn.toString());
 		} catch (IndexOutOfBoundsException e) {
 			// End of objects if loop has no end we put loaded as null so next time (after
 			// sleep) it
@@ -79,6 +83,7 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 		if (toReturn != null) {
 			toReturn = transformForTransformer(toReturn.getAsJsonObject());
+			log.debug("getObject@GeoserverLoader - getAsJsonObject :: {}", toReturn.toString());
 			if (toReturn == null) {
 				// already treated get next recursively
 				toReturn = getObject();
@@ -104,6 +109,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			LoaderJsonObject loaderJson = new LoaderJsonObject();
 			loaderJson.setGlobalId(globalId);
 			loaderJson.setElement(object);
+			log.debug("transformForTransformer@GeoserverLoader - globalId {} not treated add to treatedGUIDs", globalId);
 			return gson.fromJson(gson.toJson(loaderJson), JsonObject.class);
 		} else {
 			return null;
@@ -112,6 +118,8 @@ public class GeoserverLoader extends ConnectorLoader {
 	}
 
 	private JsonObject loadResponse(long timeout) {
+
+		log.debug("loadResponse@GeoserverLoader - init with timeout '{}'",timeout);
 		RequestConfig.Builder requestBuilder = RequestConfig.custom();
 		requestBuilder.setConnectTimeout((int) timeout);
 		requestBuilder.setConnectionRequestTimeout((int) timeout);
@@ -144,6 +152,7 @@ public class GeoserverLoader extends ConnectorLoader {
 		JsonObject jsonResponse;
 
 		try {
+			log.debug("loadResponse@GeoserverLoader - execute httpClient built");
 			Gson gson = new Gson();
 			HttpResponse response = httpClient.execute(request.build());
 			String bodyResp = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
@@ -165,6 +174,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			Date updateDate = null;
 			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
 			if (this.page.getContent().isEmpty() || filterField == null) {
+				log.debug("loadResponse@GeoserverLoader - page is empty or filerField is null");
 				for (JsonElement e : all) {
 					Pair<String, String> ids = getIds(e);
 					String localId = ids.getLeft();
@@ -173,6 +183,7 @@ public class GeoserverLoader extends ConnectorLoader {
 					this.guidsExisting.put(localId, globalId);
 					this.allGUIDs.add(globalId);
 				}
+				log.debug("loadResponse@GeoserverLoader - sort all of global id");
 				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 				sorter.sort(arr);
@@ -184,7 +195,8 @@ public class GeoserverLoader extends ConnectorLoader {
 			} else {
 				updateDate = this.page.getContent().get(0).getExecutionStartDate();
 				SimpleDateFormat sdf = new SimpleDateFormat(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
-			
+
+				log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
 				for (JsonElement e : all) {
 					Pair<String, String> ids = getIds(e);
 					String localId = ids.getLeft();
@@ -205,6 +217,7 @@ public class GeoserverLoader extends ConnectorLoader {
 					}
 
 				}
+				log.debug("loadResponse@GeoserverLoader - sort all of global id");
 				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 				sorter.sort(arr);

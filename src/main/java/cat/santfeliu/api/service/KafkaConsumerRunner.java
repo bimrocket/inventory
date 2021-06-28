@@ -14,6 +14,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
@@ -23,6 +25,9 @@ import com.google.gson.JsonObject;
 import cat.santfeliu.api.components.ConnectorInstance;
 
 public class KafkaConsumerRunner implements Runnable {
+
+	private static final Logger log = LoggerFactory.getLogger(KafkaConsumerRunner.class);
+
 	private final Gson gson = new Gson();
 	private final KafkaConsumer<String, String> consumer;
 	private final String topic;
@@ -48,6 +53,7 @@ public class KafkaConsumerRunner implements Runnable {
 		props.put("key.deserializer", StringDeserializer.class.getName());
 		props.put("value.deserializer", StringDeserializer.class.getName());
 		this.consumer = new KafkaConsumer<>(props);
+		log.debug("KafkaConsumer@KafkaConsumerRunner - create new kafkaconsumerRunner of connector with name {} with groupId {} and topic {}", instance.getConnector().getConnectorName(),groupId,topic);
 	}
 
 	@Override
@@ -70,13 +76,16 @@ public class KafkaConsumerRunner implements Runnable {
 		} finally {
 			consumer.close();
 		}
+		log.debug("run@KafkaConsumerRunner - run kafkaconsumer");
 	}
 
 	public void shutdown() {
 		consumer.wakeup();
+		log.debug("shutdown@KafkaConsumerRunner - shutdown kafkaconsumer");
 	}
 
 	public JsonObject getRecord() {
+		log.debug("getRecord@KafkaConsumerRunner - get record");
 		String record = this.records.poll();
 		if (record == null) {
 			return null;

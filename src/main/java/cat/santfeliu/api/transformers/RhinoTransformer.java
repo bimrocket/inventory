@@ -79,6 +79,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 		} finally {
 			converter.end();
 		}
+		log.debug("transform@RhinoTransformer - transform jsonObject object {} to jsonNode", object.toString());
 		return new Gson().fromJson(output, JsonObject.class);
 	}
 

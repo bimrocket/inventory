@@ -48,7 +48,8 @@ public class ConnectorApiService {
 	
 	public List<ConnectorDTO> getAllConnectors() {
 		List<ConnectorDTO> toReturn = new ArrayList<ConnectorDTO>();
-		
+
+		log.debug("getAllConnectors@ConnectorAllConnectors - find all connectors");
 		Iterable<ConnectorDb> set = conRepo.findAll();
 		for (ConnectorDb con : set) {
 			toReturn.add(mapper.connectorDbToDTO(con));
@@ -77,6 +78,7 @@ public class ConnectorApiService {
 		status.setConnectorName(db.getConnectorName());
 		status.setConnectorStatus("offline");
 		conStatusRepo.save(status);
+		log.debug("createConnector@ConnectorApiService - create new connector {}", connector.getConnectorName());
 		return mapper.connectorDbToDTO(exists.get());
 		
 	}
@@ -99,6 +101,7 @@ public class ConnectorApiService {
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					String.format("cant find connector %s", connector.getConnectorName()), "error creating");
 		}
+		log.debug("updateConnector@ConnectorApiService - update connector {}",connector.getConnectorName());
 		return mapper.connectorDbToDTO(exists.get());
 	}
 
@@ -107,6 +110,7 @@ public class ConnectorApiService {
 		if (exists.isEmpty()) {
 			return null;
 		}
+		log.debug("getConnector@ConnectorApiService - get existing connector {}",connectorName);
 		return mapper.connectorDbToDTO(exists.get());
 	}
 
@@ -117,6 +121,7 @@ public class ConnectorApiService {
 			ConnectorComponentDTO dto = mapper.componentDbToDTO(compDb);
 			toReturn.add(dto);
 		}
+		log.debug("getAllComponents@ConnectorApiServcie - find all components");
 		return toReturn;
 	}
 

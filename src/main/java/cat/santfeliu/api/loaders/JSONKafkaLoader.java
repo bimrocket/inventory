@@ -1,12 +1,17 @@
 package cat.santfeliu.api.loaders;
 
+import cat.santfeliu.api.service.ConnectorRunnerService;
 import com.google.gson.JsonObject;
 
 import cat.santfeliu.api.components.ConnectorLoader;
 import cat.santfeliu.api.enumerator.JSONKafkaLoaderConfigKeys;
 import cat.santfeliu.api.service.KafkaConsumerRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSONKafkaLoader extends ConnectorLoader  {
+
+	private static final Logger log = LoggerFactory.getLogger(JSONKafkaLoader.class);
 
 	private KafkaConsumerRunner runner;
 	private Thread threatRunner;
@@ -19,6 +24,7 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 			threatRunner = new Thread(runner);
 			threatRunner.start();
 		};
+		log.debug("load@JSONKafkaLoader - load of kafka consumer runner with timeout {}", timeout);
 		return runner.getRecord();
 	} 
 
@@ -30,5 +36,6 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 
 		}			
 		instance.stop();
+		log.debug("stop@JSONKafkaLoader - stop of kafka consumer runner");
 	}
 }

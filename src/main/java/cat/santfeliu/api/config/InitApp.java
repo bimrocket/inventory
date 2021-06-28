@@ -25,7 +25,7 @@ import cat.santfeliu.api.utils.ConfigContainer;
 import cat.santfeliu.api.utils.InventoryUtils;
 
 /**
- * Component spring a executar quan app s'ha iniciat.
+ * Spring component to run when app has started.
  * @author kfiertek
  *
  */
@@ -62,7 +62,7 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     }
 
     /**
-     * Mètode cridat quan l'aplicació s'ha iniciat correctament.
+     * Method called when the application has started successfully.
      * @throws Exception 
      */
     public void init( ) throws Exception {

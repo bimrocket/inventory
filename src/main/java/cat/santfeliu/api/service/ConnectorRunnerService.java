@@ -47,12 +47,12 @@ public class ConnectorRunnerService {
 	
 	
 	/**
-	 * Bucle prinicipal de flux de dades
-	 * Serveix tan per llegir a kafka com escriure
-	 * S'ha de passar ConnectorInstance que ha sigut generat previament
-	 * per mètode setupConnector de ConnectorManagerService
-	 * Aquest mètode es asincron es a dir es genera un nou Thread
-	 * que s'encarrega de la execució del mètode.
+	 * Main data flow loop
+	 * It serves both to read kafka and to write
+	 * The previously generated ConnectorInstance must be passed
+	 * by ConnectorManagerService setupConnector method
+	 * This method is asynchronous, a new thread is generated
+	 * which is responsible for the execution of the method.
 	 * @param instance
 	 */
 	@Async
@@ -148,12 +148,16 @@ public class ConnectorRunnerService {
 		stats.setExecutionEndDate(Calendar.getInstance().getTime());
 		if (processedAllObjects) {
 			stats.setExecutionFinalState("finalized correctly due to end of objects");
+			log.debug("endRun@ConnectorRunnerService - connector with name {} finalized correctly due to end of objects", instance.getConnector().getConnectorName());
 		} else if (hasGlobalException) {
 			stats.setExecutionFinalState("stopped by global exception");
+			log.debug("endRun@ConnectorRunnerService - connector with name {} stopped by global exception", instance.getConnector().getConnectorName());
 		} else if (gracefullyStopped) {
 			stats.setExecutionFinalState("stopped by stop endpoint");
+			log.debug("endRun@ConnectorRunnerService - connector with name {} stopped by stop endpoint", instance.getConnector().getConnectorName());
 		} else {
 			stats.setExecutionFinalState("finalized correctly");
+			log.debug("endRun@ConnectorRunnerService - connector with name {} finalized correctly", instance.getConnector().getConnectorName());
 		}
 		connectorStatsRepo.save(stats);
 		instance.destroy();
@@ -163,12 +167,16 @@ public class ConnectorRunnerService {
 		ConnectorExecutionStatsDb stats = instance.getConnectorStats();
 		if (componentType == null) {
 			stats.addDeleted();
+			log.debug("updateStats@ConnectorRunnerService - connector with name {} stats deleted", instance.getConnector().getConnectorName());
 		} else if (componentType.getName().equals(ComponentTypeEnum.LOADER.getName())) {
 			stats.addLoaded();
+			log.debug("updateStats@ConnectorRunnerService - connector with name {} stats {} loaded", instance.getConnector().getConnectorName(),stats.toString());
 		} else if (componentType.getName().equals(ComponentTypeEnum.TRANSFORMER.getName())) {
 			stats.addTransformed();
+			log.debug("updateStats@ConnectorRunnerService - connector with name {} stats {} transformed", instance.getConnector().getConnectorName(), stats.toString());
 		} else if (componentType.getName().equals(ComponentTypeEnum.SENDER.getName())) {
 			stats.addSent();
+			log.debug("updateStats@ConnectorRunnerService - connector with name {} stats {} sent", instance.getConnector().getConnectorName(), stats.toString());
 		}
 	}
 }

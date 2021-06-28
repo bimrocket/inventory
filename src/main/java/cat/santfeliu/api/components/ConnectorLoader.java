@@ -37,92 +37,93 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	protected InventoryUtils invUtils;
 
 	/**
-	 * Indica si loader te fin
+	 * Indicate the loader has end
 	 */
 	protected boolean ends;
 
 	/**
-	 * Indica si cal reiniciar loader
+	 * Indicates whether to restart the charger
 	 */
 	protected boolean reset = true;
 
 	/**
-	 * Indica temps que cal dormir-lo en cas de que no tingui fin
+	 * It indicates time to sleep in case it has no end
 	 */
 	protected long sleepTime;
 
 	/**
-	 * Timeout per el mètode load
+	 * Timeout for the load method
 	 */
 	protected long loadTimeout;
 
 	/**
-	 * Instancia de connector corresponent a la carrega
+	 * Instance of connector corresponding to the load
 	 */
 	protected ConnectorInstance instance;
 	
 	/**
-	 * Elements carregats filtrats a retornar per load
+	 * Loaded items filtered to return by load
 	 */
 	protected JsonArray loaded = null;
 
 	/**
-	 * Tots els elements sense filtra
+	 * All items without filter
 	 */
 	protected JsonArray all = null;
 
 	protected final Gson gson = new Gson();
 	
 	/**
-	 * Index de objecte actual per recuperar via load
+	 * Current object index to retrieve via load
 	 */
 	protected int currentIndex = -1;
 
 	/**
-	 * Index de eliminacio actual per recupera via load
+	 * Current removal index to recover via load
 	 */
 	protected int deletionIndex = -1;
 
 	/**
-	 * Indica si s'han comprovat eliminacions
+	 * Indicates whether deletions have been checked
 	 */
 	protected boolean checkedDeletions = false;
 
 	/**
-	 * Correspon a tots els GUIDs de la array all
+	 * Corresponds to all GUIDs in the all array
 	 */
 	protected List<String> allGUIDs = new ArrayList<String>();
 
 	/**
-	 * Correspon a tots els GUIDs de la base de dades
+	 * Corresponds to all GUIDs in the database
 	 */
 	protected Map<String, String> guidsExisting = new HashMap<>();
 
 	/**
-	 * Correspon a tots GUIDs que han passat per load
+	 * Corresponds to all GUIDs that have gone through load
 	 */
 	protected List<String> treatedGUIDs = new ArrayList<String>();
 
 	/**
-	 * Correspon a tots els objects a eliminar
-	 * Es pot omplir amb mètode checkDeletions
+	 * Corresponds to all objects to be deleted
+	 * It can be filled with checkDeletions method
 	 */
 	protected List<JsonObject> deletions = new ArrayList<>();
 
 	/**
-	 * Conté la última execució 
-	 * Es utilitza per filtra dades
+	 * Contains the last run
+	 * It is used to filter data
 	 */
 	protected Page<ConnectorExecutionStatsDb> page = null;
 
 	public abstract JsonObject load(long timeout);
 
 	/**
-	 * Inicialitza connector loader i recupera variables de config 
-	 * necessaries per la seva execució
+	 * Initializes connector loader and retrieves config variables
+	 * necessary for its execution
 	 * @param instance
 	 */
 	public void initLoader(ConnectorInstance instance) {
+		logLoader.info("initLoader@ConnectorLoader - initialitzation of connector with name {}", instance.getConnector().getConnectorName());
 		this.instance = instance;
 		this.ends = Boolean.valueOf(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_HAS_END.getKey()));
 		this.sleepTime = Long
@@ -133,8 +134,8 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	}
 
 	/**
-	 * Reinicia variables de loader
-	 * Es utilitza si es vol a tornar a fer la carrega
+	 * Restart loader variables
+	 * Used if you want to reload
 	 */
 	protected void resetVars() {
 		guidsExisting = new HashMap<>();
@@ -157,7 +158,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	}
 
 	/**
-	 * Retorna si el loader t
+	 * Returns if the loader has
 	 * @return
 	 */
 	public boolean hasEnd() {
@@ -181,7 +182,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	public void checkDeletions() {
 		List<GlobalIdDb> listGUIDs = globalIdRepo.findByInventory(this.inventoryName);
 
-		// Tractament globalIds no existents ja
+		// GlobalIds treatmentIds no longer exist
 		if (!this.allGUIDs.isEmpty()) {
 			for (int i = 0; i < listGUIDs.size(); i++) {
 				boolean found = false;
@@ -190,12 +191,13 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 				}
 				if (!found) {
 
-					// No s'ha trobat GUID cal enviar global id amb element null
+					// GUID not found, global id must be sent with null element
 					LoaderJsonObject obj = new LoaderJsonObject();
 					obj.setGlobalId(listGUIDs.get(i).getGlobalId());
 					deletions.add(gson.fromJson(gson.toJson(obj), JsonObject.class));
 					globalIdRepo.delete(listGUIDs.get(i));
 					this.instance.getConnectorStats().addDeleted();
+					logLoader.debug("checkDeletions@ConnectorLoader - guid not found, must send global id with null element");
 
 				}
 			}

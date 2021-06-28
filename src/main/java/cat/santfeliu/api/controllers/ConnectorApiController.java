@@ -35,43 +35,51 @@ public class ConnectorApiController implements ConnectorApi {
 	
 	@Override
 	public ResponseEntity<List<ConnectorDTO>> getConnectors() {
+
+		log.info("getConnectors@ConnectorApiController - find all connectors");
 		return ResponseEntity.ok(apiService.getAllConnectors());
 	}
 
 	@Override
 	public ResponseEntity<ConnectorDTO> createConnector(@NotNull @Valid @PathVariable("connectorName") String connectorName, @RequestBody ConnectorDTO connector) {
 
+		log.info("createConnector@ConnectorApiController - create connector with name {}",connectorName);
 		return ResponseEntity.ok(apiService.createConnector(connector));
 	}
 
 	@Override
 	public ResponseEntity<ConnectorDTO> updateConnector(@NotNull @Valid @PathVariable("connectorName") String connectorName, @RequestBody ConnectorDTO connector) {
 
+		log.info("updateConnector@ConnectorApiController - update connector with name {}", connectorName);
 		return ResponseEntity.ok(apiService.updateConnector(connector));
 	}
 
 	@Override
 	public ResponseEntity<ConnectorDTO> getConnector(@NotNull @Valid @PathVariable("connectorName") String connectorName) {
 
+		log.info("getConnector@ConnectorApiController - get connector with name {}", connectorName);
 		return ResponseEntity.ok(apiService.getConnector(connectorName));
 	}
 
 	@Override
 	public ResponseEntity<ConnectorStatusDTO> startConnector(@NotNull @Valid @PathVariable("connectorName") String connectorName) {
 
+		log.info("startConnector@ConnectorApiController - start controller with name {}", connectorName);
 		return ResponseEntity.ok(managerService.startConnector(connectorName));
 	}
 
 	@Override
 	public ResponseEntity<ConnectorStatusDTO> stopConnector(@NotNull @Valid @PathVariable("connectorName") String connectorName) {
-		
+
+		log.info("stopConnector@ConnectorApiController - stop connetor with name {}", connectorName);
 		return ResponseEntity.ok(managerService.stopConnector(connectorName));
 		
 	}
 
 	@Override
 	public ResponseEntity<ConnectorStatusDTO> connectorStatus(@NotNull @Valid @PathVariable("connectorName") String connectorName) {
-		
+
+		log.info("connectorStatus@ConnectorApiController - get status of connector with name {}", connectorName);
 		return ResponseEntity.ok(managerService.connectorStatus(connectorName));
 		
 	}
@@ -79,12 +87,14 @@ public class ConnectorApiController implements ConnectorApi {
 	@Override
 	public ResponseEntity<List<ConnectorComponentDTO>> connectorComponents() {
 
+		log.info("connectorComponents@ConnectorApiController - get all components");
 		return ResponseEntity.ok(apiService.getAllComponents());
 	}
 
 	@Override
 	public ResponseEntity<PageStatsDTO> connectorStats(@NotNull @Valid @PathVariable("connectorName") String connectorName, @RequestParam(name = "page", defaultValue = "0") int page,@RequestParam(name = "size", defaultValue = "10") int size) {
 		
+		log.info("connectorStats@ConnectorApiController - get stats of connector with name {} of page {} with size {}",connectorName,page,size);
 		return ResponseEntity.ok(managerService.connectorStats(connectorName, page, size));
 		
 	}
