@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -35,7 +36,6 @@ import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
 import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
 import cat.santfeliu.api.exceptions.ApiErrorException;
 import cat.santfeliu.api.model.GlobalIdDb;
-import cat.santfeliu.api.utils.InventoryUtils;
 import cat.santfeliu.api.utils.QuickSortAlgorithm;
 
 public class GeoserverLoader extends ConnectorLoader {
@@ -84,6 +84,8 @@ public class GeoserverLoader extends ConnectorLoader {
 				toReturn = getObject();
 			}
 		}
+		ObjectMapper map = new ObjectMapper();
+		map.readTree(toReturn.getAsString()).get("array").elements()
 
 		return toReturn != null ? toReturn.getAsJsonObject() : null;
 	}
@@ -164,7 +166,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			JsonArray arrayFiltered = new JsonArray();
 			Date updateDate = null;
 			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
-			if (this.page.getContent().isEmpty() || filterField == null) {
+			if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
 				for (JsonElement e : all) {
 					Pair<String, String> ids = getIds(e);
 					String localId = ids.getLeft();
@@ -182,7 +184,7 @@ public class GeoserverLoader extends ConnectorLoader {
 				this.loaded = all;
 				
 			} else {
-				updateDate = this.page.getContent().get(0).getExecutionStartDate();
+				updateDate = this.page.getContent().get(1).getExecutionStartDate();
 				SimpleDateFormat sdf = new SimpleDateFormat(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
 			
 				for (JsonElement e : all) {

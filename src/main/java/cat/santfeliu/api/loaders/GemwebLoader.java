@@ -211,6 +211,15 @@ public class GemwebLoader extends ConnectorLoader {
 						false);
 				if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
 					this.loaded = all;
+					
+					for (JsonElement e : all) {
+						Pair<String, String> ids = getIds(e);
+						String localId = ids.getLeft();
+						String globalId = ids.getRight();
+
+						this.guidsExisting.put(localId, globalId);
+						this.allGUIDs.add(globalId);
+					}
 				} else {
 					updateDate = this.page.getContent().get(1).getExecutionStartDate();
 					SimpleDateFormat sdf = new SimpleDateFormat(
