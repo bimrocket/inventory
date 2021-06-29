@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorInstance;
 import cat.santfeliu.api.enumerator.ComponentTypeEnum;

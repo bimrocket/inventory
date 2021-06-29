@@ -2,7 +2,7 @@ package cat.santfeliu.api.components;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.repo.GlobalIdRepo;
 import cat.santfeliu.api.utils.InventoryUtils;
@@ -15,6 +15,6 @@ public abstract class ConnectorTransformer extends ConnectorComponent {
 	@Autowired
 	protected InventoryUtils invUtils;
 	
-	public abstract JsonObject transform(JsonObject object);
+	public abstract JsonNode transform(JsonNode object);
 	
 }

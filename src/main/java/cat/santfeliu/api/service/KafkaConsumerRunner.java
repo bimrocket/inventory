@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,8 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorInstance;
 
@@ -28,7 +28,7 @@ public class KafkaConsumerRunner implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(KafkaConsumerRunner.class);
 
-	private final Gson gson = new Gson();
+	private final ObjectMapper mapper = new ObjectMapper();
 	private final KafkaConsumer<String, String> consumer;
 	private final String topic;
 	private final ConnectorInstance instance;
@@ -84,13 +84,13 @@ public class KafkaConsumerRunner implements Runnable {
 		log.debug("shutdown@KafkaConsumerRunner - shutdown kafkaconsumer");
 	}
 
-	public JsonObject getRecord() {
+	public JsonNode getRecord() {
 		log.debug("getRecord@KafkaConsumerRunner - get record");
 		String record = this.records.poll();
 		if (record == null) {
 			return null;
 		} else {
-			return gson.fromJson(record, JsonObject.class);
+			return mapper.valueToTree(record);
 		}
 	}
 }

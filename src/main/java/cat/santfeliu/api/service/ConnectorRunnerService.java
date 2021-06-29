@@ -3,6 +3,7 @@ package cat.santfeliu.api.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.python.icu.util.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorInstance;
 import cat.santfeliu.api.components.ConnectorLoader;
@@ -31,6 +32,7 @@ public class ConnectorRunnerService {
 	
 	public static final Map<String, ConnectorInstance> instances;
 	private static final Logger log = LoggerFactory.getLogger(ConnectorRunnerService.class);
+	ObjectMapper mapper = new ObjectMapper();
 	static 
 	{
 		instances = new HashMap<>();
@@ -65,45 +67,45 @@ public class ConnectorRunnerService {
 		ConnectorTransformer transformer = instance.getConnectorTransformer();
 		ConnectorSender sender = instance.getConnectorSender();
 		loader.initLoader(instance);		
-		JsonObject curObject = null;
+		JsonNode curObject = null;
 		try {
 			curObject = loader.load(loader.getLoadTimeout());
 			boolean loaderHasEnd = loader.hasEnd();
 			// ---------------------- Initializing classes
 			while (!instance.shouldEnd()) {
-				if (curObject == null && loaderHasEnd) {
+				if (curObject.isNull() && loaderHasEnd) {
 					instance.stop();
-				} else if (curObject == null && !loaderHasEnd) {
+				} else if (curObject.isNull() && !loaderHasEnd) {
 					log.debug("runConnector@ConnectorRunnerService - connector {} put to sleep {}ms due to end of objects", instance.getConnector().getConnectorName(), loader.getSleepTime());
 					Thread.sleep(loader.getSleepTime());
 					log.debug("runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader", instance.getConnector().getConnectorName());
 					curObject = loader.load(loader.getLoadTimeout());
 				}
-				if (curObject != null) {
-					log.debug("currentOnject :: {}", curObject.toString());
+				if (!curObject.isNull()) {
+					log.debug("currentOnject :: {}", mapper.writeValueAsString(curObject));
 					this.updateStats(instance, ComponentTypeEnum.LOADER);
-					JsonObject transformed = null;
+					JsonNode transformed = null;
 					try {
 						transformed = transformer.transform(curObject);
-						log.info("afterTransform :: {}", transformed.toString());
+						log.info("afterTransform :: {}", mapper.writeValueAsString(transformed));
 					} catch (Exception e) {
 						String error = String.format(
 								"exception while transforming object of connector %s with message '%s' check logs for more details", instance.getConnector().getConnectorName(), e.getMessage());
 						log.error("runConnector@ConnectorRunnerService - {}", error, e);
-						log.error("runConnector@ConnectorRunnerService - object :: {}", curObject.toString());
+						log.error("runConnector@ConnectorRunnerService - object :: {}", new ObjectMapper().writeValueAsString(curObject));
 					}
-					if (transformed != null) {
+					if (!transformed.isNull()) {
 						
 						this.updateStats(instance, ComponentTypeEnum.TRANSFORMER);
 						try {
 							sender.send(transformed);
-							log.debug("sent :: {}", transformed.toString());
+							log.debug("sent :: {}", new ObjectMapper().writeValueAsString(transformed));
 							this.updateStats(instance, ComponentTypeEnum.SENDER);
 						} catch (Exception e) {
 							String error = String.format(
 									"exception while sending object of connector %s with message '%s' check logs for more details", instance.getConnector().getConnectorName(), e.getMessage());
 							log.error("runConnector@ConnectorRunnerService - {}", error, e);
-							log.error("runConnector@ConnectorRunnerService - object :: {}", curObject.toString());
+							log.error("runConnector@ConnectorRunnerService - object :: {}", new ObjectMapper().writeValueAsString(curObject));
 						
 						}
 					
@@ -118,7 +120,7 @@ public class ConnectorRunnerService {
 			log.error("runConnector@ConnectorRunnerService - {}", error, e);
 			hasException = true;
 		} finally {	
-			if (curObject == null && loader.hasEnd()) {
+			if (curObject.isNull() && loader.hasEnd()) {
 				String info = String.format("runConnector@ConnectorRunnerService - processed all objects stoping connector %s", instance.getConnector().getConnectorName());
 				log.info(info);
 				endRun(instance, true, false, false);
