@@ -9,7 +9,10 @@ public enum RhinoTransformerConfigKeys {
 	TRANSFORMER_MODEL_INVENTORY_NAME("model.inventory.name", "Inventory name of model", false),
 	TRANSFORMER_SCRIPT_SCOPE_JSON_OBJECT_NAME("scope.json.object.name", "Name of arriving json node to transform inside javascript, should be singular name", true),
 	TRANSFORMER_SCRIPT_SCOPE_GLOBAL_ID_NAME("scope.global.id.name", "Name of globalId variable inside javascript, should be singular name", false),
-	TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME("scope.model.global.id.name", "Name of model globalId variable inside javascript, should be singular name", false);
+	TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME("scope.model.global.id.name", "Name of model globalId variable inside javascript, should be singular name", false),
+	TRANSFORMER_TRANSFORM_GEOMETRY("transform.geometry", "Should transform geometry ? (true or false)", true),
+	TRANSFORMER_JSON_PATH_GEOMETRY("json.path.geometry", "JSON Path to geometry object", false),
+	TRANSFORMER_TRANSFORM_GEOMETRY_OUTPUT("transform.geometry.output", "Output geometry can be Line, MultiLine, Polygon, etc..", true);
 
 	
 	private String key;

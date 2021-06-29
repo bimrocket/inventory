@@ -13,14 +13,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import cat.santfeliu.api.components.ConnectorInstance;
 import cat.santfeliu.api.enumerator.ComponentTypeEnum;
-import cat.santfeliu.api.loaders.GemwebLoader;
-import cat.santfeliu.api.model.ConnectorDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
+import cat.santfeliu.api.transformers.RhinoTransformer;
 import cat.santfeliu.api.utils.ConfigContainer;
 import cat.santfeliu.api.utils.InventoryUtils;
 
@@ -79,25 +78,5 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         	status.setConnectorStatus("offline");
         	statusRepo.save(status);
         }
-        log.info(invUtils.getGuid());
-//        
-//		GemwebLoader loader = new GemwebLoader();
-//		ConfigContainer params = new ConfigContainer();
-//		autowireCapableBeanFactory.autowireBean(params);
-//		params.init("CentresProducer", ComponentTypeEnum.LOADER.getName());
-//		autowireCapableBeanFactory.autowireBean(loader);
-//		loader.init("GemwebCentres", params);
-//		ConnectorDb connector = new ConnectorDb();
-//		connector.setInventoryName("GemwebCentres");
-//		
-//		ConnectorInstance instance = new ConnectorInstance(connector, null, null, null);
-//		
-//		loader.initLoader(instance);
-//		log.info(loader.getAccessToken());
-//		JsonObject obj = loader.load(60000);
-//		while (obj != null) {
-//			log.info(obj.toString());
-//			obj = loader.load(60000); 
-//		}
     }
 }
