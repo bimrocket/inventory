@@ -1,7 +1,7 @@
 package cat.santfeliu.api.loaders;
 
 import cat.santfeliu.api.service.ConnectorRunnerService;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorLoader;
 import cat.santfeliu.api.enumerator.JSONKafkaLoaderConfigKeys;
@@ -17,7 +17,7 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 	private Thread threatRunner;
 	
 	@Override
-	public JsonObject load(long timeout) {
+	public JsonNode load(long timeout) {
 		if (runner == null) {		
 			runner = new KafkaConsumerRunner(this.instance, this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_GROUP_ID.getKey()),
 			this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_TOPIC_NAME.getKey()));

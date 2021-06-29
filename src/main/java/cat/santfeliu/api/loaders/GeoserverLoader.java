@@ -23,11 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
@@ -41,20 +40,20 @@ import cat.santfeliu.api.utils.QuickSortAlgorithm;
 public class GeoserverLoader extends ConnectorLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
-	
+
 	@Override
-	public JsonObject load(long timeout) {
+	public JsonNode load(long timeout) {
 		if (loaded == null && this.reset) {
 			this.checkedDeletions = false;
 			this.reset = false;
-			log.debug("load@GeoserverLoader - load response of timeout {}",timeout);
+			log.debug("load@GeoserverLoader - load response of timeout {}", timeout);
 			return loadResponse(timeout);
 		} else {
 			if (this.checkedDeletions) {
 				log.debug("load@GeoserverLoader - return checked deletion {}", this.getDeletion());
 				return this.getDeletion();
 			} else {
-				JsonObject obj = getObject();
+				JsonNode obj = getObject();
 				if (obj == null) {
 					this.checkDeletions();
 					log.debug("load@GeoserverLoader - return not checked deletion {}", this.getDeletion());
@@ -67,38 +66,44 @@ public class GeoserverLoader extends ConnectorLoader {
 
 	}
 
-	private JsonObject getObject() {
+	private JsonNode getObject() {
 		// Add one more to index as it starts at -1 and objects start at 0
 		currentIndex++;
-		JsonElement toReturn;
+		JsonNode toReturn = null;
 		try {
 			// Try to recover object
 			toReturn = loaded.get(currentIndex);
-			log.debug("getObject@GeoserverLoader - get :: {}", toReturn.toString());
+			log.debug("getObject@GeoserverLoader - get :: {}", mapper.writeValueAsString(toReturn));
 		} catch (IndexOutOfBoundsException e) {
 			// End of objects if loop has no end we put loaded as null so next time (after
 			// sleep) it
 			// recover all objects again
 			return null;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
-		if (toReturn != null) {
-			toReturn = transformForTransformer(toReturn.getAsJsonObject());
-			log.debug("getObject@GeoserverLoader - getAsJsonObject :: {}", toReturn.toString());
-			if (toReturn == null) {
+		if (!toReturn.isNull()) {
+			toReturn = transformForTransformer(toReturn);
+			try {
+				log.debug("getObject@GeoserverLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			if (toReturn.isNull()) {
 				// already treated get next recursively
 				toReturn = getObject();
 			}
 		}
 
-		return toReturn != null ? toReturn.getAsJsonObject() : null;
+		return toReturn != null ? toReturn : null;
 	}
 
-	private JsonObject transformForTransformer(JsonObject object) {
+	private JsonNode transformForTransformer(JsonNode node) {
 
-		Pair<String, String> ids = getIds(object);
+		Pair<String, String> ids = getIds(node);
 		String localId = ids.getLeft();
 		String globalId = ids.getRight();
-		
+
 		boolean alreadyTreated = false;
 		for (int j = 0; j < this.treatedGUIDs.size() && !alreadyTreated; j++) {
 			alreadyTreated = this.treatedGUIDs.get(j).equals(globalId);
@@ -108,18 +113,19 @@ public class GeoserverLoader extends ConnectorLoader {
 			this.treatedGUIDs.add(globalId);
 			LoaderJsonObject loaderJson = new LoaderJsonObject();
 			loaderJson.setGlobalId(globalId);
-			loaderJson.setElement(object);
-			log.debug("transformForTransformer@GeoserverLoader - globalId {} not treated add to treatedGUIDs", globalId);
-			return gson.fromJson(gson.toJson(loaderJson), JsonObject.class);
+			loaderJson.setElement(node);
+			log.debug("transformForTransformer@GeoserverLoader - globalId {} not treated add to treatedGUIDs",
+					globalId);
+			return mapper.valueToTree(loaderJson);
 		} else {
 			return null;
 		}
 
 	}
 
-	private JsonObject loadResponse(long timeout) {
+	private JsonNode loadResponse(long timeout) {
 
-		log.debug("loadResponse@GeoserverLoader - init with timeout '{}'",timeout);
+		log.debug("loadResponse@GeoserverLoader - init with timeout '{}'", timeout);
 		RequestConfig.Builder requestBuilder = RequestConfig.custom();
 		requestBuilder.setConnectTimeout((int) timeout);
 		requestBuilder.setConnectionRequestTimeout((int) timeout);
@@ -149,14 +155,13 @@ public class GeoserverLoader extends ConnectorLoader {
 			request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
 		}
 
-		JsonObject jsonResponse;
+		JsonNode jsonResponse;
 
 		try {
 			log.debug("loadResponse@GeoserverLoader - execute httpClient built");
-			Gson gson = new Gson();
 			HttpResponse response = httpClient.execute(request.build());
 			String bodyResp = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-			jsonResponse = gson.fromJson(bodyResp, JsonObject.class);
+			jsonResponse = mapper.valueToTree(bodyResp);
 
 		} catch (ConnectTimeoutException | SocketTimeoutException e) {
 			log.error("loadResponse@GeoserverLoader - timeout while sending petition : ", e);
@@ -169,63 +174,68 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 
 		try {
-			all = jsonResponse.get("features").getAsJsonArray();
-			JsonArray arrayFiltered = new JsonArray();
+			all = mapper.valueToTree(jsonResponse.get("features"));
+			ArrayNode arrayFiltered = mapper.createArrayNode();
 			Date updateDate = null;
 			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
 
 			if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
 				log.debug("loadResponse@GeoserverLoader - page is empty or filerField is null");
+				if (all.isArray()) {
+					for (JsonNode e : all) {
+						Pair<String, String> ids = getIds(e);
+						String localId = ids.getLeft();
+						String globalId = ids.getRight();
 
-				for (JsonElement e : all) {
-					Pair<String, String> ids = getIds(e);
-					String localId = ids.getLeft();
-					String globalId = ids.getRight();
-					
-					this.guidsExisting.put(localId, globalId);
-					this.allGUIDs.add(globalId);
+						this.guidsExisting.put(localId, globalId);
+						this.allGUIDs.add(globalId);
+					}
+					log.debug("loadResponse@GeoserverLoader - sort all of global id");
+					QuickSortAlgorithm sorter = new QuickSortAlgorithm();
+					String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
+					sorter.sort(arr);
+					List<String> list = new ArrayList<>();
+					Collections.addAll(list, arr);
+					this.allGUIDs = list;
+					this.loaded = all;
 				}
-				log.debug("loadResponse@GeoserverLoader - sort all of global id");
-				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
-				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
-				sorter.sort(arr);
-		        List<String> list = new ArrayList<>();
-		        Collections.addAll(list, arr);
-		        this.allGUIDs = list;
-				this.loaded = all;
-				
+
 			} else {
 				updateDate = this.page.getContent().get(1).getExecutionStartDate();
-				SimpleDateFormat sdf = new SimpleDateFormat(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
+				SimpleDateFormat sdf = new SimpleDateFormat(
+						this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
 
 				log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
-				for (JsonElement e : all) {
-					Pair<String, String> ids = getIds(e);
-					String localId = ids.getLeft();
-					String globalId = ids.getRight();
-					
-					this.guidsExisting.put(localId, globalId);
-					this.allGUIDs.add(globalId);
-					String dateUpdateElemStr = JsonPath.parse(e.toString()).<String>read(filterField);
-					if (dateUpdateElemStr != null && !dateUpdateElemStr.isBlank()) {
-						Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
-						if (dateUpdateElem.compareTo(updateDate) > 0) {
-							arrayFiltered.add(e);
-							log.debug("element added : {}", e.toString());
-						}	
-					} else {
-						arrayFiltered.add(e);
-						log.debug("element added : {}", e.toString());
-					}
+				if (all.isArray()) {
+					for (JsonNode e : all) {
+						Pair<String, String> ids = getIds(e);
+						String localId = ids.getLeft();
+						String globalId = ids.getRight();
 
+						this.guidsExisting.put(localId, globalId);
+						this.allGUIDs.add(globalId);
+						String dateUpdateElemStr = JsonPath.parse(mapper.writeValueAsString(e))
+								.<String>read(filterField);
+						if (dateUpdateElemStr != null && !dateUpdateElemStr.isBlank()) {
+							Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
+							if (dateUpdateElem.compareTo(updateDate) > 0) {
+								arrayFiltered.add(e);
+								log.debug("element added : {}", mapper.writeValueAsString(e));
+							}
+						} else {
+							arrayFiltered.add(e);
+							log.debug("element added : {}", mapper.writeValueAsString(e));
+						}
+
+					}
 				}
 				log.debug("loadResponse@GeoserverLoader - sort all of global id");
 				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 				sorter.sort(arr);
-		        List<String> list = new ArrayList<>();
-		        Collections.addAll(list, arr);
-		        this.allGUIDs = list;
+				List<String> list = new ArrayList<>();
+				Collections.addAll(list, arr);
+				this.allGUIDs = list;
 				this.loaded = arrayFiltered;
 			}
 			return getObject();
@@ -237,14 +247,20 @@ public class GeoserverLoader extends ConnectorLoader {
 		}
 
 	}
-	
-	private Pair<String, String> getIds(JsonElement e) {
-		String localId = JsonPath.parse(e.toString())
-				.<String>read(this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+
+	private Pair<String, String> getIds(JsonNode e) {
+		String localId = null;
+		try {
+			localId = JsonPath.parse(mapper.writeValueAsString(e)).<String>read(
+					this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+		} catch (JsonProcessingException jsonProcessingException) {
+			jsonProcessingException.printStackTrace();
+		}
 		String globalId = null;
-		
+
 		String hasGuid = this.guidsExisting.get(localId);
-		log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId, this.guidsExisting.size());
+		log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId,
+				this.guidsExisting.size());
 		if (hasGuid == null) {
 			globalId = invUtils.getGuid();
 			GlobalIdDb guidDb = new GlobalIdDb();

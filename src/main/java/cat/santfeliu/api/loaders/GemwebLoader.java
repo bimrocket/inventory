@@ -9,11 +9,11 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,9 +31,6 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
@@ -51,7 +48,7 @@ public class GemwebLoader extends ConnectorLoader {
 	private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
 
 	@Override
-	public JsonObject load(long timeout) {
+	public JsonNode load(long timeout) {
 		if (loaded == null && this.reset) {
 			this.checkedDeletions = false;
 			this.reset = false;
@@ -67,7 +64,7 @@ public class GemwebLoader extends ConnectorLoader {
 				return this.getDeletion();
 			} else {
 
-				JsonObject obj = getObject();
+				JsonNode obj = getObject();
 				if (obj == null) {
 					this.checkDeletions();
 					log.debug("load@GemwebLoader - return not checked deletion {}", this.getDeletion());
@@ -80,35 +77,41 @@ public class GemwebLoader extends ConnectorLoader {
 
 	}
 
-	private JsonObject getObject() {
+	private JsonNode getObject() {
 		// Add one more to index as it starts at -1 and objects start at 0
 		currentIndex++;
-		JsonElement toReturn;
+		JsonNode toReturn = null;
 		try {
 			// Try to recover object
 			toReturn = loaded.get(currentIndex);
-			log.debug("getObject@GemwebLoader - get :: {}", toReturn.toString());
+			log.debug("getObject@GemwebLoader - get :: {}", mapper.writeValueAsString(toReturn));
 		} catch (IndexOutOfBoundsException e) {
 			// End of objects if loop has no end we put loaded as null so next time (after
 			// sleep) it
 			// recover all objects again
 			return null;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
-		if (toReturn != null) {
-			toReturn = transformForTransformer(toReturn.getAsJsonObject());
-			log.debug("getObject@GemwebLoader - getAsJsonObject :: {}", toReturn.toString());
-			if (toReturn == null) {
+		if (!toReturn.isNull()) {
+			toReturn = transformForTransformer(toReturn);
+			try {
+				log.debug("getObject@GemwebLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			if (toReturn.isNull()) {
 				// already treated get next recursively
 				toReturn = getObject();
 			}
 		}
 
-		return toReturn != null ? toReturn.getAsJsonObject() : null;
+		return toReturn != null ? toReturn : null;
 	}
 
-	private JsonObject transformForTransformer(JsonObject object) {
+	private JsonNode transformForTransformer(JsonNode node) {
 
-		Pair<String, String> ids = getIds(object);
+		Pair<String, String> ids = getIds(node);
 		String localId = ids.getLeft();
 		String globalId = ids.getRight();
 
@@ -121,9 +124,9 @@ public class GemwebLoader extends ConnectorLoader {
 			this.treatedGUIDs.add(globalId);
 			LoaderJsonObject loaderJson = new LoaderJsonObject();
 			loaderJson.setGlobalId(globalId);
-			loaderJson.setElement(object);
+			loaderJson.setElement(node);
 			log.debug("transformForTransformer@GemwebLoader - globalId {} not treated add to treatedGUIDs", globalId);
-			return gson.fromJson(gson.toJson(loaderJson), JsonObject.class);
+			return mapper.valueToTree(loaderJson);
 		} else {
 			return null;
 		}
@@ -138,7 +141,7 @@ public class GemwebLoader extends ConnectorLoader {
 	 * @return XML to return
 	 * @throws Exception
 	 */
-	public JsonObject loadResponse(String token) throws Exception {
+	public JsonNode loadResponse(String token) throws Exception {
 
 		Instant start = Instant.now();
 
@@ -211,8 +214,8 @@ public class GemwebLoader extends ConnectorLoader {
 
 			try {
 				JSONArray array  = JsonPath.parse(json).<JSONArray>read(this.params.getParamValue(GemWebLoaderConfigKeys.LOADER_JSON_PATH_ELEMENT_ARRAY.getKey())); 
-				all = gson.fromJson(array.toJSONString(), JsonArray.class);
-				JsonArray arrayFiltered = new JsonArray();
+				all = mapper.valueToTree(array);
+				ArrayNode arrayFiltered = mapper.createArrayNode();
 				Date updateDate = null;
 				String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(),
 						false);
@@ -233,25 +236,27 @@ public class GemwebLoader extends ConnectorLoader {
 							this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
 
 					log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
-					for (JsonElement e : all) {
-						Pair<String, String> ids = getIds(e);
-						String localId = ids.getLeft();
-						String globalId = ids.getRight();
+					if(all.isArray()) {
+						for (JsonNode e : all ) {
+							Pair<String, String> ids = getIds(e);
+							String localId = ids.getLeft();
+							String globalId = ids.getRight();
 
-						this.guidsExisting.put(localId, globalId);
-						this.allGUIDs.add(globalId);
-						String dateUpdateElemStr = JsonPath.parse(e.toString()).<String>read(filterField);
-						if (dateUpdateElemStr != null && !dateUpdateElemStr.isBlank()) {
-							Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
-							if (dateUpdateElem.compareTo(updateDate) > 0) {
+							this.guidsExisting.put(localId, globalId);
+							this.allGUIDs.add(globalId);
+							String dateUpdateElemStr = JsonPath.parse(mapper.writeValueAsString(e)).<String>read(filterField);
+							if (dateUpdateElemStr != null && !dateUpdateElemStr.isBlank()) {
+								Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
+								if (dateUpdateElem.compareTo(updateDate) > 0) {
+									arrayFiltered.add(e);
+									log.debug("element added : {}", mapper.writeValueAsString(e));
+								}
+							} else {
 								arrayFiltered.add(e);
-								log.debug("element added : {}", e.toString());
+								log.debug("element added : {}", mapper.writeValueAsString(e));
 							}
-						} else {
-							arrayFiltered.add(e);
-							log.debug("element added : {}", e.toString());
-						}
 
+						}
 					}
 					log.debug("loadResponse@GemwebLoader - sort all of global id");
 					QuickSortAlgorithm sorter = new QuickSortAlgorithm();
@@ -393,9 +398,14 @@ public class GemwebLoader extends ConnectorLoader {
 		return ret;
 	}
 
-	private Pair<String, String> getIds(JsonElement e) {
-		String localId = JsonPath.parse(e.toString())
-				.<String>read(this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+	private Pair<String, String> getIds(JsonNode e) {
+		String localId = null;
+		try {
+			localId = JsonPath.parse(mapper.writeValueAsString(e))
+					.<String>read(this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+		} catch (JsonProcessingException jsonProcessingException) {
+			jsonProcessingException.printStackTrace();
+		}
 		String globalId = null;
 
 		String hasGuid = this.guidsExisting.get(localId);

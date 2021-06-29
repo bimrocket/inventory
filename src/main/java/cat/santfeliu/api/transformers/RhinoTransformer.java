@@ -13,11 +13,10 @@ import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
@@ -31,17 +30,17 @@ public class RhinoTransformer extends ConnectorTransformer {
 	private static final Logger log = LoggerFactory.getLogger(RhinoTransformer.class);
 
 	@Override
-	public JsonObject transform(JsonObject object) {
-		Gson objMap = new Gson();
+	public JsonNode transform(JsonNode object) {
+		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> scopeObjects = new HashMap<>();
-		JsonObject fJson = object;
+		JsonNode fJson = object;
 		String modelGlobalId = "";
 		String fieldRef = this.params.getParamValue(
 				RhinoTransformerConfigKeys.TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME.getKey(), false);
 
 		if (fieldRef != null && !fieldRef.isEmpty()) {
 			try {
-				String modelLocalId = JsonPath.parse(fJson.toString()).<String>read(this.params
+				String modelLocalId = JsonPath.parse(mapper.writeValueAsString(fJson)).<String>read(this.params
 						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_JSON_PATH_LOCAL_MODEL_ID.getKey()));
 				String modelInventoryName = this.params
 						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_MODEL_INVENTORY_NAME.getKey());
@@ -60,6 +59,8 @@ public class RhinoTransformer extends ConnectorTransformer {
 				}
 			} catch (PathNotFoundException e) {
 				// delete record incoming ignore
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 			}
 
 		}
@@ -73,7 +74,6 @@ public class RhinoTransformer extends ConnectorTransformer {
 		}
 
 		String output = "";
-		ObjectMapper mapper = new ObjectMapper();
 
 		JavaScriptConverter converter = new JavaScriptConverter(this.params);
 		try {
@@ -103,13 +103,21 @@ public class RhinoTransformer extends ConnectorTransformer {
 			JsonNode outputFeature = converter.convert(node);
 			output = mapper.writeValueAsString(outputFeature);
 		} catch (Exception ex) {
-			log.error("transformData@RhinoService - error while converting feature {} with exception ",
-					fJson.toString(), ex);
+			try {
+				log.error("transformData@RhinoService - error while converting feature {} with exception ",
+						mapper.writeValueAsString(fJson), ex);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		} finally {
 			converter.end();
 		}
-		log.debug("transform@RhinoTransformer - transform jsonObject object {} to jsonNode", object.toString());
-		return new Gson().fromJson(output, JsonObject.class);
+		try {
+			log.debug("transform@RhinoTransformer - transform jsonObject object {} to jsonNode", mapper.writeValueAsString(object));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return mapper.valueToTree(output);
 	}
 
 }

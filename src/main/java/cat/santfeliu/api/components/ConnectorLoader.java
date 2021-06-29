@@ -1,19 +1,21 @@
 package cat.santfeliu.api.components;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
 import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
@@ -60,18 +62,18 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	 * Instance of connector corresponding to the load
 	 */
 	protected ConnectorInstance instance;
-	
+
+	protected final ObjectMapper mapper = new ObjectMapper();
 	/**
 	 * Loaded items filtered to return by load
 	 */
-	protected JsonArray loaded = null;
+	protected ArrayNode loaded = mapper.createArrayNode();
 
 	/**
 	 * All items without filter
 	 */
-	protected JsonArray all = null;
+	protected ArrayNode all = mapper.createArrayNode();
 
-	protected final Gson gson = new Gson();
 	
 	/**
 	 * Current object index to retrieve via load
@@ -107,7 +109,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	 * Corresponds to all objects to be deleted
 	 * It can be filled with checkDeletions method
 	 */
-	protected List<JsonObject> deletions = new ArrayList<>();
+	protected List<JsonNode> deletions = new ArrayList<>();
 
 	/**
 	 * Contains the last run
@@ -115,7 +117,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	 */
 	protected Page<ConnectorExecutionStatsDb> page = null;
 
-	public abstract JsonObject load(long timeout);
+	public abstract JsonNode load(long timeout);
 
 	/**
 	 * Initializes connector loader and retrieves config variables
@@ -194,7 +196,7 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 					// GUID not found, global id must be sent with null element
 					LoaderJsonObject obj = new LoaderJsonObject();
 					obj.setGlobalId(listGUIDs.get(i).getGlobalId());
-					deletions.add(gson.fromJson(gson.toJson(obj), JsonObject.class));
+					deletions.add(mapper.valueToTree(obj));
 					globalIdRepo.delete(listGUIDs.get(i));
 					this.instance.getConnectorStats().addDeleted();
 					logLoader.debug("checkDeletions@ConnectorLoader - guid not found, must send global id with null element");
@@ -207,9 +209,9 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 
 	}
 
-	public JsonObject getDeletion() {			
+	public JsonNode getDeletion() {
 		this.deletionIndex++;
-		JsonObject deletion = null;
+		JsonNode deletion = null;
 		try {
 			deletion = deletions.get(deletionIndex);
 		} catch (IndexOutOfBoundsException e) {

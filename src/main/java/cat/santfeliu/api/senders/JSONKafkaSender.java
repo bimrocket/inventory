@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cat.santfeliu.api.service.ConnectorRunnerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
@@ -13,7 +15,7 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorSender;
 import cat.santfeliu.api.enumerator.JSONKafkaSenderConfigKeys;
@@ -29,11 +31,19 @@ public class JSONKafkaSender extends ConnectorSender {
 	protected KafkaAdmin admin;
 
 	@Override
-	public void send(JsonObject node) {
+	public void send(JsonNode node) {
 
-		this.template.send(this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()),
-				node.toString());
-		log.debug("send@JSONKafkaSender - send :: {} , {}", this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()), node.toString());
+		try {
+			this.template.send(this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()),
+					new ObjectMapper().writeValueAsString(node));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		try {
+			log.debug("send@JSONKafkaSender - send :: {} , {}", this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()), new ObjectMapper().writeValueAsString(node));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 	}
 
 //	private void createTopic(JsonObject node) {
