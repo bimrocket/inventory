@@ -82,14 +82,14 @@ public class GeoserverLoader extends ConnectorLoader {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-		if (!toReturn.isNull()) {
+		if (toReturn !=  null) {
 			toReturn = transformForTransformer(toReturn);
 			try {
 				log.debug("getObject@GeoserverLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-			if (toReturn.isNull()) {
+			if (toReturn == null) {
 				// already treated get next recursively
 				toReturn = getObject();
 			}

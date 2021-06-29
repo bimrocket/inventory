@@ -73,7 +73,7 @@ public class ConnectorRunnerService {
 			boolean loaderHasEnd = loader.hasEnd();
 			// ---------------------- Initializing classes
 			while (!instance.shouldEnd()) {
-				if (curObject.isNull() && loaderHasEnd) {
+				if (curObject == null && loaderHasEnd) {
 					instance.stop();
 				} else if (curObject.isNull() && !loaderHasEnd) {
 					log.debug("runConnector@ConnectorRunnerService - connector {} put to sleep {}ms due to end of objects", instance.getConnector().getConnectorName(), loader.getSleepTime());
@@ -120,7 +120,7 @@ public class ConnectorRunnerService {
 			log.error("runConnector@ConnectorRunnerService - {}", error, e);
 			hasException = true;
 		} finally {	
-			if (curObject.isNull() && loader.hasEnd()) {
+			if (curObject == null && loader.hasEnd()) {
 				String info = String.format("runConnector@ConnectorRunnerService - processed all objects stoping connector %s", instance.getConnector().getConnectorName());
 				log.info(info);
 				endRun(instance, true, false, false);
