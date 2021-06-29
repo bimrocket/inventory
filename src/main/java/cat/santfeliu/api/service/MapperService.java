@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cat.santfeliu.api.components.ConnectorInstance;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ import cat.santfeliu.api.repo.ConnectorComponentConfigRepo;
 @Service
 public class MapperService {
 
+	private static final Logger log = LoggerFactory.getLogger(MapperService.class);
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -41,25 +45,26 @@ public class MapperService {
 	private ConnectorComponentConfigRepo conConfigRepo;
 	
 	/**
-	 * Retorna dto de ConnectorStatusDb
+	 * Return dto of ConnectorStatusDb
 	 * @param statusDb
 	 * @return dto ConnectorStatusDTO
 	 */
 	public ConnectorStatusDTO statusDbToDTO(ConnectorStatusDb statusDb) {
 		ConnectorStatusDTO dto = new ConnectorStatusDTO();
+		log.debug("statusDbToDTO@MapperService - get dto of statutsDb {}", statusDb.getConnectorName());
 		return modelMapper.map(statusDb, ConnectorStatusDTO.class);
 		
 	}
 	
 	/**
-	 * Retorna dto de componente de connector ConnectorComponentDb
+	 * Returns connector component dto ConnectorComponentDb
 	 * @param db
 	 * @return dto
 	 */
 	public ConnectorComponentDTO componentDbToDTO(ConnectorComponentDb db) {
 		ConnectorComponentDTO dto = modelMapper.map(db, ConnectorComponentDTO.class);
 		if (dto.getConnectorComponentName().equals(ComponentEnum.GEOSERVER_LOADER.getName())) {
-			
+
 			for (GeoserverLoaderConfigKeys key : GeoserverLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
@@ -67,6 +72,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - geoserverLoaderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 			for (GlobalLoaderConfigKeys key : GlobalLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
@@ -74,7 +81,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
-			
+			log.debug("componentDbToDTO@MapperService - globalLoaderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.JSON_KAFKA_LOADER.getName())) {
 			for (JSONKafkaLoaderConfigKeys key : JSONKafkaLoaderConfigKeys	.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -83,7 +91,9 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
-			
+			log.debug("componentDbToDTO@MapperService - jsonKafkaLoaderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
+
 			for (GlobalLoaderConfigKeys key : GlobalLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
 				configDto.setConfigKey(key.getKey());
@@ -91,6 +101,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - globalLoaderConfigKey keys add to component connector db {} to dto ", db.getConnectorComponentName());
+
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.GEMWEB_LOADER.getName())) {
 			for (GemWebLoaderConfigKeys key : GemWebLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -99,6 +111,7 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - globalLoaderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
 			
 			for (GlobalLoaderConfigKeys key : GlobalLoaderConfigKeys.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -107,6 +120,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - globalLoaderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.RHINO_TRANSFORMER.getName())) {
 			for (RhinoTransformerConfigKeys key : RhinoTransformerConfigKeys	.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -115,6 +130,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - rhinoTransformerConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.GEOSERVER_SENDER.getName())) {
 			for (GeoserverSenderConfigKeys key : GeoserverSenderConfigKeys	.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -123,6 +140,8 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - geoserverSenderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 		} else if (dto.getConnectorComponentName().equals(ComponentEnum.JSON_KAFKA_SENDER.getName())) {
 			for (GeoserverSenderConfigKeys key : GeoserverSenderConfigKeys	.values()) {
 				ComponentConfigKeyDTO configDto = new ComponentConfigKeyDTO();
@@ -131,12 +150,14 @@ public class MapperService {
 				configDto.setDescription(key.getDescription());
 				dto.getComponentConfigKeys().add(configDto);
 			}
+			log.debug("componentDbToDTO@MapperService - geoserverSenderConfigKey keys add to component connector db {} to dto", db.getConnectorComponentName());
+
 		}
 		return dto;
 	}
 	
 	/**
-	 * Retorna dto de connector desde ConnectorDb
+	 * Returns connector dto from ConnectorDb
 	 * @param con
 	 * @return dto
 	 */
@@ -148,16 +169,18 @@ public class MapperService {
 			params.add(modelMapper.map(paramDb, ConnectorParamDTO.class));
 		}
 		dto.setConnectorParams(params);
+		log.debug("connectorDbToDTO@MapperService - connector db {} to dto", con.getConnectorName());
 		return dto;
 	}
 	
 	/**
-	 * ConnectorDTO a model de base de dades ConnectorDb
+	 * ConnectorDTO to ConnectorDb database model
 	 * @param dto
 	 * @return db
 	 */
 	public ConnectorDb connectorDTOToDb(ConnectorDTO dto) {
 		ConnectorDb db = modelMapper.map(dto, ConnectorDb.class);;
+		log.debug("connectorDTOToDb@MapperService - connector dto {} to db", db.getConnectorName());
 		return db;
 	}
 	
@@ -174,11 +197,12 @@ public class MapperService {
 			paramDb.setConnectorName(connectorName);
 			paramsDb.add(paramDb);
 		}
+		log.debug("connectorConfigSetDTOToDb@MapperService - connector dto with name {} and a list of param to db", connectorName);
 		return paramsDb;
 	}
 
 	/**
-	 * Estadístiques db paginades a PageStatsDTO
+	 * Database statistics paginated on PageStatsDTO
 	 * @param statsDb
 	 * @return
 	 */
@@ -192,6 +216,7 @@ public class MapperService {
 			ConnectorStatsDTO statDto = modelMapper.map(statDb, ConnectorStatsDTO.class);
 			pageDto.getStats().add(statDto);
 		}
+		log.debug("connectorStatsDbToDTO@MapperService - page of statsDb to page of statsDto");
 		return pageDto;
 	}
 }

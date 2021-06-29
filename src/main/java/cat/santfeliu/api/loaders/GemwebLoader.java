@@ -56,17 +56,21 @@ public class GemwebLoader extends ConnectorLoader {
 			this.checkedDeletions = false;
 			this.reset = false;
 			try {
+				log.debug("load@GemwebLoader - load response of getTokenAcces {}",this.getAccessToken());
 				return loadResponse(this.getAccessToken());
 			} catch (Exception e) {
 				return null;
 			}
 		} else {
 			if (this.checkedDeletions) {
+				log.debug("load@GemwebLoader - return checked deletion {}", this.getDeletion());
 				return this.getDeletion();
 			} else {
+
 				JsonObject obj = getObject();
 				if (obj == null) {
 					this.checkDeletions();
+					log.debug("load@GemwebLoader - return not checked deletion {}", this.getDeletion());
 					return this.getDeletion();
 				}
 				return obj;
@@ -83,6 +87,7 @@ public class GemwebLoader extends ConnectorLoader {
 		try {
 			// Try to recover object
 			toReturn = loaded.get(currentIndex);
+			log.debug("getObject@GemwebLoader - get :: {}", toReturn.toString());
 		} catch (IndexOutOfBoundsException e) {
 			// End of objects if loop has no end we put loaded as null so next time (after
 			// sleep) it
@@ -91,6 +96,7 @@ public class GemwebLoader extends ConnectorLoader {
 		}
 		if (toReturn != null) {
 			toReturn = transformForTransformer(toReturn.getAsJsonObject());
+			log.debug("getObject@GemwebLoader - getAsJsonObject :: {}", toReturn.toString());
 			if (toReturn == null) {
 				// already treated get next recursively
 				toReturn = getObject();
@@ -116,6 +122,7 @@ public class GemwebLoader extends ConnectorLoader {
 			LoaderJsonObject loaderJson = new LoaderJsonObject();
 			loaderJson.setGlobalId(globalId);
 			loaderJson.setElement(object);
+			log.debug("transformForTransformer@GemwebLoader - globalId {} not treated add to treatedGUIDs", globalId);
 			return gson.fromJson(gson.toJson(loaderJson), JsonObject.class);
 		} else {
 			return null;
@@ -124,11 +131,11 @@ public class GemwebLoader extends ConnectorLoader {
 	}
 
 	/**
-	 * Envia un request de tipus POST.
+	 * Send a POST request.
 	 * 
-	 * @param uri Servidor de tercers
-	 * @param xml XML a enviar
-	 * @return XML de retorn
+	 * @param uri Third party server
+	 * @param xml XML to send
+	 * @return XML to return
 	 * @throws Exception
 	 */
 	public JsonObject loadResponse(String token) throws Exception {
@@ -225,6 +232,7 @@ public class GemwebLoader extends ConnectorLoader {
 					SimpleDateFormat sdf = new SimpleDateFormat(
 							this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
 
+					log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
 					for (JsonElement e : all) {
 						Pair<String, String> ids = getIds(e);
 						String localId = ids.getLeft();
@@ -245,6 +253,7 @@ public class GemwebLoader extends ConnectorLoader {
 						}
 
 					}
+					log.debug("loadResponse@GemwebLoader - sort all of global id");
 					QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 					String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 					sorter.sort(arr);
@@ -280,11 +289,11 @@ public class GemwebLoader extends ConnectorLoader {
 	}
 
 	/**
-	 * Envia un request de tipus POST.
+	 * Send a POST request.
 	 * 
-	 * @param uri Servidor de tercers
-	 * @param xml XML a enviar
-	 * @return XML de retorn
+	 * @param uri Third party server
+	 * @param xml XML to send
+	 * @return XML to return
 	 * @throws Exception
 	 */
 	public String getAccessToken() throws Exception {
@@ -369,6 +378,7 @@ public class GemwebLoader extends ConnectorLoader {
 	private String inputStreamResponseToString(InputStream reader) {
 		StringBuilder sb = new StringBuilder();
 
+		log.debug("inputStreamResponseToString@GemwebLoader - reading response of input");
 		try (InputStreamReader inputStreamReader = new InputStreamReader(reader)) {
 			BufferedReader br = new BufferedReader(inputStreamReader);
 			String readLine;

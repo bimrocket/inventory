@@ -51,6 +51,7 @@ public class KafkaConfiguration {
 		Map<String, Object> configs = new HashMap<>();
 		// Depending on you Kafka Cluster setup you need to configure
 		// additional properties!
+		log.debug("kafkaAdmin@KafkaConfiguration - get all the topics by key {}", "topic.name");
 		List<ConnectorComponentConfigDb> topicsDb = configRepo.findAllByKey("topic.name");
 		int i = 1;
 		for (ConnectorComponentConfigDb topic : topicsDb) {
@@ -62,10 +63,12 @@ public class KafkaConfiguration {
 		AdminClient client = AdminClient.create(new KafkaAdmin(configs).getConfigurationProperties());
 
 		// Here you get all the consumer groups
+		log.debug("kafkaAdmin@KafkaConfiguration - get all the consumer groups");
 		List<String> groupIds = client.listConsumerGroups().all().get().stream().map(s -> s.groupId())
 				.collect(Collectors.toList());
 
 		// Here you get all the descriptions for the groups
+		log.debug("kafkaAdmin@kafkaConfiguration - get all the description for the group");
 		Map<String, ConsumerGroupDescription> groups = client.describeConsumerGroups(groupIds).all().get();
 		for (final ConsumerGroupDescription groupId : groups.values()) {
 			log.info(groupId.toString());
@@ -75,11 +78,13 @@ public class KafkaConfiguration {
 
 	@Bean
 	public ProducerFactory<String, String> producerFactory() {
+		log.debug("producerFactory@KafkaConfiguration - create a new producer factory.");
 		return new DefaultKafkaProducerFactory<>(producerConfigs());
 	}
 
 	@Bean
 	public Map<String, Object> producerConfigs() {
+		log.debug("producerConfigs@KafkaConfiguration - create a map and put the properties of producerConfig");
 		Map<String, Object> props = new HashMap<>();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -91,6 +96,7 @@ public class KafkaConfiguration {
 
 	@Bean
 	public KafkaTemplate<String, String> kafkaTemplate() {
+		log.debug("kafkaTemplate@KafkaConfiguration - create a new kafka template");
 		return new KafkaTemplate<String, String>(producerFactory());
 	}
 }
