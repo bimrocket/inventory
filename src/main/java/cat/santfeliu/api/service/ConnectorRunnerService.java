@@ -75,13 +75,13 @@ public class ConnectorRunnerService {
 			while (!instance.shouldEnd()) {
 				if (curObject == null && loaderHasEnd) {
 					instance.stop();
-				} else if (curObject.isNull() && !loaderHasEnd) {
+				} else if (curObject == null && !loaderHasEnd) {
 					log.debug("runConnector@ConnectorRunnerService - connector {} put to sleep {}ms due to end of objects", instance.getConnector().getConnectorName(), loader.getSleepTime());
 					Thread.sleep(loader.getSleepTime());
 					log.debug("runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader", instance.getConnector().getConnectorName());
 					curObject = loader.load(loader.getLoadTimeout());
 				}
-				if (!curObject.isNull()) {
+				if (curObject == null) {
 					log.debug("currentOnject :: {}", mapper.writeValueAsString(curObject));
 					this.updateStats(instance, ComponentTypeEnum.LOADER);
 					JsonNode transformed = null;
@@ -94,7 +94,7 @@ public class ConnectorRunnerService {
 						log.error("runConnector@ConnectorRunnerService - {}", error, e);
 						log.error("runConnector@ConnectorRunnerService - object :: {}", new ObjectMapper().writeValueAsString(curObject));
 					}
-					if (!transformed.isNull()) {
+					if (transformed != null) {
 						
 						this.updateStats(instance, ComponentTypeEnum.TRANSFORMER);
 						try {

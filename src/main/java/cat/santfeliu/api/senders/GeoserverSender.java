@@ -49,13 +49,13 @@ public class GeoserverSender extends ConnectorSender {
 		log.debug("send@GeoserverSender - find globalidDb by inventory {} and globalid {}", this.inventoryName, globalId);
 		Optional<GlobalIdDb> globalIdDbOpt = globalIdRepo.findByInventoryAndGlobalId(this.inventoryName, globalId);
 		if (globalIdDbOpt.isPresent()) {
-			if (node.get("element").isNull()) {
+			if (node.get("element") == null) {
 				delete = true;
 			} else {
 				update = true;
 			}
 			localId = globalIdDbOpt.get().getLocalId();
-		} else if (!node.get("element").isNull()) {
+		} else if (node.get("element") != null) {
 			insert = true;
 		}
 		Directives dir = new Directives();
@@ -98,7 +98,7 @@ public class GeoserverSender extends ConnectorSender {
 					} else {
 						dir.add(key);
 						log.debug("send@GeoserverSender - add not geom key {}", key);
-						if (entry.getValue().isNull()) {
+						if (entry.getValue() == null) {
 							dir.set(null);
 						} else {
 							dir.set(entry.getValue().asText());
@@ -154,7 +154,7 @@ public class GeoserverSender extends ConnectorSender {
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
-					if (entry.getValue().isNull()) {
+					if (entry.getValue() == null) {
 						dir.set(null);
 					} else {
 						dir.set(entry.getValue().asText());

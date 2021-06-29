@@ -93,14 +93,14 @@
 //		} catch (JsonProcessingException e) {
 //			e.printStackTrace();
 //		}
-//		if (!toReturn.isNull()) {
+//		if (toReturn != null) {
 //			toReturn = transformForTransformer(toReturn);
 //			try {
 //				log.debug("getObject@GemwebLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
 //			} catch (JsonProcessingException e) {
 //				e.printStackTrace();
 //			}
-//			if (toReturn.isNull()) {
+//			if (toReturn == null) {
 //				// already treated get next recursively
 //				toReturn = getObject();
 //			}
