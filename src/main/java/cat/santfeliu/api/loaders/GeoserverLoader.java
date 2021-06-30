@@ -116,7 +116,12 @@ public class GeoserverLoader extends ConnectorLoader {
 			loaderJson.setElement(node);
 			log.debug("transformForTransformer@GeoserverLoader - globalId {} not treated add to treatedGUIDs",
 					globalId);
-			return mapper.valueToTree(loaderJson);
+			try {
+				return mapper.readTree(mapper.writeValueAsString(loaderJson));
+			} catch (JsonProcessingException e) {
+				// bever happens
+				return null;
+			}
 		} else {
 			return null;
 		}
@@ -161,7 +166,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			log.debug("loadResponse@GeoserverLoader - execute httpClient built");
 			HttpResponse response = httpClient.execute(request.build());
 			String bodyResp = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-			jsonResponse = mapper.valueToTree(bodyResp);
+			jsonResponse = mapper.readTree(bodyResp);
 
 		} catch (ConnectTimeoutException | SocketTimeoutException e) {
 			log.error("loadResponse@GeoserverLoader - timeout while sending petition : ", e);

@@ -37,7 +37,6 @@ public class RhinoTransformer extends ConnectorTransformer {
 		String modelGlobalId = "";
 		String fieldRef = this.params.getParamValue(
 				RhinoTransformerConfigKeys.TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME.getKey(), false);
-
 		if (fieldRef != null && !fieldRef.isEmpty()) {
 			try {
 				String modelLocalId = JsonPath.parse(mapper.writeValueAsString(fJson)).<String>read(this.params
@@ -73,12 +72,12 @@ public class RhinoTransformer extends ConnectorTransformer {
 
 		}
 
-		String output = "";
+		JsonNode outputFeature = null;
 
 		JavaScriptConverter converter = new JavaScriptConverter(this.params);
 		try {
 			converter.begin(scopeObjects);
-			JsonNode node = mapper.readTree(fJson.toString());
+			JsonNode node = fJson;
 			String transformGeoStr = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY.getKey(), false);
 			if (transformGeoStr != null && Boolean.valueOf(transformGeoStr)) {
 				String geojsonPath = this.params
@@ -100,8 +99,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 				}
 				
 			}
-			JsonNode outputFeature = converter.convert(node);
-			output = mapper.writeValueAsString(outputFeature);
+			outputFeature = converter.convert(node); 
 		} catch (Exception ex) {
 			try {
 				log.error("transformData@RhinoService - error while converting feature {} with exception ",
@@ -117,7 +115,10 @@ public class RhinoTransformer extends ConnectorTransformer {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-		return mapper.valueToTree(output);
+		if (outputFeature.get("globalId").isNull()) {
+			log.info("gid is null");
+		}
+		return outputFeature;
 	}
 
 }

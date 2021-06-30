@@ -81,7 +81,7 @@ public class ConnectorRunnerService {
 					log.debug("runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader", instance.getConnector().getConnectorName());
 					curObject = loader.load(loader.getLoadTimeout());
 				}
-				if (curObject == null) {
+				if (curObject != null) {
 					log.debug("currentOnject :: {}", mapper.writeValueAsString(curObject));
 					this.updateStats(instance, ComponentTypeEnum.LOADER);
 					JsonNode transformed = null;

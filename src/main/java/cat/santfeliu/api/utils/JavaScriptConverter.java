@@ -70,13 +70,13 @@ public class JavaScriptConverter extends ObjectConverter {
 	public JsonNode convert(JsonNode object) {
 		ScriptableObject.putProperty(scope, "node", object);
 		ScriptableObject.putProperty(scope, this.config.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_SCRIPT_SCOPE_JSON_OBJECT_NAME.getKey()), new JsonNodeScriptable(scope, object));
-
+ 
 		Object result = script.exec(context, scope);
 
 		if (result instanceof NativeJavaObject) {
 			result = ((NativeJavaObject) result).unwrap();
 			if (result instanceof JsonNode) {
-				return (JsonNode) result;
+				return (JsonNode) result; 
 			}
 		} else if (result instanceof Scriptable) {
 			return toJsonNode((Scriptable) result);

@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -115,16 +116,16 @@ public class GeoserverSender extends ConnectorSender {
 			log.debug("send@GeoserverSender - add update of geoserversender key {}",this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()) );
 			dir.add("Update").attr("typeName", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
-			Map<String, JsonNode> m = null;
+			Map<String, LinkedHashMap<String, String>> m = null;
 			try {
 				m = (mapper.treeToValue(elem, Map.class));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-			for (Map.Entry<String, JsonNode> entry : m.entrySet()) {
+			for (Map.Entry<String, LinkedHashMap<String, String>> entry : m.entrySet()) {
 				dir.add("Property");
 				String key = entry.getKey();
-				JsonNode elemElem = entry.getValue();
+				JsonNode elemElem = mapper.valueToTree(entry.getValue());
 				if (key.equals("geom")) {
 					log.debug("send@GeoserverSender - set geom key");
 					dir.add("Name").set("geom").up();
@@ -150,14 +151,14 @@ public class GeoserverSender extends ConnectorSender {
 
 					}
 				} else {
-					log.debug("send@GeoserverSender - set not geom key {}", key);
+					log.debug("send@GeoserverSender - set another key {}", key);
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
-					if (entry.getValue() == null) {
+					if (elemElem == null || elemElem.isNull()) {
 						dir.set(null);
 					} else {
-						dir.set(entry.getValue().asText());
+						dir.set(elemElem.asText());
 					}
 					dir.up();
 				}

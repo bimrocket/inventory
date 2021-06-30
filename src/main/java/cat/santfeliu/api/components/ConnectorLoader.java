@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
@@ -196,7 +197,11 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 					// GUID not found, global id must be sent with null element
 					LoaderJsonObject obj = new LoaderJsonObject();
 					obj.setGlobalId(listGUIDs.get(i).getGlobalId());
-					deletions.add(mapper.valueToTree(obj));
+					try {
+						deletions.add(mapper.readTree(mapper.writeValueAsString(obj)));
+					} catch (JsonProcessingException e) {
+						// never happens
+					}
 					globalIdRepo.delete(listGUIDs.get(i));
 					this.instance.getConnectorStats().addDeleted();
 					logLoader.debug("checkDeletions@ConnectorLoader - guid not found, must send global id with null element");

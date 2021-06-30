@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorInstance;
@@ -90,7 +91,12 @@ public class KafkaConsumerRunner implements Runnable {
 		if (record == null) {
 			return null;
 		} else {
-			return mapper.valueToTree(record);
+			try {
+				return mapper.readTree(record);
+			} catch (JsonProcessingException e) {
+				log.debug("getRecord@KafkaConsummerRunner - record is not a valid Json :: {}", record);
+				return null;
+			}
 		}
 	}
 }
