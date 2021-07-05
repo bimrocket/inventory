@@ -7,15 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -29,11 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import cat.santfeliu.api.components.ConnectorSender;
 import cat.santfeliu.api.enumerator.GeoserverSenderConfigKeys;
 import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.utils.GeometryXMLUtils;
 
 public class GeoserverSender extends ConnectorSender {
 
@@ -47,7 +47,8 @@ public class GeoserverSender extends ConnectorSender {
 		boolean delete = false;
 		String localId = "";
 		String globalId = node.get("globalId").asText();
-		log.debug("send@GeoserverSender - find globalidDb by inventory {} and globalid {}", this.inventoryName, globalId);
+		log.debug("send@GeoserverSender - find globalidDb by inventory {} and globalid {}", this.inventoryName,
+				globalId);
 		Optional<GlobalIdDb> globalIdDbOpt = globalIdRepo.findByInventoryAndGlobalId(this.inventoryName, globalId);
 		if (globalIdDbOpt.isPresent()) {
 			if (node.get("element") == null) {
@@ -61,102 +62,93 @@ public class GeoserverSender extends ConnectorSender {
 		}
 		Directives dir = new Directives();
 		dir.add("Transaction").attr("xmlns", "http://www.opengis.net/wfs").attr("service", "WFS")
-				.attr("version", "1.1.0").attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+				.attr("version", "1.0.0").attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 				.attr("xsi:schemaLocation", "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd");
 		if (insert) {
 			JsonNode elem = node.get("element");
-			log.debug("send@GeoserverSender - add insert of geoserversender key {}", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
+			log.debug("send@GeoserverSender - add insert of geoserversender key {}",
+					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
 			dir.add("Insert").add(this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
 			dir.attr("xmlns", "https://www.santfeliu.cat");
-			try {
-				Map<String, JsonNode> m = (mapper.treeToValue(elem,Map.class));
-				for (Map.Entry<String, JsonNode> entry : m.entrySet()) {
-					String key = entry.getKey();
-					JsonNode elemElem = entry.getValue();
-					if (key.equals("geom")) {
-						log.debug("send@GeoserverSender - add geom key");
-						dir.add("geom");
-						JsonNode geomObj = elemElem;
-						String type = geomObj.get("type").asText();
-						if (type.equals("MultiPoint")) {
-							dir.add("Point").attr("xmlns", "http://www.opengis.net/gml");
-							dir.add("pos");
-							String pointCoordsStr = "";
-							boolean first = true;
-							ArrayNode coords = mapper.valueToTree(geomObj.get("coordinates"));
-							for (int i = 0; i < coords.size(); i++) {
-								ArrayNode pointCoords = mapper.valueToTree(coords.get(i));
-								for (int j = 0; j < pointCoords.size(); j++) {
-									pointCoordsStr += ((i == 0 && j == 0) ? pointCoords.get(j)
-											: (" " + pointCoords.get(j)));
-								}
-							}
-							dir.set(pointCoordsStr);
-							dir.up().up().up();
-							log.debug("send@GeoserverSender - add point {} of geom key", pointCoordsStr);
-
+			Iterator<String> keys = elem.fieldNames();
+			while (keys.hasNext()) {
+				String key = keys.next();
+				
+				if (key.equals("geom")) {
+					JsonNode elemElem = null;
+					try {
+						JsonNode nodeGeom = elem.get(key);
+						if (nodeGeom.isObject()) {
+							elemElem = nodeGeom;
+						} else if (nodeGeom.isValueNode()) {
+							elemElem = (JsonNode) mapper.readValue((nodeGeom.asText()), ObjectNode.class);
 						}
-					} else {
-						dir.add(key);
-						log.debug("send@GeoserverSender - add not geom key {}", key);
-						if (entry.getValue() == null) {
-							dir.set(null);
-						} else {
-							dir.set(entry.getValue().asText());
-						}
-						dir.up();
+						
+					} catch (JsonProcessingException e) {
+						log.error("send@GeoserverSender - can't map geom object as jsonObject {}", elem.get(key).asText());
 					}
+					log.debug("send@GeoserverSender - add geom key");
+					dir.add("geom");
+					JsonNode geomObj = elemElem;
+					if (geomObj != null && !geomObj.isNull()) {
+						GeometryXMLUtils.putGeometryObjInXML(dir, geomObj);
+					}
+					dir.up();
+				} else {
+					JsonNode elemElem = null;
+					elemElem = elem.get(key);
+					dir.add(key);
+					log.debug("send@GeoserverSender - add not geom key {}", key);
+					if (elemElem == null || elemElem.isNull()) {
+						dir.set("");
+					} else {
+						dir.set(elemElem.asText());
+					}
+					dir.up();
 				}
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
 			}
 
 		} else if (update) {
 			JsonNode elem = node.get("element");
-			log.debug("send@GeoserverSender - add update of geoserversender key {}",this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()) );
-			dir.add("Update").attr("typeName", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			log.debug("send@GeoserverSender - add update of geoserversender key {}",
+					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			dir.add("Update").attr("typeName",
+					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
-			Map<String, LinkedHashMap<String, String>> m = null;
-			try {
-				m = (mapper.treeToValue(elem, Map.class));
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-			for (Map.Entry<String, LinkedHashMap<String, String>> entry : m.entrySet()) {
+			Iterator<String> keys = elem.fieldNames();
+			while (keys.hasNext()) {
+				String key = keys.next();
 				dir.add("Property");
-				String key = entry.getKey();
-				JsonNode elemElem = mapper.valueToTree(entry.getValue());
 				if (key.equals("geom")) {
+					JsonNode elemElem = null;
+					try {
+						JsonNode nodeGeom = elem.get(key);
+						if (nodeGeom.isObject()) {
+							elemElem = nodeGeom;
+						} else if (nodeGeom.isValueNode()) {
+							elemElem = (JsonNode) mapper.readValue((nodeGeom.asText()), ObjectNode.class);
+						}
+					} catch (JsonProcessingException e) {
+						log.error("send@GeoserverSender - can't map geom object as jsonObject {}", elem.get(key).asText());
+					}
 					log.debug("send@GeoserverSender - set geom key");
 					dir.add("Name").set("geom").up();
 					JsonNode geomObj = elemElem;
-					String type = geomObj.get("type").asText();
-					if (type.equals("MultiPoint")) {
-						dir.add("Value");
-						dir.add("Point").attr("xmlns", "http://www.opengis.net/gml");
-						dir.add("pos");
-						String pointCoordsStr = "";
-						boolean first = true;
-						ArrayNode coords = mapper.valueToTree(geomObj.get("coordinates"));
-						for (int i = 0; i < coords.size(); i++) {
-							ArrayNode pointCoords = mapper.valueToTree(coords.get(i));
-							for (int j = 0; j < pointCoords.size(); j++) {
-								pointCoordsStr += ((i == 0 && j == 0) ? pointCoords.get(j)
-										: (" " + pointCoords.get(j)));
-							}
-						}
-						dir.set(pointCoordsStr);
-						dir.up().up().up();
-						log.debug("send@GeoserverSender - set point {} of geom key", pointCoordsStr);
+					dir.add("Value");
 
-					}
+					GeometryXMLUtils.putGeometryObjInXML(dir, geomObj);
+					
+					dir.up();
 				} else {
+					JsonNode elemElem = null;
+					elemElem = elem.get(key);
+
 					log.debug("send@GeoserverSender - set another key {}", key);
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
 					if (elemElem == null || elemElem.isNull()) {
-						dir.set(null);
+						dir.set("");
 					} else {
 						dir.set(elemElem.asText());
 					}
@@ -164,18 +156,25 @@ public class GeoserverSender extends ConnectorSender {
 				}
 				dir.up();
 			}
-			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");			
-			dir.add("FeatureId").attr("fid",localId);
+			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
+			dir.add("FeatureId").attr("fid", localId);
 		} else {
-			log.debug("send@GeoserverSender - add delete of geoserversender key {}",this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
-			dir.add("Delete").attr("typeName", this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			log.debug("send@GeoserverSender - add delete of geoserversender key {}",
+					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			dir.add("Delete").attr("typeName",
+					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
-			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");			
-			dir.add("FeatureId").attr("fid",localId);
+			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
+			dir.add("FeatureId").attr("fid", localId);
 		}
 		try {
 			String xml = new Xembler(dir).xml().replaceAll("\r\n", "");
 
+//			StringReader reader = new StringReader(xml);
+//			Parser parser = new Parser(new WFSConfiguration());
+//			TransactionType tt = (TransactionType) parser.parse(reader);
+//			InsertElementType insert1 = (InsertElementType) tt.getInsert().get(0);
+//			insert1
 			log.info("xml done :: {}", xml);
 			String uri = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_URL.getKey());
 			String bodyResp = sendPostXML(uri, xml);
@@ -185,7 +184,7 @@ public class GeoserverSender extends ConnectorSender {
 				try {
 					Matcher m = Pattern.compile("fid=\"[A-z_.0-9]+\"").matcher(bodyResp);
 					while (m.find()) {
-						localId = m.group(0).replaceAll("fid=","").replaceAll("\"","");
+						localId = m.group(0).replaceAll("fid=", "").replaceAll("\"", "");
 					}
 					GlobalIdDb globalIdDb = new GlobalIdDb();
 					globalIdDb.setGlobalId(globalId);
@@ -198,13 +197,17 @@ public class GeoserverSender extends ConnectorSender {
 			} else if (update) {
 				Matcher m = Pattern.compile("<wfs:totalUpdated>1</wfs:totalUpdated>").matcher(bodyResp);
 				if (!m.find()) {
-					log.error("send@GeoserverSender - couldn't do update transaction, response from geoserver :: {}, xml sent :: {}",bodyResp, xml);
+					log.error(
+							"send@GeoserverSender - couldn't do update transaction, response from geoserver :: {}, xml sent :: {}",
+							bodyResp, xml);
 				}
 			} else if (delete) {
 				globalIdRepo.delete(globalIdDbOpt.get());
 				Matcher m = Pattern.compile("<wfs:totalDeleted>1</wfs:totalDeleted>").matcher(bodyResp);
 				if (!m.find()) {
-					log.error("send@GeoserverSender - couldn't do delete transaction, response from geoserver :: {}, xml sent :: {}",bodyResp, xml);
+					log.error(
+							"send@GeoserverSender - couldn't do delete transaction, response from geoserver :: {}, xml sent :: {}",
+							bodyResp, xml);
 				}
 			}
 		} catch (Exception e) {
@@ -235,7 +238,7 @@ public class GeoserverSender extends ConnectorSender {
 			RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
 					.setSocketTimeout(socketTimeout).build();
 			String authType = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_AUTH.getKey());
-			String authHeader = ""; 
+			String authHeader = "";
 			if (authType != null && authType.equals("Basic")) {
 				String auth = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_USERNAME.getKey()) + ":"
 						+ this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_PASSWORD.getKey());
@@ -255,7 +258,7 @@ public class GeoserverSender extends ConnectorSender {
 				String readLine;
 				while (((readLine = br.readLine()) != null)) {
 					sb.append("\n").append(readLine);
-				} 
+				}
 			}
 
 			String ret = sb.toString();

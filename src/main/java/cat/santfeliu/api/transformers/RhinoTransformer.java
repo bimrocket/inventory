@@ -89,7 +89,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 					GeometryJSON gjson = new GeometryJSON();						
 					Reader reader = new StringReader(geojson.strip());
 					Geometry geo = geo = gjson.read(reader);
-					Point p = geo.getCentroid();
+					Point p = geo.getInteriorPoint();
 					String[] paths = geojsonPath.split("\\.");
 					JsonNode currentNode = node;
 					for (int i=1;i < paths.length - 1;i++) {
@@ -109,14 +109,6 @@ public class RhinoTransformer extends ConnectorTransformer {
 			}
 		} finally {
 			converter.end();
-		}
-		try {
-			log.debug("transform@RhinoTransformer - transform jsonObject object {} to jsonNode", mapper.writeValueAsString(object));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		if (outputFeature.get("globalId").isNull()) {
-			log.info("gid is null");
 		}
 		return outputFeature;
 	}
