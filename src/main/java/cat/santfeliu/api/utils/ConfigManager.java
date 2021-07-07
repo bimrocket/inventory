@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author realor
  */
-public class PropertyManager
+public class ConfigManager
 {
   public static List<PropertyInfo> getProperties(
     ConnectorComponent component)
@@ -20,7 +20,7 @@ public class PropertyManager
     Field[] fields = cls.getDeclaredFields();
     for (Field field : fields)
     {
-      ComponentProperty property = field.getAnnotation(ComponentProperty.class);
+      ConfigProperty property = field.getAnnotation(ConfigProperty.class);
       if (property != null)
       {
         PropertyInfo info = new PropertyInfo(property, field);        
@@ -37,7 +37,7 @@ public class PropertyManager
     Field[] fields = cls.getDeclaredFields();
     for (Field field : fields)
     {
-      ComponentProperty property = field.getAnnotation(ComponentProperty.class);
+      ConfigProperty property = field.getAnnotation(ConfigProperty.class);
       if (property != null)
       {
         String name = property.name();
@@ -83,7 +83,7 @@ public class PropertyManager
     private final String description;
     private final Field field;
 
-    PropertyInfo(ComponentProperty property, Field field)
+    PropertyInfo(ConfigProperty property, Field field)
     {
       this.name = property.name();
       this.required = property.required();

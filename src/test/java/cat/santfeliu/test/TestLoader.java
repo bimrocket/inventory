@@ -1,10 +1,10 @@
 package cat.santfeliu.test;
 
 import cat.santfeliu.api.components.ConnectorLoader;
-import cat.santfeliu.api.utils.ComponentProperty;
 import cat.santfeliu.api.utils.ConfigContainer;
-import cat.santfeliu.api.utils.PropertyManager;
+import cat.santfeliu.api.utils.ConfigManager;
 import com.google.gson.JsonObject;
+import cat.santfeliu.api.utils.ConfigProperty;
 
 /**
  *
@@ -12,20 +12,20 @@ import com.google.gson.JsonObject;
  */
 public class TestLoader extends ConnectorLoader
 {
-  @ComponentProperty(name="url",
+  @ConfigProperty(name="url",
     description="Connection url")
   String url;
   
-  @ComponentProperty(name="layer")
+  @ConfigProperty(name="layer")
   String layer;
   
-  @ComponentProperty(name="username")
+  @ConfigProperty(name="username")
   String username;
 
-  @ComponentProperty(name="password")
+  @ConfigProperty(name="password")
   String password;
 
-  @ComponentProperty(name="maxEntities", 
+  @ConfigProperty(name="maxEntities", 
     description="Max number of entities to return", required = false)
   int maxEntities;
 
@@ -34,7 +34,7 @@ public class TestLoader extends ConnectorLoader
   {
     super.init(inventoryName, params); // params not needed inside loader, remove it
     
-    PropertyManager.inject(this, params); // inject params in loader fields.
+    ConfigManager.inject(this, params); // inject params in loader fields.
   }
   
   @Override
@@ -52,6 +52,7 @@ public class TestLoader extends ConnectorLoader
   public static void main(String[] args)
   {
     TestLoader loader = new TestLoader();
-    System.out.println(PropertyManager.getProperties(loader));
+    ConfigManager.getProperties(loader);
+    System.out.println(ConfigManager.getProperties(loader));
   }
 }

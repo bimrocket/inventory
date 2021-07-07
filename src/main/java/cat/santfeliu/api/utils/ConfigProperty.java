@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ComponentProperty 
+public @interface ConfigProperty 
 {
   String name();
   String description() default "";
