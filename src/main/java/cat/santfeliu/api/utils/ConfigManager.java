@@ -50,7 +50,7 @@ public class ConfigManager
         else if (field.getType() == boolean.class 
           || field.getType() == Boolean.class)
         {
-          value = Integer.parseInt(textValue);          
+          value = Boolean.parseBoolean(textValue);          
         }
         else if (field.getType() == int.class 
           || field.getType() == Integer.class)
@@ -70,7 +70,7 @@ public class ConfigManager
         }
         catch (Exception ex)
         {
-          // warn
+          // log warn
         }
       }
     }    
