@@ -51,8 +51,6 @@ public class TestLoader extends ConnectorLoader
   
   public static void main(String[] args)
   {
-    TestLoader loader = new TestLoader();
-    ConfigManager.getProperties(loader);
-    System.out.println(ConfigManager.getProperties(loader));
+    System.out.println(ConfigManager.getProperties(TestLoader.class));
   }
 }

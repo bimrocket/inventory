@@ -11,13 +11,11 @@ import java.util.List;
  */
 public class ConfigManager
 {
-  public static List<PropertyInfo> getProperties(
-    ConnectorComponent component)
+  public static List<PropertyInfo> getProperties(Class componentClass)
   {
     List<PropertyInfo> properties = new ArrayList<>();
   
-    Class cls = component.getClass();
-    Field[] fields = cls.getDeclaredFields();
+    Field[] fields = componentClass.getDeclaredFields();
     for (Field field : fields)
     {
       ConfigProperty property = field.getAnnotation(ConfigProperty.class);
