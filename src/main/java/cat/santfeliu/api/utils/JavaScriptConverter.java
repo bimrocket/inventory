@@ -2,6 +2,9 @@ package cat.santfeliu.api.utils;
 
 import java.util.Map;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+
 import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
@@ -53,7 +56,6 @@ public class JavaScriptConverter extends ObjectConverter {
 		script = context.compileString(source, "converter", 0, null);
 
 		scope = context.initStandardObjects();
-
 		ScriptableObject.putProperty(scope, "mapper", mapper);
 		
 		for (String key : scopeObjects.keySet()) {

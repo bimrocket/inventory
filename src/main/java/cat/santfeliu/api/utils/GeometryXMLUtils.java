@@ -1,5 +1,6 @@
 package cat.santfeliu.api.utils;
 
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xembly.Directives;
@@ -16,13 +17,13 @@ public class GeometryXMLUtils {
 		String type = geomObj.get("type").asText();
 		if (type.equals("Point")) {
 			dir.add("Point").attr("xmlns", "http://www.opengis.net/gml");
-			dir.add("pos");
+			dir.add("coordinates").attr("decimal", ".").attr("cs", ",").attr("ts", " ");
 			String pointCoordsStr = "";
 			ArrayNode coords = mapper.valueToTree(geomObj.get("coordinates"));
 			for (int i = 0; i < coords.size(); i++) {
 				JsonNode pointCoords = coords.get(i);
 					pointCoordsStr += ((i == 0) ? pointCoords.asDouble()
-							: (" " + pointCoords.asDouble()));
+							: ("," + pointCoords.asDouble()));
 			}
 			dir.set(pointCoordsStr);
 			dir.up().up();

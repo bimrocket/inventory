@@ -2,6 +2,8 @@ package cat.santfeliu.api.components;
 
 import cat.santfeliu.api.service.ConnectorRunnerService;
 import cat.santfeliu.api.utils.ConfigContainer;
+import cat.santfeliu.api.utils.ConfigManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ public abstract class ConnectorComponent {
 	public void init(String inventoryName, ConfigContainer params) {
 		this.inventoryName = inventoryName;
 		this.params = params;
+		ConfigManager.inject(this, params);
 		log.debug("init@ConnectorComponent - initialization of connector component with name {}", inventoryName);
 	}
 	

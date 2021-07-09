@@ -18,4 +18,5 @@ public @interface ConfigProperty
   String name();
   String description() default "";
   boolean required() default true;
+  boolean hidden() default false;
 }

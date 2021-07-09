@@ -39,27 +39,36 @@ public class ConfigManager
       if (property != null)
       {
         String name = property.name();
-        String textValue = config.getParamValue(name);
         Object value = null;
-        if (field.getType() == String.class)
-        {
-          value = textValue;
+        if (name.endsWith("*")) {
+        	value = List.copyOf(config.getMultipleParamValues(name));
+        } else {
+        	String textValue = config.getParamValue(name);
+
+            if (field.getType() == String.class)
+            {
+              value = textValue;
+            }
+            else if (field.getType() == boolean.class 
+              || field.getType() == Boolean.class)
+            {
+              value = Boolean.parseBoolean(textValue);          
+            }
+            else if (field.getType() == int.class 
+              || field.getType() == Integer.class)
+            {
+              value = Integer.parseInt(textValue);          
+            }
+            else if (field.getType() == double.class 
+              || field.getType() == Double.class)
+            {
+              value = Double.parseDouble(textValue);          
+            }
+            else if (field.getType() == List.class) {
+            	
+            }
         }
-        else if (field.getType() == boolean.class 
-          || field.getType() == Boolean.class)
-        {
-          value = Boolean.parseBoolean(textValue);          
-        }
-        else if (field.getType() == int.class 
-          || field.getType() == Integer.class)
-        {
-          value = Integer.parseInt(textValue);          
-        }
-        else if (field.getType() == double.class 
-          || field.getType() == Double.class)
-        {
-          value = Double.parseDouble(textValue);          
-        }
+        
         // ... other conversions (arrays, etc...)
         try
         {

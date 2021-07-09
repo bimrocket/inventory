@@ -25,13 +25,13 @@ public class ConfigContainer {
 	@Autowired
 	private ConnectorComponentConfigRepo configRepo;
 	
-	public void init(String producer, String type) {
+	public void init(String connectorName, String type) {
 		this.params = new HashMap<String, String>();
-		List<ConnectorComponentConfigDb> configs = configRepo.findAllByProducerAndType(producer, type);
+		List<ConnectorComponentConfigDb> configs = configRepo.findAllByProducerAndType(connectorName, type);
 		for (ConnectorComponentConfigDb config : configs) {
 			this.params.put(config.getConfigKey(), config.getConfigValue());
 		}
-		this.connectorName = producer;
+		this.connectorName = connectorName;
 		this.connectorComponentType = type;
 	}
 	

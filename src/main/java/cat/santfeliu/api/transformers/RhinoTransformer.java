@@ -78,27 +78,27 @@ public class RhinoTransformer extends ConnectorTransformer {
 		try {
 			converter.begin(scopeObjects);
 			JsonNode node = fJson;
-			String transformGeoStr = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY.getKey(), false);
-			if (transformGeoStr != null && Boolean.valueOf(transformGeoStr)) {
-				String geojsonPath = this.params
-						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_JSON_PATH_GEOMETRY.getKey());
-				String geojson = mapper.writeValueAsString(JsonPath.parse(fJson.toString()).<LinkedHashMap<String, String>>read(geojsonPath));
-				JsonNode geoJsonNode = mapper.readTree(geojson);
-				String outputGeo = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY_OUTPUT.getKey());
-				if (outputGeo.equals("Point")) {
-					GeometryJSON gjson = new GeometryJSON();						
-					Reader reader = new StringReader(geojson.strip());
-					Geometry geo = geo = gjson.read(reader);
-					Point p = geo.getInteriorPoint();
-					String[] paths = geojsonPath.split("\\.");
-					JsonNode currentNode = node;
-					for (int i=1;i < paths.length - 1;i++) {
-						currentNode = currentNode.get(paths[i]);
-					}
-					((ObjectNode)currentNode).put(paths[paths.length-1], gjson.toString(p));
-				}
-				
-			}
+//			String transformGeoStr = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY.getKey(), false);
+//			if (transformGeoStr != null && Boolean.valueOf(transformGeoStr)) {
+//				String geojsonPath = this.params
+//						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_JSON_PATH_GEOMETRY.getKey());
+//				String geojson = mapper.writeValueAsString(JsonPath.parse(fJson.toString()).<LinkedHashMap<String, String>>read(geojsonPath));
+//				JsonNode geoJsonNode = mapper.readTree(geojson);
+//				String outputGeo = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY_OUTPUT.getKey());
+//				if (outputGeo.equals("Point")) {
+//					GeometryJSON gjson = new GeometryJSON();						
+//					Reader reader = new StringReader(geojson.strip());
+//					Geometry geo = geo = gjson.read(reader);
+//					Point p = geo.getInteriorPoint();
+//					String[] paths = geojsonPath.split("\\.");
+//					JsonNode currentNode = node;
+//					for (int i=1;i < paths.length - 1;i++) {
+//						currentNode = currentNode.get(paths[i]);
+//					}
+//					((ObjectNode)currentNode).put(paths[paths.length-1], gjson.toString(p));
+//				}
+//				
+//			}
 			outputFeature = converter.convert(node); 
 		} catch (Exception ex) {
 			try {

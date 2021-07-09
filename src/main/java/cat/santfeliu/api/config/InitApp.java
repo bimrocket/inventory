@@ -12,14 +12,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
-import org.xembly.Directives;
-import org.xembly.Xembler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import cat.santfeliu.api.components.ConnectorInstance;
+import cat.santfeliu.api.components.ConnectorLoader;
+import cat.santfeliu.api.loaders.GeoserverTestLoader;
+import cat.santfeliu.api.model.ConnectorDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
-import cat.santfeliu.api.utils.GeometryXMLUtils;
+import cat.santfeliu.api.utils.ConfigContainer;
 import cat.santfeliu.api.utils.InventoryUtils;
 
 /**
@@ -77,6 +77,23 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         	status.setConnectorStatus("offline");
         	statusRepo.save(status);
         }
+        
+//        GeoserverTestLoader testLoader = new GeoserverTestLoader();
+//        ConfigContainer params = new ConfigContainer();
+//        autowireCapableBeanFactory.autowireBean(params);
+//        params.init("testConnector", "loader");
+//        testLoader.init("testConnector", params);
+//        autowireCapableBeanFactory.autowireBean(testLoader);
+//		ConnectorDb connector = new ConnectorDb();
+//		connector.setInventoryName("testConnector");
+//		connector.setConnectorName("testConnector");
+//        ConnectorInstance instance = new ConnectorInstance(connector,null, null, null);
+//        testLoader.initLoader(instance);
+//        
+//        while (!testLoader.hasEnd()) {
+//        	log.info(testLoader.load(testLoader.getLoadTimeout()).toPrettyString());
+//        }
+//        
 //        RhinoTransformer transformer = new RhinoTransformer();
 //        ConfigContainer params = new ConfigContainer();
 //    	autowireCapableBeanFactory.autowireBean(params);
