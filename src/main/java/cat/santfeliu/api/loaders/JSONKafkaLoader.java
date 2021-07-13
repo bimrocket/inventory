@@ -1,6 +1,7 @@
 package cat.santfeliu.api.loaders;
 
 import cat.santfeliu.api.service.ConnectorRunnerService;
+import cat.santfeliu.api.utils.ConfigProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorLoader;
@@ -15,12 +16,20 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 
 	private KafkaConsumerRunner runner;
 	private Thread threatRunner;
-	
+
+	@ConfigProperty(name = "consumer.group.id", description = "Number of the kafka group to which the loader belongs")
+	String groupID;
+
+	@ConfigProperty(name = "consumer.topic.name", description = "Kafka topic number to send to")
+	String topicName;
+
+	@ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
+	String hasEnd;
+
 	@Override
 	public JsonNode load(long timeout) {
 		if (runner == null) {		
-			runner = new KafkaConsumerRunner(this.instance, this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_GROUP_ID.getKey()),
-			this.params.getParamValue(JSONKafkaLoaderConfigKeys.KAFKA_TOPIC_NAME.getKey()));
+			runner = new KafkaConsumerRunner(this.instance, groupID, topicName);
 			threatRunner = new Thread(runner);
 			threatRunner.start();
 		};

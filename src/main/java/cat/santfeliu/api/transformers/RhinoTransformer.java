@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import cat.santfeliu.api.utils.ConfigProperty;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -29,20 +30,27 @@ public class RhinoTransformer extends ConnectorTransformer {
 
 	private static final Logger log = LoggerFactory.getLogger(RhinoTransformer.class);
 
+	@ConfigProperty(name = "scope.model.global.id.name", description = "Name of model globalId variable inside javascript, should be singular name")
+	String scriptScopeModelGlobalIdName;
+
+	@ConfigProperty(name = "json.path.local.model.id",description = "JSON Path to model local id used for model global id creation")
+	String jsonPathLocalModelId;
+
+	@ConfigProperty(name = "model.inventory.name", description = "Inventory name of model")
+	String model_InventoryName;
+
+
 	@Override
 	public JsonNode transform(JsonNode object) {
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> scopeObjects = new HashMap<>();
 		JsonNode fJson = object;
 		String modelGlobalId = "";
-		String fieldRef = this.params.getParamValue(
-				RhinoTransformerConfigKeys.TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME.getKey(), false);
+		String fieldRef = scriptScopeModelGlobalIdName;
 		if (fieldRef != null && !fieldRef.isEmpty()) {
 			try {
-				String modelLocalId = JsonPath.parse(mapper.writeValueAsString(fJson)).<String>read(this.params
-						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_JSON_PATH_LOCAL_MODEL_ID.getKey()));
-				String modelInventoryName = this.params
-						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_MODEL_INVENTORY_NAME.getKey());
+				String modelLocalId = JsonPath.parse(mapper.writeValueAsString(fJson)).<String>read(jsonPathLocalModelId);
+				String modelInventoryName = model_InventoryName;
 				Optional<GlobalIdDb> globalIdModel = globalIdRepo.findByInventoryAndLocalId(modelInventoryName,
 						modelLocalId);
 
@@ -65,10 +73,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 		}
 
 		if (modelGlobalId != null && !modelGlobalId.isBlank()) {
-			scopeObjects.put(
-					this.params.getParamValue(
-							RhinoTransformerConfigKeys.TRANSFORMER_SCRIPT_SCOPE_MODEL_GLOBAL_ID_NAME.getKey()),
-					modelGlobalId);
+			scopeObjects.put(scriptScopeModelGlobalIdName, modelGlobalId);
 
 		}
 

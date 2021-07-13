@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cat.santfeliu.api.service.ConnectorRunnerService;
+import cat.santfeliu.api.utils.ConfigProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -30,17 +31,22 @@ public class JSONKafkaSender extends ConnectorSender {
 	@Autowired
 	protected KafkaAdmin admin;
 
+	@ConfigProperty(name = "topic.name", description = "Kafka topic name to send to")
+	String topicName;
+
+	@ConfigProperty(name = "topic.partitions", description = "Partitions of topic kafka")
+	String partitions;
+
 	@Override
 	public void send(JsonNode node) {
-
 		try {
-			this.template.send(this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()),
+			this.template.send(topicName,
 					new ObjectMapper().writeValueAsString(node));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 		try {
-			log.debug("send@JSONKafkaSender - send :: {} , {}", this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey()), new ObjectMapper().writeValueAsString(node));
+			log.debug("send@JSONKafkaSender - send :: {} , {}", topicName, new ObjectMapper().writeValueAsString(node));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}

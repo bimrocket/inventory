@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cat.santfeliu.api.utils.ConfigProperty;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -40,6 +41,25 @@ public class GeoserverSender extends ConnectorSender {
 	private static final Logger log = LoggerFactory.getLogger(GeoserverSender.class);
 	ObjectMapper mapper = new ObjectMapper();
 
+	// PARAMS
+	@ConfigProperty(name="url", description="Url fins wfs de servidor geoserver")
+	String url;
+
+	@ConfigProperty(name = "layer", description = "Layer to update")
+	String layer;
+
+	@ConfigProperty(name = "type.name", description = "Nom de entitat a actualitza")
+	String typeName;
+
+	@ConfigProperty(name = "auth", description = "Authentication used currently supported only Basic")
+	String auth;
+
+	@ConfigProperty(name = "username", description = "User used for basic authentication")
+	String username;
+
+	@ConfigProperty(name = "password", description = "Password used for basic authentication", hidden=true)
+	String password;
+
 	@Override
 	public void send(JsonNode node) {
 		boolean insert = false;
@@ -66,9 +86,8 @@ public class GeoserverSender extends ConnectorSender {
 				.attr("xsi:schemaLocation", "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd");
 		if (insert) {
 			JsonNode elem = node.get("element");
-			log.debug("send@GeoserverSender - add insert of geoserversender key {}",
-					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
-			dir.add("Insert").add(this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_LAYER.getKey()));
+			log.debug("send@GeoserverSender - add insert of geoserversender key {}", layer);
+			dir.add("Insert").add(layer);
 			dir.attr("xmlns", "https://www.santfeliu.cat");
 			Iterator<String> keys = elem.fieldNames();
 			while (keys.hasNext()) {
@@ -110,10 +129,8 @@ public class GeoserverSender extends ConnectorSender {
 
 		} else if (update) {
 			JsonNode elem = node.get("element");
-			log.debug("send@GeoserverSender - add update of geoserversender key {}",
-					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
-			dir.add("Update").attr("typeName",
-					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			log.debug("send@GeoserverSender - add update of geoserversender key {}", typeName);
+			dir.add("Update").attr("typeName", typeName);
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			Iterator<String> keys = elem.fieldNames();
 			while (keys.hasNext()) {
@@ -159,10 +176,8 @@ public class GeoserverSender extends ConnectorSender {
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
 			dir.add("FeatureId").attr("fid", localId);
 		} else {
-			log.debug("send@GeoserverSender - add delete of geoserversender key {}",
-					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
-			dir.add("Delete").attr("typeName",
-					this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_TYPE_NAME.getKey()));
+			log.debug("send@GeoserverSender - add delete of geoserversender key {}", typeName);
+			dir.add("Delete").attr("typeName", typeName);
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
 			dir.add("FeatureId").attr("fid", localId);
@@ -176,7 +191,7 @@ public class GeoserverSender extends ConnectorSender {
 //			InsertElementType insert1 = (InsertElementType) tt.getInsert().get(0);
 //			insert1
 			log.info("xml done :: {}", xml);
-			String uri = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_URL.getKey());
+			String uri = url;
 			String bodyResp = sendPostXML(uri, xml);
 
 			if (insert) {
@@ -237,11 +252,10 @@ public class GeoserverSender extends ConnectorSender {
 			HttpPost httpPost = new HttpPost(uri);
 			RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
 					.setSocketTimeout(socketTimeout).build();
-			String authType = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_AUTH.getKey());
+			String authType = auth;
 			String authHeader = "";
 			if (authType != null && authType.equals("Basic")) {
-				String auth = this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_USERNAME.getKey()) + ":"
-						+ this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_PASSWORD.getKey());
+				String auth = username + ":" + password;
 				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1));
 				authHeader = "Basic " + new String(encodedAuth);
 			}
