@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import cat.santfeliu.api.utils.ConfigProperty;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
@@ -40,6 +41,40 @@ import cat.santfeliu.api.utils.QuickSortAlgorithm;
 public class GeoserverLoader extends ConnectorLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
+
+	// PARAMS
+	@ConfigProperty(name="url", description="Geoserver wfs url")
+	String url;
+
+	@ConfigProperty(name="params", description="Geoserver url query params")
+	String urlParams;
+
+	@ConfigProperty(name="username", description="User used for basic authentication")
+	String username;
+
+	@ConfigProperty(name="password", description="Password used for basic authentication", hidden=true)
+	String password;
+
+	@ConfigProperty(name="layers.*", description="Layers to load from geoserver can be multiple like this: layers.01, layers.02...")
+	List<String> layersLoad;
+
+	@ConfigProperty(name="format", description="Format of petition's body sent to geoserver")
+	String formatPetition;
+
+	@ConfigProperty(name="auth", description="Type of authentication currently only Basic is supported")
+	String auth;
+
+	@ConfigProperty(name="json.path.local.id", description="Json path route in element leading to local id")
+	String jsonPathLocalId;
+
+	@ConfigProperty(name="json.path.array.element", description="Path route in geoserver response leading to array with elements")
+	String jsonPathArrayElement;
+
+	@ConfigProperty(name = "filter.field", description = "Param that indicates with which field the date of update of the object corresponds, if it is not indicated a full load is made")
+	String filter_Field;
+
+	@ConfigProperty(name = "filter.format", description = "Indicates update date format")
+	String filterFormat;
 
 	@Override
 	public JsonNode load(long timeout) {
@@ -137,23 +172,21 @@ public class GeoserverLoader extends ConnectorLoader {
 		HttpClientBuilder clientBuilder = HttpClients.custom();
 		clientBuilder.setDefaultRequestConfig(requestBuilder.build());
 		HttpClient httpClient = clientBuilder.build();
-		String authType = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_AUTH.getKey());
+		String authType = auth;
 		String authHeader = "";
 		if (authType != null && authType.equals("Basic")) {
-			String auth = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_USERNAME.getKey()) + ":"
-					+ this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_PASSWORD.getKey());
+			String auth = username + ":" + password;
 			byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1));
 			authHeader = "Basic " + new String(encodedAuth);
 		}
-		String uri = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_URL.getKey());
-		String params = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_PARAMS.getKey());
-		List<String> layers = this.params
-				.getMultipleParamValues(GeoserverLoaderConfigKeys.LOADER_LAYERS_MULTIPLE.getKey());
+		String uri = url;
+		String params = urlParams;
+		List<String> layers = layersLoad;
 		String layersInline = "";
 		for (int i = 0; i < layers.size(); i++) {
 			layersInline += (i != 0 ? "," + layers.get(i) : layers.get(i));
 		}
-		String format = this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_FORMAT.getKey());
+		String format = formatPetition;
 		RequestBuilder request = RequestBuilder.get()
 				.setUri(uri + params + "&typeName=" + layersInline + "&outputFormat=" + format);
 		if (authType != null && authType.equals("Basic")) {
@@ -182,7 +215,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			all = mapper.valueToTree(jsonResponse.get("features"));
 			ArrayNode arrayFiltered = mapper.createArrayNode();
 			Date updateDate = null;
-			String filterField = this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FIELD.getKey(), false);
+			String filterField = filter_Field;
 
 			if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
 				log.debug("loadResponse@GeoserverLoader - page is empty or filerField is null");
@@ -207,9 +240,7 @@ public class GeoserverLoader extends ConnectorLoader {
 
 			} else {
 				updateDate = this.page.getContent().get(1).getExecutionStartDate();
-				SimpleDateFormat sdf = new SimpleDateFormat(
-						this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_FILTER_FORMAT.getKey()));
-
+				SimpleDateFormat sdf = new SimpleDateFormat(filterFormat);
 				log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
 				if (all.isArray()) {
 					for (JsonNode e : all) {
@@ -256,8 +287,7 @@ public class GeoserverLoader extends ConnectorLoader {
 	private Pair<String, String> getIds(JsonNode e) {
 		String localId = null;
 		try {
-			localId = JsonPath.parse(mapper.writeValueAsString(e)).<String>read(
-					this.params.getParamValue(GeoserverLoaderConfigKeys.LOADER_JSON_PATH_LOCAL_ID.getKey()));
+			localId = JsonPath.parse(mapper.writeValueAsString(e)).<String>read(jsonPathLocalId);
 		} catch (JsonProcessingException jsonProcessingException) {
 			jsonProcessingException.printStackTrace();
 		}

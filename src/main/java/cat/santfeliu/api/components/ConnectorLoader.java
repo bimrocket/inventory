@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cat.santfeliu.api.utils.ConfigProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -38,6 +39,15 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	
 	@Autowired
 	protected InventoryUtils invUtils;
+
+	@ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
+	String hasEnd;
+
+	@ConfigProperty(name = "sleep.time", description = "Whenever the thread sleeps in milliseconds if no object is found (= null), it is used only if the loader has no end")
+	String sleep_time;
+
+	@ConfigProperty(name = "load.timeout", description = "Timeout for loading objects, for example in case of geoserver is the maximum that takes the request")
+	String timeout;
 
 	/**
 	 * Indicate the loader has end
@@ -128,11 +138,9 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	public void initLoader(ConnectorInstance instance) {
 		logLoader.info("initLoader@ConnectorLoader - initialitzation of connector with name {}", instance.getConnector().getConnectorName());
 		this.instance = instance;
-		this.ends = Boolean.valueOf(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_HAS_END.getKey()));
-		this.sleepTime = Long
-				.parseLong(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_SLEEP_TIME.getKey(), false));
-		this.loadTimeout = Long
-				.parseLong(this.params.getParamValue(GlobalLoaderConfigKeys.LOADER_TIMEOUT.getKey(), false));
+		this.ends = Boolean.valueOf(hasEnd);
+		this.sleepTime = Long.parseLong(sleep_time);
+		this.loadTimeout = Long.parseLong(timeout);
 		this.resetVars();
 	}
 
