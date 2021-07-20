@@ -19,7 +19,7 @@
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
-		<geotools.version>26-SNAPSHOT</geotools.version>
+		<geotools.version>24-SNAPSHOT</geotools.version>
 	</properties>
 
 	<dependencies>

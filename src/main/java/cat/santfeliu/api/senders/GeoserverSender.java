@@ -74,7 +74,7 @@ public class GeoserverSender extends ConnectorSender {
 			while (keys.hasNext()) {
 				String key = keys.next();
 				
-				if (key.equals("geom")) {
+				if (key.equals("geom") || key.startsWith("geom")) {
 					JsonNode elemElem = null;
 					try {
 						JsonNode nodeGeom = elem.get(key);
@@ -87,8 +87,8 @@ public class GeoserverSender extends ConnectorSender {
 					} catch (JsonProcessingException e) {
 						log.error("send@GeoserverSender - can't map geom object as jsonObject {}", elem.get(key).asText());
 					}
-					log.debug("send@GeoserverSender - add geom key");
-					dir.add("geom");
+					log.debug("send@GeoserverSender - add geom key"); 
+					dir.add(key);
 					JsonNode geomObj = elemElem;
 					if (geomObj != null && !geomObj.isNull()) {
 						GeometryXMLUtils.putGeometryObjInXML(dir, geomObj);

@@ -43,7 +43,12 @@ public class ConfigManager
         if (name.endsWith("*")) {
         	value = List.copyOf(config.getMultipleParamValues(name));
         } else {
-        	String textValue = config.getParamValue(name);
+        	String textValue;
+        	if (property.required()) {
+        		textValue= config.getParamValue(name);
+        	} else {
+        		textValue = config.getParamValue(name, false);
+        	}
 
             if (field.getType() == String.class)
             {

@@ -1,6 +1,4 @@
-package cat.santfeliu.api.utils;
-
-import org.locationtech.jts.geom.Geometry;
+package cat.santfeliu.api.utils;		
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xembly.Directives;
@@ -50,6 +48,7 @@ public class GeometryXMLUtils {
 			dir.set(coordsStr);
 			dir.up().up();
 			log.debug("putGeometryObjInXML@GeometryXMLUtils - add LinesString {} of geom key", coordsStr);
+
 		} else if (type.equals("MultiPolygon")) {
 			dir.add("MultiPolygon").attr("srsName", "http://www.opengis.net/gml/srs/epsg.xml#25831");
 			ArrayNode coordsMultiPolygon = mapper.valueToTree(geomObj.get("coordinates"));
@@ -83,6 +82,94 @@ public class GeometryXMLUtils {
 			}
 			dir.up();
 		}
+		else if(type.equals("Polygon")){
+			dir.add("Polygon");
+			ArrayNode coordsPolygon = mapper.valueToTree(geomObj.get("coordinates"));
+			for (int j= 0; j < coordsPolygon.size(); j++) {
+				if (j == 0) {
+					dir.add("outerBoundaryIs");
+				} else {
+					dir.add("innerBoundaryIs");
+				}
+				dir.add("LinearRing");
+				dir.add("coordinates").attr("xmlns", "http://www.opengis.net/gml").attr("decimal", ".").attr("cs", ",").attr("ts", " ");
+				ArrayNode coordsLinearRing = mapper.valueToTree(coordsPolygon.get(j));
+				StringBuilder coordsLinear = new StringBuilder();
+				for (int c = 0; c < coordsLinearRing.size(); c++) {
+					if (c != 0) {
+						coordsLinear.append(" ");
+					}
+					ArrayNode coordsLinearRingXY = mapper.valueToTree(coordsLinearRing.get(c));
+					double x = coordsLinearRingXY.get(0).asDouble();
+					double y = coordsLinearRingXY.get(1).asDouble();
+					coordsLinear.append(x).append(",").append(y);
+				}
+				dir.set(coordsLinear.toString());
+				dir.up().up().up();
+			}
+			dir.up();
+		}
+		else if(type.equals("MultiPoint")){
+			dir.add("MultiPoint");
+			ArrayNode coordsMultiPoint = mapper.valueToTree(geomObj.get("coordinates"));
+			for (int i = 0; i < coordsMultiPoint.size(); i++) {
+				dir.add("pointMember");
+				dir.add("Point").attr("xmlns", "http://www.opengis.net/gml");
+				dir.add("coordinates").attr("decimal", ".").attr("cs", ",").attr("ts", " ");;
+				String pointCoordsStr = "";
+				ArrayNode coords = mapper.valueToTree(coordsMultiPoint.get(i));
+				for (int j = 0; j < coords.size(); j++) {
+					JsonNode pointCoords = coords.get(j);
+					pointCoordsStr += ((j == 0) ? pointCoords.asDouble()
+							: ("," + pointCoords.asDouble()));
+				}
+				dir.set(pointCoordsStr);
+				dir.up().up().up();
+				log.debug("putGeometryObjInXML@GeometryXMLUtils - add point {} of geom key", pointCoordsStr);
+			}
+			dir.up();
+			log.debug("putGeometryObjInXML@GeometryXMLUtils - add MultiPoint of geom key");
+		}
+		else if(type.equals("MultiLineString")){
+			dir.add("MultiLineString");
+			ArrayNode coordsMultiLineString = mapper.valueToTree(geomObj.get("coordinates"));
+			for (int i = 0; i < coordsMultiLineString.size(); i++) {
+				dir.add("lineStringMember");
+				dir.add("LineString");
+				dir.add("coordinates").attr("xmlns", "http://www.opengis.net/gml").attr("decimal", ".").attr("cs", ",").attr("ts", " ");
+				String coordsStr = "";
+				ArrayNode coordsLineString = mapper.valueToTree(coordsMultiLineString.get(i));
+				for (int j = 0; j < coordsLineString.size(); j++) {
+					if (j != 0) {
+						coordsStr += " ";
+					}
+					ArrayNode coordsLine = mapper.valueToTree(coordsLineString.get(j));
+					for (int k= 0; k < coordsLine.size(); k++) {
+						double coord = coordsLine.get(k).asDouble();
+						if (k != 0) {
+							coordsStr += ",";
+						}
+						coordsStr += coord;
+					}
+				}
+				dir.set(coordsStr);
+				dir.up().up().up();
+				log.debug("putGeometryObjInXML@GeometryXMLUtils - add LinesString {} of geom key", coordsStr);
+			}
+			dir.up();
+		}
+		else if(type.equals("GeometryCollection")){
+			dir.add("GeometryCollection").attr("srsName", "http://www.opengis.net/gml/srs/epsg.xml#2583");
+			ArrayNode collection = mapper.valueToTree(geomObj.get("geometries"));
+			for(int i = 0; i<collection.size(); i++){
+				dir.add("geometryMember");
+				dir = putGeometryObjInXML(dir,collection.get(i));
+				dir.up();
+			}
+			dir.up();
+		}
+
 		return dir;
 	}
+
 }
