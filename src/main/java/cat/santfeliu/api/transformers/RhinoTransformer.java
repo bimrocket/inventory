@@ -30,13 +30,13 @@ public class RhinoTransformer extends ConnectorTransformer {
 
 	private static final Logger log = LoggerFactory.getLogger(RhinoTransformer.class);
 
-	@ConfigProperty(name = "scope.model.global.id.name", description = "Name of model globalId variable inside javascript, should be singular name")
+	@ConfigProperty(name = "scope.model.global.id.name", description = "Name of model globalId variable inside javascript, should be singular name", required=false)
 	String scriptScopeModelGlobalIdName;
 
-	@ConfigProperty(name = "json.path.local.model.id",description = "JSON Path to model local id used for model global id creation")
+	@ConfigProperty(name = "json.path.local.model.id",description = "JSON Path to model local id used for model global id creation", required=false)
 	String jsonPathLocalModelId;
 
-	@ConfigProperty(name = "model.inventory.name", description = "Inventory name of model")
+	@ConfigProperty(name = "model.inventory.name", description = "Inventory name of model", required=false)
 	String model_InventoryName;
 
 

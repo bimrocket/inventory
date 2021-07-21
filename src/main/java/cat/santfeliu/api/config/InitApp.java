@@ -1,7 +1,11 @@
 package cat.santfeliu.api.config;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,20 +14,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
-import cat.santfeliu.api.components.ConnectorInstance;
-import cat.santfeliu.api.components.ConnectorLoader;
-import cat.santfeliu.api.loaders.GeoserverTestLoader;
-import cat.santfeliu.api.model.ConnectorDb;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import cat.santfeliu.api.components.ConnectorComponent;
+import cat.santfeliu.api.dto.ComponentConfigKeyDTO;
+import cat.santfeliu.api.enumerator.ComponentEnum;
+import cat.santfeliu.api.exceptions.ApiErrorException;
+import cat.santfeliu.api.loaders.GeoserverLoader;
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
-import cat.santfeliu.api.utils.ConfigContainer;
+import cat.santfeliu.api.utils.ConfigProperty;
 import cat.santfeliu.api.utils.InventoryUtils;
 
 /**
  * Spring component to run when app has started.
+ * 
  * @author kfiertek
  *
  */
@@ -31,53 +40,54 @@ import cat.santfeliu.api.utils.InventoryUtils;
 @EnableWebSecurity
 public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 
+	Logger log = LoggerFactory.getLogger(InitApp.class);
 
-    Logger log = LoggerFactory.getLogger(InitApp.class);
-    
-    @Value("${app.name}")
-    private String appName;
-    
-    @Value("${app.url}")
-    private String externalUrl;
-    
-    @Autowired
-    private ConnectorStatusRepo statusRepo;
-    
+	@Value("${app.name}")
+	private String appName;
+
+	@Value("${app.url}")
+	private String externalUrl;
+
+	@Autowired
+	private ConnectorStatusRepo statusRepo;
+
 	@Autowired
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;
-	
+
 	@Autowired
 	private InventoryUtils invUtils;
-	
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent arg0) {
-        try {
+
+	@Override
+	public void onApplicationEvent(ApplicationReadyEvent arg0) {
+		try {
 			init();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
+	}
 
-    /**
-     * Method called when the application has started successfully.
-     * @throws Exception 
-     */
-    public void init( ) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss '(Europe/Madrid)'");
-        
-        log.info("init@InitApp - Application with name {} started at {}", appName, sdf.format(Calendar.getInstance().getTime()));
-        log.info("init@InitApp - Application url is '{}'", externalUrl);
-        
-        Iterable<ConnectorStatusDb> ite = statusRepo.findAll();
-        
-        for (ConnectorStatusDb status : ite) {
-        	status.setConnectorEndDate(null);
-        	status.setConnectorStartDate(null);
-        	status.setConnectorStatus("offline");
-        	statusRepo.save(status);
-        }
-        
+	/**
+	 * Method called when the application has started successfully.
+	 * 
+	 * @throws Exception
+	 */
+	public void init() throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss '(Europe/Madrid)'");
+
+		log.info("init@InitApp - Application with name {} started at {}", appName,
+				sdf.format(Calendar.getInstance().getTime()));
+		log.info("init@InitApp - Application url is '{}'", externalUrl);
+
+		Iterable<ConnectorStatusDb> ite = statusRepo.findAll();
+
+		for (ConnectorStatusDb status : ite) {
+			status.setConnectorEndDate(null);
+			status.setConnectorStartDate(null);
+			status.setConnectorStatus("offline");
+			statusRepo.save(status);
+		}
+
 //        GeoserverTestLoader testLoader = new GeoserverTestLoader();
 //        ConfigContainer params = new ConfigContainer();
 //        autowireCapableBeanFactory.autowireBean(params);
@@ -120,5 +130,5 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 //			log.info(obj.toString());
 //			obj = loader.load(60000); 
 //		}
-    }
+	}
 }

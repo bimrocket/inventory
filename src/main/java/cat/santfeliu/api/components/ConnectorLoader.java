@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cat.santfeliu.api.utils.ConfigManager;
 import cat.santfeliu.api.utils.ConfigProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,18 +41,13 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	@Autowired
 	protected InventoryUtils invUtils;
 
-	@ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
-	String hasEnd;
-
-	@ConfigProperty(name = "sleep.time", description = "Whenever the thread sleeps in milliseconds if no object is found (= null), it is used only if the loader has no end")
-	String sleep_time;
-
-	@ConfigProperty(name = "load.timeout", description = "Timeout for loading objects, for example in case of geoserver is the maximum that takes the request")
-	String timeout;
+	@ConfigProperty(name = "sleep.time", description = "Whenever the thread sleeps in milliseconds if no object is found (= null), it is used only if the loader has no end", required = false)
+	protected Integer sleepTime;
 
 	/**
 	 * Indicate the loader has end
 	 */
+	@ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
 	protected boolean ends;
 
 	/**
@@ -60,14 +56,10 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	protected boolean reset = true;
 
 	/**
-	 * It indicates time to sleep in case it has no end
-	 */
-	protected long sleepTime;
-
-	/**
 	 * Timeout for the load method
 	 */
-	protected long loadTimeout;
+	@ConfigProperty(name = "load.timeout", description = "Timeout for loading objects, for example in case of geoserver is the maximum that takes the request")
+	protected Integer loadTimeout;
 
 	/**
 	 * Instance of connector corresponding to the load
@@ -138,9 +130,6 @@ public abstract class ConnectorLoader extends ConnectorComponent {
 	public void initLoader(ConnectorInstance instance) {
 		logLoader.info("initLoader@ConnectorLoader - initialitzation of connector with name {}", instance.getConnector().getConnectorName());
 		this.instance = instance;
-		this.ends = Boolean.valueOf(hasEnd);
-		this.sleepTime = Long.parseLong(sleep_time);
-		this.loadTimeout = Long.parseLong(timeout);
 		this.resetVars();
 	}
 

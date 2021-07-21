@@ -67,9 +67,6 @@ public class GeoserverLoader extends ConnectorLoader {
 	@ConfigProperty(name="json.path.local.id", description="Json path route in element leading to local id")
 	String jsonPathLocalId;
 
-	@ConfigProperty(name="json.path.array.element", description="Path route in geoserver response leading to array with elements")
-	String jsonPathArrayElement;
-
 	@ConfigProperty(name = "filter.field", description = "Param that indicates with which field the date of update of the object corresponds, if it is not indicated a full load is made")
 	String filter_Field;
 

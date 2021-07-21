@@ -5,6 +5,7 @@ public class ComponentConfigKeyDTO {
 	private String configKey;
 	private String description;
 	private boolean required;
+	private boolean hidden;
 	
 	public ComponentConfigKeyDTO() {
 		
@@ -39,6 +40,20 @@ public class ComponentConfigKeyDTO {
 	public void setRequired(boolean required) {
 		this.required = required;
 	}
+
+
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+	
+	
 	
 	
 	

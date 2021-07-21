@@ -22,10 +22,7 @@ public class JSONKafkaLoader extends ConnectorLoader  {
 
 	@ConfigProperty(name = "consumer.topic.name", description = "Kafka topic number to send to")
 	String topicName;
-
-	@ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
-	String hasEnd;
-
+	
 	@Override
 	public JsonNode load(long timeout) {
 		if (runner == null) {		

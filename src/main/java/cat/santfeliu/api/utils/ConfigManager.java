@@ -1,9 +1,12 @@
 package cat.santfeliu.api.utils;
 
-import cat.santfeliu.api.components.ConnectorComponent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+
+import cat.santfeliu.api.components.ConnectorComponent;
 
 /**
  *
@@ -32,7 +35,8 @@ public class ConfigManager
     ConfigContainer config)
   {
     Class cls = component.getClass();
-    Field[] fields = cls.getDeclaredFields();
+    Field[] fields = Stream.concat(Arrays.stream(cls.getDeclaredFields()), Arrays.stream(cls.getSuperclass().getDeclaredFields()))
+            .toArray(Field[]::new);
     for (Field field : fields)
     {
       ConfigProperty property = field.getAnnotation(ConfigProperty.class);
