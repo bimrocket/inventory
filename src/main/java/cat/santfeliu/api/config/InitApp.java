@@ -1,11 +1,7 @@
 package cat.santfeliu.api.config;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,20 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import cat.santfeliu.api.components.ConnectorComponent;
-import cat.santfeliu.api.dto.ComponentConfigKeyDTO;
-import cat.santfeliu.api.enumerator.ComponentEnum;
-import cat.santfeliu.api.exceptions.ApiErrorException;
-import cat.santfeliu.api.loaders.GeoserverLoader;
 import cat.santfeliu.api.model.ConnectorStatusDb;
 import cat.santfeliu.api.repo.ConnectorStatusRepo;
-import cat.santfeliu.api.utils.ConfigProperty;
 import cat.santfeliu.api.utils.InventoryUtils;
 
 /**

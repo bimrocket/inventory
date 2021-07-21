@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import cat.santfeliu.api.utils.ConfigProperty;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
@@ -27,15 +26,13 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.gson.JsonElement;
 import com.jayway.jsonpath.JsonPath;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
 import cat.santfeliu.api.components.ConnectorLoader;
-import cat.santfeliu.api.enumerator.GeoserverLoaderConfigKeys;
-import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
 import cat.santfeliu.api.exceptions.ApiErrorException;
 import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.utils.ConfigProperty;
 import cat.santfeliu.api.utils.QuickSortAlgorithm;
 
 public class GeoserverLoader extends ConnectorLoader {

@@ -1,14 +1,13 @@
 package cat.santfeliu.api.loaders;
 
-import cat.santfeliu.api.service.ConnectorRunnerService;
-import cat.santfeliu.api.utils.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import cat.santfeliu.api.components.ConnectorLoader;
-import cat.santfeliu.api.enumerator.JSONKafkaLoaderConfigKeys;
 import cat.santfeliu.api.service.KafkaConsumerRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cat.santfeliu.api.utils.ConfigProperty;
 
 public class JSONKafkaLoader extends ConnectorLoader  {
 

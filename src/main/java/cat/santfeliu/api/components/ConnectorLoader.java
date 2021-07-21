@@ -1,16 +1,10 @@
 package cat.santfeliu.api.components;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cat.santfeliu.api.utils.ConfigManager;
-import cat.santfeliu.api.utils.ConfigProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +13,15 @@ import org.springframework.data.domain.PageRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import cat.santfeliu.api.beans.LoaderJsonObject;
-import cat.santfeliu.api.enumerator.GlobalLoaderConfigKeys;
 import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.GlobalIdDb;
 import cat.santfeliu.api.repo.ConnectorStatsRepo;
 import cat.santfeliu.api.repo.GlobalIdRepo;
+import cat.santfeliu.api.utils.ConfigProperty;
 import cat.santfeliu.api.utils.InventoryUtils;
 
 public abstract class ConnectorLoader extends ConnectorComponent {

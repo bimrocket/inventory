@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cat.santfeliu.api.utils.ConfigProperty;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -32,8 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import cat.santfeliu.api.components.ConnectorSender;
-import cat.santfeliu.api.enumerator.GeoserverSenderConfigKeys;
 import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.utils.ConfigProperty;
 import cat.santfeliu.api.utils.GeometryXMLUtils;
 
 public class GeoserverSender extends ConnectorSender {
