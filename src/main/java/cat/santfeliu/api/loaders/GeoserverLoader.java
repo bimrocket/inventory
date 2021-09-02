@@ -3,10 +3,7 @@ package cat.santfeliu.api.loaders;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,7 +30,6 @@ import cat.santfeliu.api.components.ConnectorLoader;
 import cat.santfeliu.api.exceptions.ApiErrorException;
 import cat.santfeliu.api.model.GlobalIdDb;
 import cat.santfeliu.api.utils.ConfigProperty;
-import cat.santfeliu.api.utils.QuickSortAlgorithm;
 
 public class GeoserverLoader extends ConnectorLoader {
 
@@ -64,10 +60,10 @@ public class GeoserverLoader extends ConnectorLoader {
 	@ConfigProperty(name="json.path.local.id", description="Json path route in element leading to local id")
 	String jsonPathLocalId;
 
-	@ConfigProperty(name = "filter.field", description = "Param that indicates with which field the date of update of the object corresponds, if it is not indicated a full load is made")
+	@ConfigProperty(name = "filter.field", description = "Param that indicates with which field the date of update of the object corresponds, if it is not indicated a full load is made", required = false)
 	String filter_Field;
 
-	@ConfigProperty(name = "filter.format", description = "Indicates update date format")
+	@ConfigProperty(name = "filter.format", description = "Indicates update date format", required = false)
 	String filterFormat;
 
 	@Override
@@ -223,9 +219,8 @@ public class GeoserverLoader extends ConnectorLoader {
 						this.allGUIDs.add(globalId);
 					}
 					log.debug("loadResponse@GeoserverLoader - sort all of global id");
-					QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 					String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
-					sorter.sort(arr);
+					Arrays.sort(arr);
 					List<String> list = new ArrayList<>();
 					Collections.addAll(list, arr);
 					this.allGUIDs = list;
@@ -260,9 +255,8 @@ public class GeoserverLoader extends ConnectorLoader {
 					}
 				}
 				log.debug("loadResponse@GeoserverLoader - sort all of global id");
-				QuickSortAlgorithm sorter = new QuickSortAlgorithm();
 				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
-				sorter.sort(arr);
+				Arrays.sort(arr);
 				List<String> list = new ArrayList<>();
 				Collections.addAll(list, arr);
 				this.allGUIDs = list;

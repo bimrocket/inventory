@@ -49,15 +49,6 @@ public class KafkaConfiguration {
 	@Bean
 	public KafkaAdmin kafkaAdmin() throws InterruptedException, ExecutionException {
 		Map<String, Object> configs = new HashMap<>();
-		// Depending on you Kafka Cluster setup you need to configure
-		// additional properties!
-		log.debug("kafkaAdmin@KafkaConfiguration - get all the topics by key {}", "topic.name");
-		List<ConnectorComponentConfigDb> topicsDb = configRepo.findAllByKey("topic.name");
-		int i = 1;
-		for (ConnectorComponentConfigDb topic : topicsDb) {
-			beans.registerBean("kafkaTopic" + i, TopicBuilder.name(topic.getConfigValue()).partitions(1).build());
-			i++;
-		}
 		configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
 
 		AdminClient client = AdminClient.create(new KafkaAdmin(configs).getConfigurationProperties());

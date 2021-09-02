@@ -5,8 +5,14 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.geotools.geojson.geom.GeometryJSON;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -337,5 +343,28 @@ public class GeometryWorkshop {
 					e);
 		}
 		return geo;
+	}
+
+	public static JsonNode crsTransform(JsonNode geojson, String source, String dest){
+
+		Geometry sourceGeometry = nodeToGeometry(geojson);
+		try {
+			CoordinateReferenceSystem sourceCRS = CRS.decode(source);
+			CoordinateReferenceSystem targetCRS = CRS.decode(dest);
+			MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+			Geometry targetGeometry = JTS.transform(sourceGeometry, transform);
+
+			String st = new GeometryJSON().toString(targetGeometry);
+			geojson = mapper.readTree(st);
+
+		} catch (FactoryException e) {
+			log.error("crsTransfom@GeometryWorkshop - can't decode a Coordinate Reference System");
+		} catch (TransformException e) {
+			log.error("crsTransfom@GeometryWorkshop - can't transform a Coordinate Reference System");
+		} catch (IOException e) {
+			log.error("crsTransfom@GeometryWorkshop - can't read geometry to Json Node");
+		}
+
+		return geojson;
 	}
 }
