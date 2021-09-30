@@ -4,21 +4,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import cat.santfeliu.api.utils.ConfigProperty;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.ConsString;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Script;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import cat.santfeliu.api.components.ConnectorTransformer;
 import cat.santfeliu.api.model.GlobalIdDb;
+import cat.santfeliu.api.utils.ConfigProperty;
 
 public class RhinoTransformer extends ConnectorTransformer {
 
@@ -54,26 +61,32 @@ public class RhinoTransformer extends ConnectorTransformer {
 		String modelGlobalId = "";
 		String fieldRef = scriptScopeModelGlobalIdName;
 		if (fieldRef != null && !fieldRef.isEmpty()) {
+			log.debug("transform@RhinoTransformer - {} - fieldRef found searching to modelLocalId", this.connectorName);
 			try {
 				String modelLocalId = JsonPath.parse(mapper.writeValueAsString(fJson)).<String>read(jsonPathLocalModelId);
-				String modelInventoryName = model_InventoryName;
-				Optional<GlobalIdDb> globalIdModel = globalIdRepo.findByInventoryAndLocalId(modelInventoryName,
-						modelLocalId);
+				if (modelLocalId != null && modelLocalId.isEmpty()) {
+					log.debug("transform@RhinoTransformer - {} - model local id '{}' found creating global id for model", this.connectorName, modelLocalId);
+					String modelInventoryName = model_InventoryName;
+					Optional<GlobalIdDb> globalIdModel = globalIdRepo.findByInventoryAndLocalId(modelInventoryName,
+							modelLocalId);
 
-				if (globalIdModel.isPresent()) {
-					modelGlobalId = globalIdModel.get().getGlobalId();
-				} else {
-					modelGlobalId = invUtils.getGuid();
-					GlobalIdDb guid = new GlobalIdDb();
-					guid.setGlobalId(modelGlobalId);
-					guid.setInventoryName(modelInventoryName);
-					guid.setLocalId(modelLocalId);
-					globalIdRepo.save(guid);
+					if (globalIdModel.isPresent()) {
+						modelGlobalId = globalIdModel.get().getGlobalId();
+					} else {
+						modelGlobalId = invUtils.getGuid();
+						GlobalIdDb guid = new GlobalIdDb();
+						guid.setGlobalId(modelGlobalId);
+						guid.setInventoryName(modelInventoryName);
+						guid.setLocalId(modelLocalId);
+						globalIdRepo.save(guid);
+					}			
 				}
+
 			} catch (PathNotFoundException e) {
 				// delete record incoming ignore
 			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+				this.senError("TRANSFORMER_JSON_MODEL_ID").describe("Error while processing model local id").foundErr().exception(e);
+				log.error("transform@RhinoTransformer - {} - error while processing model local id for json {} with JsonException", this.connectorName, fJson.toPrettyString(), e);
 			}
 
 		}
@@ -88,35 +101,11 @@ public class RhinoTransformer extends ConnectorTransformer {
 		try {
 			begin(scopeObjects);
 			JsonNode node = fJson;
-//			String transformGeoStr = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY.getKey(), false);
-//			if (transformGeoStr != null && Boolean.valueOf(transformGeoStr)) {
-//				String geojsonPath = this.params
-//						.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_JSON_PATH_GEOMETRY.getKey());
-//				String geojson = mapper.writeValueAsString(JsonPath.parse(fJson.toString()).<LinkedHashMap<String, String>>read(geojsonPath));
-//				JsonNode geoJsonNode = mapper.readTree(geojson);
-//				String outputGeo = this.params.getParamValue(RhinoTransformerConfigKeys.TRANSFORMER_TRANSFORM_GEOMETRY_OUTPUT.getKey());
-//				if (outputGeo.equals("Point")) {
-//					GeometryJSON gjson = new GeometryJSON();						
-//					Reader reader = new StringReader(geojson.strip());
-//					Geometry geo = geo = gjson.read(reader);
-//					Point p = geo.getInteriorPoint();
-//					String[] paths = geojsonPath.split("\\.");
-//					JsonNode currentNode = node;
-//					for (int i=1;i < paths.length - 1;i++) {
-//						currentNode = currentNode.get(paths[i]);
-//					}
-//					((ObjectNode)currentNode).put(paths[paths.length-1], gjson.toString(p));
-//				}
-//				
-//			}
 			outputFeature = convert(node);
 		} catch (Exception ex) {
-			try {
-				log.error("transformData@RhinoService - error while converting feature {} with exception ",
-						mapper.writeValueAsString(fJson), ex);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+			this.senError("TRANSFORMER_CONVERTING_FEATURE").describe("Error while converting feature with exception").foundErr().exception(ex);
+			log.error("transform@RhinoService - {} - error while converting feature {} with exception ",
+						this.connectorName, fJson.toPrettyString(), ex);
 		} finally {
 			end();
 		}
@@ -129,7 +118,7 @@ public class RhinoTransformer extends ConnectorTransformer {
 		if (javaScript_Script == null) {
 			String error = String.format(
 					"script is null in javasript converter");
-			log.error("begin@JavaScriptConverter - {}", error);
+			log.error("begin@JavaScriptConverter - {} - {}", this.connectorName, error);
 			return;
 		}
 

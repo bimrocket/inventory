@@ -1,0 +1,59 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; overflow-x: hidden;}
+.main-panel .main-content {
+  margin-top: 70px;
+  padding: 30px 15px;
+  min-height: calc(100vh - 123px);
+}
+.mt-20{ margin-top:15px;}
+.mb-15{margin-bottom: 15px;}
+
+.logo-img{
+  display: block;
+  margin-left: 30px;
+  float:left;
+}
+
+/*Spinner*/
+mat-spinner{margin: auto;}
+mat-spinner circle{stroke: rgb(172,20,92)!important;}
+mat-spinner.white-spinner circle {stroke: white !important;}
+
+
+.card-header-primary {
+  background: rgb(172,20,92) !important;
+}
+
+body {
+  zoom: 90%;
+}
+
+.error {
+  font-size:12px;
+  text-align: center;
+  color: #f00;
+}
+
+.primary-snackbar {
+  background: rgb(172,20,92) !important;
+  color: whitesmoke;
+}
+
+.error-snackbar {
+  color: #f00 !important;
+  background: whitesmoke;
+  font-weight: bold;
+}
+
+.warning-snackbar {
+  background: yellow !important;
+  color: black;  
+  font-weight: bold;
+}
+
+button.mat-primary {
+  background: rgb(172,20,92) !important;
+  color: whitesmoke !important;
+}

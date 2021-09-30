@@ -6,32 +6,34 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cat.santfeliu.api.components.ConnectorComponent;
 
 /**
  *
- * @author realor
+ * @author realor && kfiertke
  */
-public class ConfigManager
-{
-  public static List<PropertyInfo> getProperties(Class componentClass)
-  {
-    List<PropertyInfo> properties = new ArrayList<>();
-  
-    Field[] fields = componentClass.getDeclaredFields();
-    for (Field field : fields)
-    {
-      ConfigProperty property = field.getAnnotation(ConfigProperty.class);
-      if (property != null)
-      {
-        PropertyInfo info = new PropertyInfo(property, field);        
-        properties.add(info);
-      }
-    }
-    return properties;    
-  }
-  
-  public static void inject(ConnectorComponent component, 
+public class ConfigManager {
+
+	private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
+
+	public static List<PropertyInfo> getProperties(Class componentClass) {
+		List<PropertyInfo> properties = new ArrayList<>();
+
+		Field[] fields = componentClass.getDeclaredFields();
+		for (Field field : fields) {
+			ConfigProperty property = field.getAnnotation(ConfigProperty.class);
+			if (property != null) {
+				PropertyInfo info = new PropertyInfo(property, field);
+				properties.add(info);
+			}
+		}
+		return properties;
+	}
+
+	public static void inject(ConnectorComponent component, 
     ConfigContainer config)
   {
     Class cls = component.getClass();
@@ -74,7 +76,7 @@ public class ConfigManager
               value = Double.parseDouble(textValue);          
             }
             else if (field.getType() == List.class) {
-            	
+            	log.error("inject@ConfigManager - trying to inject config in field named {} with type List, list types configs should end with * if you want correctly inject list", field.getName());
             }
         }
         
@@ -82,59 +84,59 @@ public class ConfigManager
         try
         {
           field.setAccessible(true);
-          field.set(component, value);
+          if (value == null) {
+              field.set(component, property.defaultValue());         	  
+          } else {
+        	  field.set(component, value);
+          }
+
         }
         catch (Exception ex)
         {
           // log warn
+        	log.error("inject@ConfigManager - couldn't inject config property named {} in class {}, ", property.name(), field.getClass().getSimpleName());
         }
       }
     }    
   }
-  
-  public static class PropertyInfo
-  {
-    private final String name;
-    private final boolean required;
-    private final String description;
-    private final Field field;
 
-    PropertyInfo(ConfigProperty property, Field field)
-    {
-      this.name = property.name();
-      this.required = property.required();
-      this.description = property.description();
-      this.field = field;
-    }
-    
-    public String getName()
-    {
-      return name;
-    }
+	public static class PropertyInfo {
+		private final String name;
+		private final boolean required;
+		private final String description;
+		private final Field field;
 
-    public boolean isRequired()
-    {
-      return required;
-    }
+		PropertyInfo(ConfigProperty property, Field field) {
+			this.name = property.name();
+			this.required = property.required();
+			this.description = property.description();
+			this.field = field;
+		}
 
-    public String getDescription()
-    {
-      return description;
-    }
+		public String getName() {
+			return name;
+		}
 
-    public Field getField()
-    {
-      return field;
-    }
-    
-    @Override
-    public String toString()
-    {
-      StringBuilder buffer = new StringBuilder();
-      buffer.append(name);
-      if (required) buffer.append("*");
-      buffer.append(" : ").append(field.getType().getSimpleName());
-      return buffer.toString();
-    }
-  }
+		public boolean isRequired() {
+			return required;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public Field getField() {
+			return field;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder buffer = new StringBuilder();
+			buffer.append(name);
+			if (required)
+				buffer.append("*");
+			buffer.append(" : ").append(field.getType().getSimpleName());
+			return buffer.toString();
+		}
+	}
 }

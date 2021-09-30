@@ -71,17 +71,17 @@ public class GeoserverLoader extends ConnectorLoader {
 		if (loaded == null && this.reset) {
 			this.checkedDeletions = false;
 			this.reset = false;
-			log.debug("load@GeoserverLoader - load response of timeout {}", timeout);
+			log.debug("load@GeoserverLoader - {} - load response of timeout {}", this.connectorName, timeout);
 			return loadResponse(timeout);
 		} else {
 			if (this.checkedDeletions) {
-				log.debug("load@GeoserverLoader - return checked deletion {}", this.getDeletion());
+				log.debug("load@GeoserverLoader - {} - return checked deletion", this.connectorName);
 				return this.getDeletion();
 			} else {
 				JsonNode obj = getObject();
 				if (obj == null) {
 					this.checkDeletions();
-					log.debug("load@GeoserverLoader - return not checked deletion {}", this.getDeletion());
+					log.debug("load@GeoserverLoader - {} - return not checked deletion", this.connectorName);
 					return this.getDeletion();
 				}
 				return obj;
@@ -98,21 +98,22 @@ public class GeoserverLoader extends ConnectorLoader {
 		try {
 			// Try to recover object
 			toReturn = loaded.get(currentIndex);
-			log.debug("getObject@GeoserverLoader - get :: {}", mapper.writeValueAsString(toReturn));
+			log.debug("getObject@GeoserverLoader - {} - get :: {}", this.connectorName, mapper.writeValueAsString(toReturn));
 		} catch (IndexOutOfBoundsException e) {
 			// End of objects if loop has no end we put loaded as null so next time (after
 			// sleep) it
 			// recover all objects again
 			return null;
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			this.senError("ERROR_LOAD_JSON_PROCESSING").exception(e).foundErr();
+			log.error("getObject@GeoserverLoader - {} - exception", this.connectorName, e);
 		}
 		if (toReturn !=  null) {
 			toReturn = transformForTransformer(toReturn);
 			try {
-				log.debug("getObject@GeoserverLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
+				log.debug("getObject@GeoserverLoader - {} - getAsJsonObject :: {}", this.connectorName, mapper.writeValueAsString(toReturn));
 			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+				log.error("getObject@GeoserverLoader - {} - exception", this.connectorName, e);
 			}
 			if (toReturn == null) {
 				// already treated get next recursively
@@ -139,8 +140,8 @@ public class GeoserverLoader extends ConnectorLoader {
 			LoaderJsonObject loaderJson = new LoaderJsonObject();
 			loaderJson.setGlobalId(globalId);
 			loaderJson.setElement(node);
-			log.debug("transformForTransformer@GeoserverLoader - globalId {} not treated add to treatedGUIDs",
-					globalId);
+			log.debug("transformForTransformer@GeoserverLoader - {} - globalId {} not treated add to treatedGUIDs",
+					this.connectorName, globalId);
 			try {
 				return mapper.readTree(mapper.writeValueAsString(loaderJson));
 			} catch (JsonProcessingException e) {
@@ -155,7 +156,7 @@ public class GeoserverLoader extends ConnectorLoader {
 
 	private JsonNode loadResponse(long timeout) {
 
-		log.debug("loadResponse@GeoserverLoader - init with timeout '{}'", timeout);
+		log.debug("loadResponse@GeoserverLoader - {} - init with timeout '{}'", this.connectorName, timeout);
 		RequestConfig.Builder requestBuilder = RequestConfig.custom();
 		requestBuilder.setConnectTimeout((int) timeout);
 		requestBuilder.setConnectionRequestTimeout((int) timeout);
@@ -186,17 +187,19 @@ public class GeoserverLoader extends ConnectorLoader {
 		JsonNode jsonResponse;
 
 		try {
-			log.debug("loadResponse@GeoserverLoader - execute httpClient built");
+			log.debug("loadResponse@GeoserverLoader - {} - execute httpClient built", this.connectorName);
 			HttpResponse response = httpClient.execute(request.build());
 			String bodyResp = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 			jsonResponse = mapper.readTree(bodyResp);
 
 		} catch (ConnectTimeoutException | SocketTimeoutException e) {
-			log.error("loadResponse@GeoserverLoader - timeout while sending petition : ", e);
+			log.error("loadResponse@GeoserverLoader - {} - timeout while sending petition : ", this.connectorName, e);
+			this.senError("LOADER_LOAD_TIMEOUT").describe("There was timeout while contacting geoserver").foundErr().exception(e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "timeout while sending petition to geoserver",
 					e.getMessage());
 		} catch (Exception e) {
-			log.error("loadResponse@GeoserverLoader - exception while sending petition : ", e);
+			log.error("loadResponse@GeoserverLoader - {} - exception while sending petition : ", this.connectorName, e);
+			this.senError("LOADER_GENERIC_EXCEPTION").describe("There was exception while contacting geoserver").foundErr().exception(e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"exception while sending petition to geoserver", e.getMessage());
 		}
@@ -208,7 +211,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			String filterField = filter_Field;
 
 			if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
-				log.debug("loadResponse@GeoserverLoader - page is empty or filerField is null");
+				log.debug("loadResponse@GeoserverLoader - {} - page is empty or filerField is null", this.connectorName);
 				if (all.isArray()) {
 					for (JsonNode e : all) {
 						Pair<String, String> ids = getIds(e);
@@ -218,7 +221,7 @@ public class GeoserverLoader extends ConnectorLoader {
 						this.guidsExisting.put(localId, globalId);
 						this.allGUIDs.add(globalId);
 					}
-					log.debug("loadResponse@GeoserverLoader - sort all of global id");
+					log.debug("loadResponse@GeoserverLoader - {} - sort all of global id", this.connectorName);
 					String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 					Arrays.sort(arr);
 					List<String> list = new ArrayList<>();
@@ -230,7 +233,7 @@ public class GeoserverLoader extends ConnectorLoader {
 			} else {
 				updateDate = this.page.getContent().get(1).getExecutionStartDate();
 				SimpleDateFormat sdf = new SimpleDateFormat(filterFormat);
-				log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
+				log.debug("loadResponse@GemwebLoader - {} - filter all pair of guid to return", this.connectorName);
 				if (all.isArray()) {
 					for (JsonNode e : all) {
 						Pair<String, String> ids = getIds(e);
@@ -245,16 +248,16 @@ public class GeoserverLoader extends ConnectorLoader {
 							Date dateUpdateElem = sdf.parse(dateUpdateElemStr);
 							if (dateUpdateElem.compareTo(updateDate) > 0) {
 								arrayFiltered.add(e);
-								log.debug("element added : {}", mapper.writeValueAsString(e));
+								log.debug("loadResponse@GemwebLoader - {} - element added : {}", this.connectorName, mapper.writeValueAsString(e));
 							}
 						} else {
 							arrayFiltered.add(e);
-							log.debug("element added : {}", mapper.writeValueAsString(e));
+							log.debug("loadResponse@GemwebLoader - {} - element added : {}", this.connectorName, mapper.writeValueAsString(e));
 						}
 
 					}
 				}
-				log.debug("loadResponse@GeoserverLoader - sort all of global id");
+				log.debug("loadResponse@GeoserverLoader - {} - sort all of global id", this.connectorName);
 				String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
 				Arrays.sort(arr);
 				List<String> list = new ArrayList<>();
@@ -264,7 +267,8 @@ public class GeoserverLoader extends ConnectorLoader {
 			}
 			return getObject();
 		} catch (Exception e) {
-			log.error("loadResponse@GeoserverLoader - exception while sending petition : ", e);
+			log.error("loadResponse@GeoserverLoader - {} - exception while sending petition : ", this.connectorName, e);
+			this.senError("LOADER_LOAD_EXCEPTION").describe("Loader has found a fatal exception while retriving objects").foundErr().exception(e);
 			throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"exception while sending petition to geoserver", e.getMessage());
 
@@ -282,7 +286,7 @@ public class GeoserverLoader extends ConnectorLoader {
 		String globalId = null;
 
 		String hasGuid = this.guidsExisting.get(localId);
-		log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId,
+		log.debug("getIds@GeoserverLoader - {} -  has guid {}, local id :: {}, guids size {}", this.connectorName, hasGuid != null, localId,
 				this.guidsExisting.size());
 		if (hasGuid == null) {
 			globalId = invUtils.getGuid();

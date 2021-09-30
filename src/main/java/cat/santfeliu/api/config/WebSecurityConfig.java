@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,27 +25,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationEntryPoint authenticationEntryPoint;
 
-	    
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
-		httpSecurity.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").authenticated().antMatchers("/gestio-inventari/**").authenticated().anyRequest()
-				.authenticated().and().httpBasic().authenticationEntryPoint(authenticationEntryPoint);
+		httpSecurity.cors().and().csrf().disable().authorizeRequests().antMatchers("/topic/**").anonymous().and()
+				.authorizeRequests().antMatchers("/**").authenticated().antMatchers("/gestio-inventari/**")
+				.authenticated().anyRequest().authenticated().and().httpBasic()
+				.authenticationEntryPoint(authenticationEntryPoint);
+
+	}
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+
+		// Tell Spring to ignore securing the handshake endpoint. This allows the
+		// handshake to take place unauthenticated
+		web.ignoring().antMatchers("/looping/**");
 
 	}
 	
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("GestorInventari2458!@"))

@@ -124,7 +124,7 @@ pipeline {
         script {
           sh '''
             mvn -v
-            mvn clean
+            mvn ${MAVEN_CLI_OPTS} clean
           '''
         }
       }
@@ -148,8 +148,8 @@ pipeline {
       steps {
         updateGitlabStatus(state: 'running')
         script {
-          sh "mvn compile"
-          sh "mvn package -DskipTests"
+          sh "mvn ${MAVEN_CLI_OPTS} compile"
+          sh "mvn ${MAVEN_CLI_OPTS} package -DskipTests"
         }
       }
       post {
@@ -170,7 +170,7 @@ pipeline {
       steps {
         updateGitlabStatus(state: 'running')
         script {
-          sh "mvn test"
+          sh "mvn ${MAVEN_CLI_OPTS} test"
         }
       }
       post {

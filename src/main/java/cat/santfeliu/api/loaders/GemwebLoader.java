@@ -37,34 +37,34 @@ import net.minidev.json.JSONArray;
 
 public class GemwebLoader extends ConnectorLoader {
 
-    private static final Logger log = LoggerFactory.getLogger(GeoserverLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(GemwebLoader.class);
 
     @ConfigProperty(name = "url", description = "Gemweb url")
-    String url;
+    private String url;
 
     @ConfigProperty(name = "client.id", description = "Used to obtain token")
-    String clientId;
+    private String clientId;
 
     @ConfigProperty(name = "client.secret", description = "Secret used for authentication")
-    String clientSecret;
+    private String clientSecret;
 
     @ConfigProperty(name = "category",description = "Category to load from gemweb")
-    String category;
+    private String category;
 
     @ConfigProperty(name = "auth", description = "Authentication used currently supported only Bearer")
-    String auth;
+    private String auth;
 
-    @ConfigProperty(name = "json.path.local.id", description = "La ruta json path fins local id")
-    String jsonPathLocalId;
+    @ConfigProperty(name = "json.path.local.id", description = "JSON Path to local id of processed element")
+    private String jsonPathLocalId;
 
-    @ConfigProperty(name = "json.path.elements", description = "Json Path to element array")
-    String jsonPathElementArray;
+    @ConfigProperty(name = "json.path.elements", description = "Json Path to array which contains elements to process")
+    private String jsonPathElementArray;
 
-    @ConfigProperty(name = "filter.field", description = "Param que indica amb quin camp correspon a data de actualització del objecte, si no es indica es fa carregua completa")
-    String filter_Field;
+    @ConfigProperty(name = "filter.field", description = "Used in partial load based on update date check, if indicated should be field corresponding to incoming element update date", required = false)
+    private String filterField;
 
-    @ConfigProperty(name = "filter.format", description = "Indica format de data d'actualització")
-    String filter_Format;
+    @ConfigProperty(name = "filter.format.date", description = "Filter field format of object updated date, if indicated should be parseable by Java SimpleDateFormat", required = false)
+    private String filterFormat;
 
     @ConfigProperty(name = "has.end", description = "Defines whether objects are arriving endlessly or there is a defined number of objects")
     protected boolean hasEnd;
@@ -81,21 +81,21 @@ public class GemwebLoader extends ConnectorLoader {
             this.checkedDeletions = false;
             this.reset = false;
             try {
-                log.debug("load@GemwebLoader - load response of getTokenAcces {}",this.getAccessToken());
+                log.debug("load@GemwebLoader - {} - load response of getTokenAcces {}", this.connectorName, this.getAccessToken());
                 return loadResponse(this.getAccessToken());
             } catch (Exception e) {
                 return null;
             }
         } else {
             if (this.checkedDeletions) {
-                log.debug("load@GemwebLoader - return checked deletion {}", this.getDeletion());
+                log.debug("load@GemwebLoader - {} - return checked deletion", this.connectorName);
                 return this.getDeletion();
             } else {
 
                 JsonNode obj = getObject();
                 if (obj == null) {
                     this.checkDeletions();
-                    log.debug("load@GemwebLoader - return not checked deletion {}", this.getDeletion());
+                    log.debug("load@GemwebLoader - {} - return not checked deletion", this.connectorName);
                     return this.getDeletion();
                 }
                 return obj;
@@ -112,7 +112,7 @@ public class GemwebLoader extends ConnectorLoader {
         try {
             // Try to recover object
             toReturn = loaded.get(currentIndex);
-            log.debug("getObject@GemwebLoader - get :: {}", mapper.writeValueAsString(toReturn));
+            log.debug("getObject@GemwebLoader - {} - get :: {}", this.connectorName, mapper.writeValueAsString(toReturn));
         } catch (IndexOutOfBoundsException e) {
             // End of objects if loop has no end we put loaded as null so next time (after
             // sleep) it
@@ -124,9 +124,9 @@ public class GemwebLoader extends ConnectorLoader {
         if (toReturn != null) {
             toReturn = transformForTransformer(toReturn);
             try {
-                log.debug("getObject@GemwebLoader - getAsJsonObject :: {}", mapper.writeValueAsString(toReturn));
+                log.debug("getObject@GemwebLoader - {} - getAsJsonObject :: {}",  this.connectorName, mapper.writeValueAsString(toReturn));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            	log.error("getObject@GemwebLoader - {} - ", this.connectorName, e);
             }
             if (toReturn == null) {
                 // already treated get next recursively
@@ -153,7 +153,7 @@ public class GemwebLoader extends ConnectorLoader {
             LoaderJsonObject loaderJson = new LoaderJsonObject();
             loaderJson.setGlobalId(globalId);
             loaderJson.setElement(node);
-            log.debug("transformForTransformer@GemwebLoader - globalId {} not treated add to treatedGUIDs", globalId);
+            log.debug("transformForTransformer@GemwebLoader - {} - globalId {} not treated add to treatedGUIDs", this.connectorName, globalId);
             return mapper.valueToTree(loaderJson);
         } else {
             return null;
@@ -179,12 +179,12 @@ public class GemwebLoader extends ConnectorLoader {
             int connectTimeout = (int) this.loadTimeout;
             int socketTimeout = (int) this.loadTimeout;
 
-            log.debug("loadResponse@GemwebLoader - init with uri '{}' and token '{}'", uri, token);
-            HttpPost httpPost = new HttpPost(uri);
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
+            log.debug("loadResponse@GemwebLoader - {} - init with uri '{}' and token '{}'", this.connectorName, uri, token);
+            var httpPost = new HttpPost(uri);
+            var requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
                     .setSocketTimeout(socketTimeout).build();
             String authType = auth;
-            String authHeader = "";
+            var authHeader = "";
             if (authType != null && authType.equals("Bearer")) {
                 authHeader = "Bearer " + new String(token);
                 httpPost.setHeader("Authorization", authHeader);
@@ -202,47 +202,12 @@ public class GemwebLoader extends ConnectorLoader {
 
             String ret = inputStreamResponseToString(resp.getEntity().getContent());
             String json = XML.toJSONObject(ret).toString();
-            /*DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-			Document doc = null;
-			all = mapper.createArrayNode();
-			XmlMapper xmlMapper = new XmlMapper();
-
-			try (InputStream targetStream = new ByteArrayInputStream(ret.getBytes());) {
-
-				// parse XML file
-				DocumentBuilder db = dbf.newDocumentBuilder();
-
-				doc = db.parse(targetStream);
-
-				System.out.println("Root Element :" + doc.getDocumentElement().getNodeName());
-				System.out.println("------");
-				xmlMapper.readTree(new Xembler(
-						   new Directives()
-						     .xpath(this.params.getParamValue(GemWebLoaderConfigKeys.LOADER_XPATH_ELEMENT_ARRAY.getKey()))
-						 ).apply(doc).g;
-				if (doc.getChildNodes().getLength() != 0) {
-					log.info(doc.getChildNodes().toString());
-				}
-
-			} catch (ParserConfigurationException | SAXException | IOException e) {
-				e.printStackTrace();
-			}
-			if (log.isDebugEnabled()) {
-				log.debug("loadResponse@GemwebLoader - response '{}'", ret);
-			}*/
-//
-//			if (node.get("error") != null) {
-//				log.error("loadResponse@GemwebLoader - error in sending pettion to gemweb, error responded : {}", node.get("error").asText());
-//				return null;
-//			}
 
             try {
                 JSONArray array  = JsonPath.parse(json).<JSONArray>read(jsonPathElementArray);
                 all = mapper.valueToTree(array);
                 ArrayNode arrayFiltered = mapper.createArrayNode();
                 Date updateDate = null;
-                String filterField = filter_Field;
                 if (this.page.getContent().isEmpty() || this.page.getContent().size() < 2 || filterField == null) {
                     this.loaded = all;
 
@@ -256,9 +221,9 @@ public class GemwebLoader extends ConnectorLoader {
                     }
                 } else {
                     updateDate = this.page.getContent().get(1).getExecutionStartDate();
-                    SimpleDateFormat sdf = new SimpleDateFormat(filter_Format);
+                    SimpleDateFormat sdf = new SimpleDateFormat(filterFormat);
 
-                    log.debug("loadResponse@GemwebLoader - filter all pair of guid to return");
+                    log.debug("loadResponse@GemwebLoader - {} - filter all pair of guid to return", this.connectorName);
                     if(all.isArray()) {
                         for (JsonNode e : all ) {
                             Pair<String, String> ids = getIds(e);
@@ -280,7 +245,7 @@ public class GemwebLoader extends ConnectorLoader {
                             }
                         }
                     }
-                    log.debug("loadResponse@GemwebLoader - sort all of global id");
+                    log.debug("loadResponse@GemwebLoader - {} - sort all of global id", this.connectorName);
                     String[] arr = this.allGUIDs.toArray(new String[this.allGUIDs.size()]);
                     Arrays.sort(arr);
                     List<String> list = new ArrayList<>();
@@ -290,26 +255,20 @@ public class GemwebLoader extends ConnectorLoader {
                 }
                 return getObject();
             } catch (Exception e) {
-                log.error("loadResponse@GemwebLoader - exception while sending petition : ", e);
+            	this.senError("LOADER_LOAD_EXCEPTION").describe("Loader has found a fatal exception while treating objects").foundErr().exception(e);
+                log.error("loadResponse@GemwebLoader - {} - exception while sending petition : ", this.connectorName,  e);
                 throw new ApiErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "exception while sending petition to gemweb", e.getMessage());
 
             }
 
         } catch (SocketTimeoutException e) {
-            log.error("loadResponse@GemwebLoader - Error sending POST to '{}' readTimeout '{}' with xml", uri, 60000);
-            throw e;
-        } catch (UnsupportedEncodingException e) {
-            log.error("loadResponse@GemwebLoader - Error sending POST to '{}'.", uri, e);
-            throw e;
-        } catch (ClientProtocolException e) {
-            log.error("loadResponse@GemwebLoader - Error sending POST to '{}''.", uri, e);
-            throw e;
-        } catch (IOException e) {
-            log.error("loadResponse@GemwebLoader - Error sending POST to '{}'.", uri, e);
+        	this.senError("LOADER_TIMEOUT_EXCEPTION").describe("Loader timedout while retriving objects").foundErr().exception(e);
+            log.error("loadResponse@GemwebLoader - {} - Error sending POST to '{}' readTimeout '{}' with xml", this.connectorName, uri, 60000);
             throw e;
         } catch (Exception e) {
-            log.error("loadResponse@GemwebLoader - Error sending POST to '{}'.", uri, e);
+        	this.senError("LOADER_GLOBAL_EXCEPTION").describe("Loader has found a fatal exception while retriving objects").foundErr().exception(e);
+            log.error("loadResponse@GemwebLoader - {} - Error sending POST to '{}'.", this.connectorName, uri, e);
             throw e;
         }
     }
@@ -332,22 +291,11 @@ public class GemwebLoader extends ConnectorLoader {
             int connectTimeout = (int) this.loadTimeout;
             int socketTimeout = (int) this.loadTimeout;
 
-            log.debug("getAccessToken@GemwebLoader - init with uri '{}'", uri);
+            log.debug("getAccessToken@GemwebLoader - {} - init with uri '{}'", this.connectorName, uri);
             HttpPost httpPost = new HttpPost(uri);
             RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
                     .setSocketTimeout(socketTimeout).build();
-            /*
-             * String authType =
-             * this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_AUTH.getKey());
-             * String authHeader = ""; if (authType != null && authType.equals("Basic")) {
-             * String auth =
-             * this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_USERNAME.getKey
-             * ()) + ":" +
-             * this.params.getParamValue(GeoserverSenderConfigKeys.GEOSERVER_PASSWORD.getKey
-             * ()); byte[] encodedAuth =
-             * Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1)); authHeader =
-             * "Basic " + new String(encodedAuth); }
-             */
+            
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             nvps.add(new BasicNameValuePair("request", "get_token"));
             nvps.add(new BasicNameValuePair("client_id", clientId));
@@ -367,11 +315,12 @@ public class GemwebLoader extends ConnectorLoader {
             String accessToken = "";
 
             if (log.isDebugEnabled()) {
-                log.debug("getAccessToken@GemwebLoader - response '{}'", ret);
+                log.debug("getAccessToken@GemwebLoader - {} - response '{}'", this.connectorName, ret);
             }
 
             if (node.get("error") != null) {
-                log.error("getAccessToken@GemwebLoader - error in authentication, error responded : {}",
+                log.error("getAccessToken@GemwebLoader - {} - error in authentication, error responded : {}",
+                		this.connectorName,
                         node.get("resultat").get("error"));
             }
             JsonNode resultat = node.get("access_token");
@@ -382,19 +331,12 @@ public class GemwebLoader extends ConnectorLoader {
             return accessToken;
 
         } catch (SocketTimeoutException e) {
-            log.error("getAccessToken@GemwebLoader - Error sending POST to '{}' readTimeout '{}' with xml", uri, 60000);
-            throw e;
-        } catch (UnsupportedEncodingException e) {
-            log.error("getAccessToken@GemwebLoader - Error sending POST to '{}'.", uri, e);
-            throw e;
-        } catch (ClientProtocolException e) {
-            log.error("getAccessToken@GemwebLoader - Error sending POST to '{}''.", uri, e);
-            throw e;
-        } catch (IOException e) {
-            log.error("getAccessToken@GemwebLoader - Error sending POST to '{}'.", uri, e);
+        	this.senError("LOADER_TIMEOUT_EXCEPTION_ACCESS_TOKEN").describe("Timeout in retriving access token").foundErr().exception(e);
+            log.error("getAccessToken@GemwebLoader - {} - Error sending POST to '{}' readTimeout '{}' with xml", this.connectorName, uri, 60000);
             throw e;
         } catch (Exception e) {
-            log.error("getAccessToken@GemwebLoader - Error sending POST to '{}'.", uri, e);
+        	this.senError("LOADER_GLOBAL_EXCEPTION_ACCESS_TOKEN").describe("Fatal exception in retriving access token").foundErr().exception(e);
+            log.error("getAccessToken@GemwebLoader - {} - Error sending POST to '{}'.", this.connectorName, uri, e);
             throw e;
         }
     }
@@ -402,7 +344,7 @@ public class GemwebLoader extends ConnectorLoader {
     private String inputStreamResponseToString(InputStream reader) {
         StringBuilder sb = new StringBuilder();
 
-        log.debug("inputStreamResponseToString@GemwebLoader - reading response of input");
+        log.debug("inputStreamResponseToString@GemwebLoader - {} - reading response of input", this.connectorName);
         try (InputStreamReader inputStreamReader = new InputStreamReader(reader)) {
             BufferedReader br = new BufferedReader(inputStreamReader);
             String readLine;
@@ -410,7 +352,8 @@ public class GemwebLoader extends ConnectorLoader {
                 sb.append("\n").append(readLine);
             }
         } catch (IOException e) {
-            log.error("inputStreamResponseToString@GemwebLoader - Error reading response", e);
+            log.error("inputStreamResponseToString@GemwebLoader - {} -  Error reading response", this.connectorName, e);
+            this.senError("LOADER_STREAM_ERROR").describe("Error reading response stream").foundErr().exception(e);
         }
 
         String ret = sb.toString().replaceAll("\r\n", "").replaceAll("\t", "").replaceAll("\n", "");
@@ -428,7 +371,7 @@ public class GemwebLoader extends ConnectorLoader {
         String globalId = null;
 
         String hasGuid = this.guidsExisting.get(localId);
-        log.debug("getIds@GeoserverLoader - has guid {}, local id :: {}, guids size {}", hasGuid != null, localId,
+        log.debug("getIds@GeoserverLoader - {} - has guid {}, local id :: {}, guids size {}", this.connectorName, hasGuid != null, localId,
                 this.guidsExisting.size());
         if (hasGuid == null) {
             globalId = invUtils.getGuid();

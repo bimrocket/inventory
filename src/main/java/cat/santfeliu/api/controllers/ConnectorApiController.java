@@ -18,7 +18,8 @@ import cat.santfeliu.api.api.ConnectorApi;
 import cat.santfeliu.api.dto.ConnectorComponentDTO;
 import cat.santfeliu.api.dto.ConnectorDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
-import cat.santfeliu.api.model.PageStatsDTO;
+import cat.santfeliu.api.dto.PageErrorsDTO;
+import cat.santfeliu.api.dto.PageStatsDTO;
 import cat.santfeliu.api.service.ConnectorApiService;
 import cat.santfeliu.api.service.ConnectorManagerService;
 
@@ -99,4 +100,11 @@ public class ConnectorApiController implements ConnectorApi {
 		
 	}
 	
+	@Override
+	public ResponseEntity<PageErrorsDTO> connectorErrors(@NotNull @Valid @PathVariable("connectorName") String connectorName, @RequestParam(name = "page", defaultValue = "0") int page,@RequestParam(name = "size", defaultValue = "10") int size) {
+		
+		log.info("connectorErrors@ConnectorApiController - get stats of connector with name {} of page {} with size {}",connectorName,page,size);
+		return ResponseEntity.ok(managerService.connectorErrors(connectorName, page, size));
+		
+	}
 }

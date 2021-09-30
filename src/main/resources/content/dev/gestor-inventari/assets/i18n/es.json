@@ -1,0 +1,110 @@
+{
+	"LOGIN": {
+		"WRITE_EMAIL": "Introdueix el usuari",
+		"WRITE_PASSWORD": "Introdueix la contrasenya",
+		"INVALID_USER": "Usuari o contrasenya incorrecta",
+		"YOU_NEED_VALUE": "Has d'escriure algun valor",
+		"INVALID_EMAIL": "Email no válid",
+		"REMEMBER_ME": "Recordar",
+		"ENTER": "Entra",
+		"REDIRECTING": "Redireccionando...",
+		"INICIAR_SESSIO": "Iniciar sessió"
+	},
+	"NAVBAR" : {
+		"LOGGED" : "Sesión iniciada como ",
+		"VERSION" : "Versión:"
+	},
+	"GENERAL": {
+		"HELLO": "Hola",
+		"SAVE_ALL": "GUARDAR TODO",
+		"BACK": "VOLVER",
+		"DISMISS" : "TANCAR",
+		"APPLY" : "APLICAR",
+		"START" : "INICIAR",
+		"STOP" : "PARAR",
+		"NO_DATA" : "No hay registros relacionados con el connector actual.",
+		"TIMES" : " veces",
+		"1TIME" : " vez",
+		"NONE" : "Ningúno"
+	},
+	"MENUITEM": {
+		"HOME": "Inici",
+		"CONNECTORS": "Connectores",
+		"CONFIG" : "Configuración",
+		"STATS" : "Estadísticas",
+		"ERRORS" : "ErrorLog"
+	},
+	"HOME": {
+		"LOGO" : "Gestor Inventario",
+		"LOGO_2" : "CityOS",
+		"FILTRE" : "Configuración de filtros",
+		"TITLE": "Connectores",
+		"CONNECTOR_NAME": "Nombre del connector",
+		"CONNECTOR_CONFIG": "Configuración",
+		"CONNECTOR_STATS": "Estadísticas",
+		"CONNECTOR_STATUS": "Estado",
+		"STATUS_UPDATE_DATE" : "Última actualitzación de estado",
+		"BY" : "Actualizado hace",
+		"EXECUTE": "Iniciar/Parar",
+		"CONFIG": "Config",
+		"STATS": "Estadísticas",
+		"START_DATE": "Data de inicio",
+		"END_DATE": "Data de finalitzación",
+		"LOADING": "Error al cargar connectores y su estado",
+		"ERROR_LOG": "Log errores",
+		"LOG": "Errores del proceso",
+		"ERROR_LOADING_CONNECTOR": "Hay problemas en configuración de este connector",
+		"COULDNT_STOP" : "No hemos podido parar el connector indicado (¿ Puede que ya esté parado ?)",
+		"STOPPED" : "Connector parado correctamente.",
+		"STARTED" : "Connector iniciado correctamente.",
+		"COULDNT_START" : "No hemos podido parar el connector indicado (¿ Puede que ya esté corriendo ?)"
+	},
+	"CON_CONFIG": {
+		"TITLE": "Configuración del connector",
+		"LOADER": "Loader",
+		"TRANSFORMER": "Transformer",
+		"SENDER": "Sender",
+		"TITLE_PARAMS": "Parámetros de configuración",
+		"COMPONENT_TYPE": "Tipo de componente",
+		"CONFIG_KEY": "Clave de configuración",
+		"CONFIG_VALUE": "Valor de configuración",
+		"SELECT" : "Selecciona el connector del cual quieres inspeccionar la configuració :"
+	},
+	"CON_STATS": {
+		"TITLE" : "Estadísticas del connector",
+		"SELECT" : "Selecciona el connector del cual quieres inspeccionar las estadísticas :",
+		"DATE_END" : "Fecha finalización",
+		"DATE_START" : "Fecha inicialización",
+		"END_STATE" : "Último estado",
+		"OBJECTS_LOADED" : "Objetos carregados",
+		"OBJECTS_TRANSFORMED" : "Objetos transformados",
+		"OBJECTS_SENT" : "Objetos enviados",
+		"OBJECTS_DELETED" : "Objetos eliminados",
+		"ID" : "Identificador de l'ejecución"
+	},	
+	"CON_ERROR": {
+		"TITLE" : "Log de errores del connector",
+		"SELECT" : "Selecciona el connector del cual quieres inspeccionar los errores :",
+		"PLACE" : "Ubicación en código fuente",
+		"KEY" : "Identificador clave de l'error",
+		"EXCEPTION" : "Excepción",
+		"OCCURRENCES" : "Ha ocurrido",
+		"OBJECTS" : "GlobalIDs implicados",
+		"DESC" : "Descripción en íngles",
+		"ID" : "Identificador de l'ejecución"
+	},
+	"CONFIG" : {
+		"ERROR_SAVING" : "Error al guardar configuración.",
+		"SAVED" : "Configuración guardada correctamente."
+	},
+	"PAGINATOR": {
+		"DE": "de",
+		"SHOWING": "Registros por página",
+		"TOTALELEMENTS": "elementos"
+	},
+	"error_501" : "Ha ocurrido un error no deseado al conectar con servidor.",
+	"check_console" : "Comproba la consola de desenvolupador para más información",
+	"error_retry_01" : "Puede probar-lo de nuevo en un par de minutos.",
+	"error_retry_02" : "Si el problema persiste contactar con soporte técnico.",
+	"error_retry_03" : "Si sabeis como incluir información de la consola de desenvolupador (red,consola) sera de utilitad para soporte."
+}

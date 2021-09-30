@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -14,24 +15,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import cat.santfeliu.api.components.ConnectorComponent;
 import cat.santfeliu.api.dto.ComponentConfigKeyDTO;
 import cat.santfeliu.api.dto.ConnectorComponentDTO;
 import cat.santfeliu.api.dto.ConnectorDTO;
+import cat.santfeliu.api.dto.ConnectorErrorsDTO;
 import cat.santfeliu.api.dto.ConnectorParamDTO;
 import cat.santfeliu.api.dto.ConnectorStatsDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
-import cat.santfeliu.api.exceptions.ApiErrorException;
+import cat.santfeliu.api.dto.PageErrorsDTO;
+import cat.santfeliu.api.dto.PageStatsDTO;
 import cat.santfeliu.api.model.ConnectorComponentConfigDb;
 import cat.santfeliu.api.model.ConnectorComponentDb;
 import cat.santfeliu.api.model.ConnectorDb;
+import cat.santfeliu.api.model.ConnectorExecutionErrorsDb;
 import cat.santfeliu.api.model.ConnectorExecutionStatsDb;
 import cat.santfeliu.api.model.ConnectorStatusDb;
-import cat.santfeliu.api.model.PageStatsDTO;
 import cat.santfeliu.api.repo.ConnectorComponentConfigRepo;
+import cat.santfeliu.api.repo.ConnectorStatusRepo;
 import cat.santfeliu.api.utils.ConfigProperty;
 
 @Service
@@ -43,6 +46,9 @@ public class MapperService {
 
 	@Autowired
 	private ConnectorComponentConfigRepo conConfigRepo;
+	
+	@Autowired
+	private ConnectorStatusRepo conStatusRepo;
 
 	/**
 	 * Return dto of ConnectorStatusDb
@@ -111,6 +117,16 @@ public class MapperService {
 		for (ConnectorComponentConfigDb paramDb : paramsDb) {
 			params.add(modelMapper.map(paramDb, ConnectorParamDTO.class));
 		}
+		Optional<ConnectorStatusDb> conStatusDb = conStatusRepo.findById(con.getConnectorName());
+		if (conStatusDb.isEmpty()) {
+			String error = String.format("couldn't find status of connector '%s'", con.getConnectorName());
+			log.error("connectorDbToDTO@MapperService - {}", error);
+		} else {
+			ConnectorStatusDb status = conStatusDb.get();
+			log.debug("connectorDbToDTO@MapperService - get status of connector {}", con.getConnectorName());
+			dto.setConnectorStatus(statusDbToDTO(status));			
+		}
+
 		dto.setConnectorParams(params);
 		log.debug("connectorDbToDTO@MapperService - connector db {} to dto", con.getConnectorName());
 		return dto;
@@ -166,6 +182,20 @@ public class MapperService {
 			pageDto.getStats().add(statDto);
 		}
 		log.debug("connectorStatsDbToDTO@MapperService - page of statsDb to page of statsDto");
+		return pageDto;
+	}
+
+	public PageErrorsDTO connectorErrorsDbToDTO(Page<ConnectorExecutionErrorsDb> errorsDb) {
+		PageErrorsDTO pageDto = new PageErrorsDTO();
+		pageDto.setPage(errorsDb.getNumber());
+		pageDto.setSize(errorsDb.getSize());
+		pageDto.setTotalELements((int) errorsDb.getTotalElements());
+		pageDto.setTotalPages(errorsDb.getTotalPages());
+		for (ConnectorExecutionErrorsDb errorDb : errorsDb.getContent()) {
+			ConnectorErrorsDTO errortDto = modelMapper.map(errorDb, ConnectorErrorsDTO.class);
+			pageDto.getErrors().add(errortDto);
+		}
+		log.debug("connectorErrorsDbToDTO@MapperService - page of errorsDb to page of errorDto");
 		return pageDto;
 	}
 }

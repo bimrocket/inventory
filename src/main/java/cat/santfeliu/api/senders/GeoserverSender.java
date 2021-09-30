@@ -1,9 +1,7 @@
 package cat.santfeliu.api.senders;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -14,7 +12,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -58,6 +55,12 @@ public class GeoserverSender extends ConnectorSender {
 
 	@ConfigProperty(name = "password", description = "Password used for basic authentication", hidden=true)
 	String password;
+	
+	@ConfigProperty(name = "petition.timeout" , description = "Timeout used to sending to geoserver (if it exceeds timeout then it retries by number of retries set")
+	Integer timeout;
+	
+	@ConfigProperty(name = "petition.retries" , description = "Number of total retries when timeout occurs")
+	Integer retries;
 
 	@Override
 	public void send(JsonNode node) {
@@ -103,9 +106,10 @@ public class GeoserverSender extends ConnectorSender {
 						}
 						
 					} catch (JsonProcessingException e) {
-						log.error("send@GeoserverSender - can't map geom object as jsonObject {}", elem.get(key).asText());
+						this.senError("SENDER_ERROR_MAPPING_GEOM").describe("can't map geom object as jsonObject").foundErr().exception(e);
+						log.error("send@GeoserverSender - {} - can't map geom object as jsonObject {}", this.connectorName, elem.get(key).asText());
 					}
-					log.debug("send@GeoserverSender - add geom key"); 
+					log.debug("send@GeoserverSender - {} - add geom key", this.connectorName); 
 					dir.add(key);
 					JsonNode geomObj = elemElem;
 					if (geomObj != null && !geomObj.isNull()) {
@@ -116,7 +120,7 @@ public class GeoserverSender extends ConnectorSender {
 					JsonNode elemElem = null;
 					elemElem = elem.get(key);
 					dir.add(key);
-					log.debug("send@GeoserverSender - add not geom key {}", key);
+					log.debug("send@GeoserverSender - {} - add not geom key {}", this.connectorName, key);
 					if (elemElem == null || elemElem.isNull()) {
 						dir.set("");
 					} else {
@@ -128,7 +132,7 @@ public class GeoserverSender extends ConnectorSender {
 
 		} else if (update) {
 			JsonNode elem = node.get("element");
-			log.debug("send@GeoserverSender - add update of geoserversender key {}", typeName);
+			log.debug("send@GeoserverSender - {} - add update of geoserversender key {}", this.connectorName, typeName);
 			dir.add("Update").attr("typeName", typeName);
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			Iterator<String> keys = elem.fieldNames();
@@ -145,21 +149,25 @@ public class GeoserverSender extends ConnectorSender {
 							elemElem = (JsonNode) mapper.readValue((nodeGeom.asText()), ObjectNode.class);
 						}
 					} catch (JsonProcessingException e) {
-						log.error("send@GeoserverSender - can't map geom object as jsonObject {}", elem.get(key).asText());
+						this.senError("SENDER_ERROR_MAPPING_GEOM").describe("can't map geom object as jsonObject").foundErr().exception(e);
+						log.error("send@GeoserverSender - {} - can't map geom object as jsonObject {}", this.connectorName, elem.get(key).asText());
 					}
-					log.debug("send@GeoserverSender - set geom key");
+					log.debug("send@GeoserverSender - {} - set geom key", this.connectorName);
 					dir.add("Name").set("geom").up();
 					JsonNode geomObj = elemElem;
 					dir.add("Value");
 
-					GeometryXMLUtils.putGeometryObjInXML(dir, geomObj);
+					if (geomObj != null && !geomObj.isNull()) {
+						GeometryXMLUtils.putGeometryObjInXML(dir, geomObj);
+					}
+
 					
 					dir.up();
 				} else {
 					JsonNode elemElem = null;
 					elemElem = elem.get(key);
 
-					log.debug("send@GeoserverSender - set another key {}", key);
+					log.debug("send@GeoserverSender - {} - set another key {}", this.connectorName, key);
 					dir.add("Name");
 					dir.set(key);
 					dir.up().add("Value");
@@ -175,7 +183,7 @@ public class GeoserverSender extends ConnectorSender {
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
 			dir.add("FeatureId").attr("fid", localId);
 		} else {
-			log.debug("send@GeoserverSender - add delete of geoserversender key {}", typeName);
+			log.debug("send@GeoserverSender - {} - add delete of geoserversender key {}", this.connectorName ,typeName);
 			dir.add("Delete").attr("typeName", typeName);
 			dir.attr("xmlns:sf", "https://www.santfeliu.cat");
 			dir.add("Filter").attr("xmlns", "http://www.opengis.net/ogc");
@@ -183,15 +191,9 @@ public class GeoserverSender extends ConnectorSender {
 		}
 		try {
 			String xml = new Xembler(dir).xml().replaceAll("\r\n", "");
-
-//			StringReader reader = new StringReader(xml);
-//			Parser parser = new Parser(new WFSConfiguration());
-//			TransactionType tt = (TransactionType) parser.parse(reader);
-//			InsertElementType insert1 = (InsertElementType) tt.getInsert().get(0);
-//			insert1
-			log.info("xml done :: {}", xml);
+			log.debug("send@GeoserverSender - {} - xml done :: {}", this.connectorName, xml);
 			String uri = url;
-			String bodyResp = sendPostXML(uri, xml);
+			String bodyResp = sendPostXML(uri, xml, retries);
 
 			if (insert) {
 				// an instance of builder to parse the specified xml file
@@ -200,32 +202,46 @@ public class GeoserverSender extends ConnectorSender {
 					while (m.find()) {
 						localId = m.group(0).replaceAll("fid=", "").replaceAll("\"", "");
 					}
-					GlobalIdDb globalIdDb = new GlobalIdDb();
-					globalIdDb.setGlobalId(globalId);
-					globalIdDb.setInventoryName(this.inventoryName);
-					globalIdDb.setLocalId(localId);
-					globalIdRepo.save(globalIdDb);
+					if (localId != null) {
+						GlobalIdDb globalIdDb = new GlobalIdDb();
+						globalIdDb.setGlobalId(globalId);
+						globalIdDb.setInventoryName(this.inventoryName);
+						globalIdDb.setLocalId(localId);
+						globalIdRepo.save(globalIdDb);
+					} else {
+						this.senError("SENDER_ERROR_INSERTING_INVALID_RESPONSE").describe("couldn't do insert in geoserver, geoserver didn't response any valid id").foundErr();
+						log.error("send@GeoserverSender - {} - couldn't do insert in geoserver, geoserver didn't response any valid id, response from geoserver :: {}, xml sent :: {}",
+								this.connectorName, bodyResp, xml);
+					}
+
 				} catch (Exception e) {
-					log.error("send@GeoserverSender - couldn't read response xml in transaction insert, exception ", e);
+					this.senError("SENDER_ERROR_INSERTING_INVALID_RESPONSE").describe("couldn't read response xml in transaction insert").foundErr().exception(e);
+					log.error("send@GeoserverSender - {} - couldn't read response xml {} in transaction insert, exception ", this.connectorName, bodyResp, e);
 				}
 			} else if (update) {
 				Matcher m = Pattern.compile("<wfs:totalUpdated>1</wfs:totalUpdated>").matcher(bodyResp);
 				if (!m.find()) {
+					this.senError("SENDER_ERROR_UPDATING_INVALID_RESPONSE").describe("couldn't do update transaction").foundErr(globalId);
+					
 					log.error(
-							"send@GeoserverSender - couldn't do update transaction, response from geoserver :: {}, xml sent :: {}",
-							bodyResp, xml);
+							"send@GeoserverSender - {} - couldn't do update transaction, response from geoserver :: {}, xml sent :: {}",
+							this.connectorName, bodyResp, xml);
 				}
 			} else if (delete) {
 				globalIdRepo.delete(globalIdDbOpt.get());
 				Matcher m = Pattern.compile("<wfs:totalDeleted>1</wfs:totalDeleted>").matcher(bodyResp);
+				
 				if (!m.find()) {
+					this.senError("SENDER_ERROR_DELETING_INVALID_RESPONSE").describe("couldn't do delete transaction").foundErr(globalId);
+					
 					log.error(
-							"send@GeoserverSender - couldn't do delete transaction, response from geoserver :: {}, xml sent :: {}",
-							bodyResp, xml);
+							"send@GeoserverSender - {} - couldn't do delete transaction, response from geoserver :: {}, xml sent :: {}",
+							this.connectorName, bodyResp, xml);
 				}
 			}
 		} catch (Exception e) {
-			log.error("send@GeoserverSender - exception while creating xml", e);
+			log.error("send@GeoserverSender - {} - exception while creating xml", this.connectorName, e);
+			this.senError("SENDER_GLOBAL_EXCEPTION").describe("An fatal exception has occurred when creating/sending to geoserver").foundErr(globalId).exception(e);
 		}
 
 	}
@@ -238,15 +254,15 @@ public class GeoserverSender extends ConnectorSender {
 	 * @return XML de retorn
 	 * @throws Exception
 	 */
-	public String sendPostXML(String uri, String xml) throws Exception {
+	public String sendPostXML(String uri, String xml, Integer retries) throws Exception {
 
 		Instant start = Instant.now();
 		try {
 
-			log.debug("sendPostMXL@GeoserverSender - init with uri '{}' xml '{}'", uri, xml);
+			log.debug("sendPostMXL@GeoserverSender - {} - init with uri '{}' xml '{}' and timeout '{}'", this.connectorName, uri, xml, timeout);
 
-			int connectTimeout = 60000;
-			int socketTimeout = 60000;
+			int connectTimeout = timeout;
+			int socketTimeout = timeout;
 
 			HttpPost httpPost = new HttpPost(uri);
 			RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
@@ -277,26 +293,23 @@ public class GeoserverSender extends ConnectorSender {
 			String ret = sb.toString();
 
 			if (log.isDebugEnabled()) {
-				log.debug("sendPostMXL@GeoserverSender - response '{}'", ret);
+				log.debug("sendPostMXL@GeoserverSender - {} - response '{}'", this.connectorName, ret);
 			}
 
 			return ret;
 
 		} catch (SocketTimeoutException e) {
-			log.error("sendPostMXL@GeoserverSender - Error sending xml to '{}' readTimeout '{}' with xml '{}'", uri,
-					60000, xml);
-			throw e;
-		} catch (UnsupportedEncodingException e) {
-			log.error("sendPostMXL@GeoserverSender - Error sending xml to '{}' with xml '{}'.", uri, xml, e);
-			throw e;
-		} catch (ClientProtocolException e) {
-			log.error("sendPostMXL@GeoserverSender - Error sending xml to '{}' with xml '{}'.", uri, xml, e);
-			throw e;
-		} catch (IOException e) {
-			log.error("sendPostMXL@GeoserverSender - Error sending xml to '{}' with xml '{}'.", uri, xml, e);
+			log.error("sendPostXML@GeoserverSender - {} - Timeout sending xml to '{}' readTimeout '{}' with xml '{}'", this.connectorName, uri,
+					timeout, xml);
+			if (retries != 0 && !this.getInstance().shouldEnd()) {
+				log.info("sendPostXML@GeoserverSender - {} - retrying operation for {} time", this.connectorName, retries);
+				sendPostXML(uri, xml, retries--);
+			} else {
+				this.senError("SENDER_TIMEOUT").describe("Timeout in sending petition to geoserver").foundErr().exception(e);
+			}
 			throw e;
 		} catch (Exception e) {
-			log.error("sendPostMXL@GeoserverSender - Error sending xml to '{}' with xml '{}'.", uri, xml, e);
+			log.error("sendPostXML@GeoserverSender - {} - Error sending xml to '{}' with xml '{}'.", this.connectorName, uri, xml, e);
 			throw e;
 		}
 	}

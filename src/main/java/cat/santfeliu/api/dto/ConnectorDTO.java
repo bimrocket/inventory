@@ -10,6 +10,7 @@ public class ConnectorDTO {
 	private String connectorSender;
 	private String inventoryName;
 	private List<ConnectorParamDTO> connectorParams;
+	private ConnectorStatusDTO connectorStatus;
 
 	public ConnectorDTO() {
 	
@@ -71,6 +72,16 @@ public class ConnectorDTO {
 	public void setInventoryName(String inventoryName) {
 		this.inventoryName = inventoryName;
 	}
+
+	public ConnectorStatusDTO getConnectorStatus() {
+		return connectorStatus;
+	}
+
+	public void setConnectorStatus(ConnectorStatusDTO connectorStatus) {
+		this.connectorStatus = connectorStatus;
+	}
+	
+	
 	
 	
 

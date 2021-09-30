@@ -35,6 +35,7 @@ public class HardcodedLoader extends ConnectorLoader {
 				return null;
 			}
 		} catch (JsonProcessingException e) {
+			this.senError("TRANSFORMER_INVALID_JSON").describe("invalid json defined as json.object in database configÇ").foundErr().exception(e);
 			log.error("load@HardcodedLoader - invalid json defined as json.object in database config, json :: {}, exception ::", json, e);
 			return null;
 		}

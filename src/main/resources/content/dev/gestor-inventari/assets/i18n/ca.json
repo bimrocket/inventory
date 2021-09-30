@@ -1,0 +1,33 @@
+{
+  "LOGIN": {
+		"WRITE_EMAIL": "Introdueix el usuari",
+		"WRITE_PASSWORD": "Introdueix la contrasenya",
+		"INVALID_USER": "Usuari o contrasenya incorrecta",
+		"YOU_NEED_VALUE": "Has d'escriure algun valor",
+		"INVALID_EMAIL": "Email no válid",
+		"REMEMBER_ME": "Recordar",
+		"ENTER": "Entra",
+		"REDIRECTING": "Redireccionand...",
+    "INICIAR_SESSIO":"Iniciar sessió"
+	},
+  "GENERAL":{
+    "HELLO":"Hola"
+  },
+  "MENUITEM":{
+    "HOME":"Inici"
+  },
+  "HOME":{
+    "TITLE":"Secció taula",
+	"CONNECTOR_NAME" : ""
+  },
+  "CON_CONFIG" : {
+	"LOADER" : "Loader",
+	"TRANSFORMER" : "Transformer",
+	"SENDER" : "Sender"
+  },
+  "PAGINATOR": {
+		"DE": "de",
+		"SHOWING": "Registros por página",
+		"TOTALELEMENTS": "elementos"
+	}
+}

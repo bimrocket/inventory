@@ -1,4 +1,4 @@
-package cat.santfeliu.api.api;
+	package cat.santfeliu.api.api;
 
 import java.util.List;
 
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import cat.santfeliu.api.dto.ConnectorComponentDTO;
 import cat.santfeliu.api.dto.ConnectorDTO;
 import cat.santfeliu.api.dto.ConnectorStatusDTO;
-import cat.santfeliu.api.model.PageStatsDTO;
+import cat.santfeliu.api.dto.PageErrorsDTO;
+import cat.santfeliu.api.dto.PageStatsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -87,6 +88,13 @@ public interface ConnectorApi {
     @RequestMapping(value = "/connectors/{connectorName}/stats",
         method = RequestMethod.GET)
     ResponseEntity<PageStatsDTO> connectorStats(@NotNull @Parameter(in = ParameterIn.PATH, description = "" ,required=true,schema=@Schema()) @Valid @PathParam(value = "connectorName") String connectorName, int page, int size);
+    
+    @Operation(summary = "", description = "", tags={ "connectors" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "OK") })
+    @RequestMapping(value = "/connectors/{connectorName}/errors",
+        method = RequestMethod.GET)
+    ResponseEntity<PageErrorsDTO> connectorErrors(@NotNull @Parameter(in = ParameterIn.PATH, description = "" ,required=true,schema=@Schema()) @Valid @PathParam(value = "connectorName") String connectorName, int page, int size);
     
 }
 

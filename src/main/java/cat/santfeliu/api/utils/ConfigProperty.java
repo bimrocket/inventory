@@ -13,10 +13,11 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigProperty 
+public @interface ConfigProperty
 {
   String name();
   String description() default "";
   boolean required() default true;
   boolean hidden() default false;
+  String defaultValue() default "";
 }

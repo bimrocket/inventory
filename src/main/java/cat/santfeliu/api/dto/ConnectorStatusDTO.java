@@ -8,9 +8,9 @@ public class ConnectorStatusDTO {
 
 	private String connectorName;
 	private String connectorStatus;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
 	private Date connectorStartDate;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
 	private Date connectorEndDate;
 
 	public ConnectorStatusDTO() {

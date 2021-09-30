@@ -27,7 +27,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         // Les API error no s'han de logar, ja ho fan a les api!
         ApiError error = ex.getApiError();
-        return new ResponseEntity<>(error, error.getStatus());
+        log.error("exceptionHandler - returning ApiErrorException", ex);
+        return new ResponseEntity<>(error, error.getStatus()); 
 
     }
     

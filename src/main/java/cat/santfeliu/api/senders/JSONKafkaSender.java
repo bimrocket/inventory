@@ -20,9 +20,6 @@ public class JSONKafkaSender extends ConnectorSender {
 	@Autowired
 	protected KafkaTemplate<String, String> template;
 
-	@Autowired
-	protected KafkaAdmin admin;
-
 	@ConfigProperty(name = "topic.name", description = "Kafka topic name to send to")
 	String topicName;
 
@@ -31,36 +28,16 @@ public class JSONKafkaSender extends ConnectorSender {
 
 	@Override
 	public void send(JsonNode node) {
-		try {
-			this.template.send(topicName,
-					new ObjectMapper().writeValueAsString(node));
+		String message = "";
+		try {		
+			message = new ObjectMapper().writeValueAsString(node);
+			this.template.send(topicName, message);
+			log.debug("send@JSONKafkaSender - {} - sent to topic {} following message :: {}", this.connectorName, topicName, message);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error("send@JSONKafkaSender - {} - error sending to topic {} can't create json", this.connectorName, topicName);
+		} catch (Exception e) {
+			log.error("send@JSONKafkaSender - {} - error sending to topic {} following message :: {}", this.connectorName, topicName, message);
 		}
-		try {
-			log.debug("send@JSONKafkaSender - send :: {} , {}", topicName, new ObjectMapper().writeValueAsString(node));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		
 	}
-
-//	private void createTopic(JsonObject node) {
-//		// Create topic
-//
-//		String kafkaTopicName = this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_TOPIC_NAME.getKey());
-//		int topicPartitions = Integer
-//				.valueOf(this.params.getParamValue(JSONKafkaSenderConfigKeys.KAFKA_PARTITIONS.getKey()));
-//		NewTopic topic = TopicBuilder.name(kafkaTopicName).partitions(topicPartitions).build();
-//		// Register topic
-//		AdminClient client = AdminClient.create(admin.getConfigurationProperties());
-//		Set<NewTopic> topics = new HashSet<>();
-//		topics.add(topic);
-//		client.createTopics(topics).all().thenApply(v -> completedFuture(node));
-//	}
-//
-//	private Object completedInit(JsonObject node) {
-//		this.initialized = true;
-//
-//	}
-
 }
