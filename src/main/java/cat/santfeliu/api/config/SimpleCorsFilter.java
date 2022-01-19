@@ -1,3 +1,4 @@
+/*
 package cat.santfeliu.api.config;
 
 import java.io.IOException;
@@ -58,3 +59,4 @@ public class SimpleCorsFilter implements Filter {
 	}
 
 }
+ */

@@ -2,6 +2,8 @@ package cat.santfeliu.api.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.python.icu.util.Calendar;
 import org.slf4j.Logger;
@@ -92,12 +94,26 @@ public class ConnectorRunnerService {
 					log.debug(
 							"runConnector@ConnectorRunnerService - connector {} put to sleep {}ms due to end of objects",
 							instance.getConnector().getConnectorName(), loader.getSleepTime());
-					Thread.sleep(loader.getSleepTime());
-					log.debug(
-							"runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader",
-							instance.getConnector().getConnectorName());
 
-					curObject = loader.load(loader.getLoadTimeout());
+					int seconds = (int) (loader.getSleepTime() / 1000);
+					int actualSeconds = 0;
+					while (actualSeconds < seconds && !instance.shouldEnd()) {
+						Thread.sleep(1000);
+						actualSeconds++;
+						log.debug(
+								"runConnector@ConnectorRunnerService - connector {} will return from sleep in {}s",
+								instance.getConnector().getConnectorName(), seconds - actualSeconds);
+					}
+					if (!instance.shouldEnd()) {
+						log.debug(
+								"runConnector@ConnectorRunnerService - connector {} ends sleep and will try now to retrive objects from loader",
+								instance.getConnector().getConnectorName());
+						curObject = loader.load(loader.getLoadTimeout());
+					} else {
+						log.debug(
+								"runConnector@ConnectorRunnerService - connector {} stopped sleep and should end",
+								instance.getConnector().getConnectorName());
+					}
 				}
 				if (curObject != null) {
 					log.debug("currentOnject :: {}", mapper.writeValueAsString(curObject));

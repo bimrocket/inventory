@@ -3,6 +3,7 @@ package cat.santfeliu.api.config;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,6 +23,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	@Value("${app.basic.auth.user}")
+	private String basicAuthUser;
+	
+	@Value("${app.basic.auth.pass}")
+	private String basicAuthPass;
+	
 	@Autowired
 	private AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -46,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("GestorInventari2458!@"))
+		auth.inMemoryAuthentication().withUser(basicAuthUser).password(passwordEncoder().encode(basicAuthPass))
 				.authorities("ROLE_ADMIN");
 	}
 
